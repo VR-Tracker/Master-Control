@@ -71,12 +71,12 @@
 
 		<div class="row">
 			<div class="col-md-6">
-                <div class="panel panel-default">
+              <!--  <div class="panel panel-default">
 					<div class="panel-heading">Connect to the Gateway</div>
 					<div class="panel-body" >
                         - Plug-in your Gateway (it can take a few minutes to start)</br>- Connect to "VR Tracker Gateway" Wifi (password "vrtracker")</br>- Once you see the message "Successfully connected to the Gateway !" go to the next step ;)
 					</div>
-				</div>
+				</div> -->
 
 
                 <div class="alert bg-danger" id="ws_failed_alert" role="alert">
@@ -91,7 +91,6 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">Choose the Cameras to Calibrate</div>
 					<div class="panel-body" >
-                        Either choose every cameras for a full calibration or only a few of them if you need to re-calibrate.</br>
                         <table class="tableau" id="available-cameras" style="margin-top: 15px;">
             			  <tr class="header" id="test">
             				<th style="width:25%;">Camera</th>
@@ -106,7 +105,7 @@
 				</div>
 
                 <p align="center" style="margin-top: 1px">
-					<button style="width:50%; margin-bottom: 10px" type="submit" class="btn btn-primary" id="calibrationBtn"  onclick="startCalibration()" style="margin-left: 10px">Start Calibration </button>
+					<button style="width:50%; margin-bottom: 10px" type="submit" class="btn btn-primary" id="calibrationBtn"  disabled onclick="startCalibration()" style="margin-left: 10px;">Start Calibration </button>
 				</p>
 
 
@@ -115,15 +114,15 @@
 					<div class="panel-body" >
 						<div class="form-group">
 							<label>X</label>
-							<input class="form-control" id="x-coordinate" placeholder="x coordinate in meters">
+							<input disabled class="form-control" id="x-coordinate" placeholder="x coordinate in meters">
 						</div>
 						<div class="form-group">
 							<label>Y</label>
-							<input class="form-control" id="y-coordinate" placeholder="y coordinate in meters">
+							<input disabled class="form-control" id="y-coordinate" placeholder="y coordinate in meters">
 						</div>
 						<div class="form-group">
 							<label>Z</label>
-							<input class="form-control" id="z-coordinate" placeholder="z coordinate in meters">
+							<input disabled class="form-control" id="z-coordinate" placeholder="z coordinate in meters">
 						</div>
 						<p align="center" style="padding-top: 10px">
 							<button class="btn btn-primary" id="add-coordinate" onclick="addNewPointCalibration()" disabled>Add new point calibration</button>
@@ -153,10 +152,10 @@
 			<div class="col-md-3"  >
 				<div class="panel panel-info" style="position:fixed; margin-right: 40px;">
 					<div class="panel-heading">
-						Info Panel
+						<strong>Info Panel</strong>
 					</div>
 					<div class="panel-body">
-						<p id="info-text">Welcome to VR Tracker calibrating tool ! This will guide you through the calibration process. Note that this has to be done every time you move the cameras.</p>
+						<p id="info-text">Welcome to VR Tracker calibrating tool ! This will guide you through the calibration process. Note that this has to be done every time you move the cameras. </br>1. First plug-in your Gateway </br>2. Connect to "VR Tracker Gateway" Wifi (password is "vrtracker") </br>3. Once you see the message "Successfully connected" Go to the next step !</p>
 					</div>
 				</div>
 			</div>
@@ -165,15 +164,15 @@
 		</div>
 		<div id="messageScreen" class="panel panel-default">
 			<div class="alert bg-danger" id="calibration-failed" role="alert">
-			<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Calibration point not detected !
+			<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Calibration point not Not Found !
 			</div>
 		<div class="alert bg-warning" id="calibration-inprocess" role="alert">
 			<svg class="glyph stroked hourglass"><use xlink:href="#stroked-hourglass"/></svg> Detecting calibration point...
 			</div>
 		<div class="alert bg-success" id="calibration-success" role="alert">
-			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Calibration point detecte !
+			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Calibration point Found !
 			</div>
-			<p id="calibrationMessage">Bring Tag to Position : </p>
+			<p id="calibrationMessage">Move the Tag to this Position and Hit Space : </p>
 			<p id="fullScreenMessage">Next Calibration Point : </p>
 			<p id="cross">
 				<a class="cancel" onclick="masquerAffichageMessage()">&times;</a>

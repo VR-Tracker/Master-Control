@@ -20,8 +20,8 @@ var pointAssociatedCamera = new Map();
 var cameraNumberPoints = new Map();
 var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
 var calibrationPoint = []; //Store the different calibration point
-var PointInfo = "<p>Now add the different position that you want to use for the calibration."+
-" It's better if you use meters as the unite for your calibration.</p>";
+var ChooseCameraInfos = "<p>Either choose every cameras for a full calibration or only a few of them if you need to re-calibrate.</br>To help you identify the cameras, you can see them slightly flash green when you select it in the list.</p>";
+var PointInfo = "<p>Now add a set of Real World Coordinates. At least 4 points must be seen by each camera. It's recommended to use meters as the default unit of measure during the calibration. You can add as many 3D positions as you want, the more add the better accuracy you will get.</br>Once you are ready, hit <strong>Space</strong> and follow the instructions.</p>";
 var CalibrationInfo = "<p>After adding all the different coordinate for the calibration, you have to possibility to do the calibration :"+
 "<p></p><ul><li>Press </li></ul></p>";
 var StopCalibrationInfoSucces = "<p>After adding all the different coordinate for the calibration, you have to possibility to do the calibration :"+
@@ -83,6 +83,7 @@ window.onload=function(){
 window.onclose=function(){
     socket.close();
     console.log("connection closed");
+    document.getElementById("calibrationBtn").disabled = true;
 }
 
 window.setInterval(function(){
@@ -106,17 +107,20 @@ function createWebsocket(){
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
         console.log("connection master...");
+        document.getElementById("info-text").innerHTML = ChooseCameraInfos;
+        document.getElementById("calibrationBtn").disabled = false;
+
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
         setInterval(getCamerasInformation, 5000);
         //Envoi du message apres un certain temps
-        console.log("connection started...");
     };
     // Handle any errors that occur.
     socket.onerror = function(error) {
         wsFailedAlert.style.display = "block";
         wsSuccessAlert.style.display = "none";
         console.log('WebSocket Error: ' + error);
+        document.getElementById("calibrationBtn").disabled = true;
     }
     // Handle messages sent by the server.
     socket.onmessage = function(event) {
@@ -316,7 +320,10 @@ function startCalibration(){
         //If there any selected camera we send the message
         sendMessage(socket, message);
         document.getElementById("stop-calibration-btn").style.display = "table-cell";
-        document.getElementById("add-coordinate").disabled = false;
+        document.getElementById("x-coordinate").disabled = false;
+        document.getElementById("y-coordinate").disabled = false;
+        document.getElementById("z-coordinate").disabled = false;
+        calibrationBtn.disabled = true;
     }
     else {
         console.log("aucune camera selectionne");
@@ -349,7 +356,7 @@ function stopCalibration(){
     //Restart the state of start calibration button
     calibrationBtn.className = "btn btn-primary btn-md";
     calibrationBtn.innerHTML = "Start Calibration";
-    calibrationBtn.disabled = false;
+    calibrationBtn.disabled = true;
     document.getElementById("stop-calibration-btn").style.display = "none";
     document.getElementById("add-coordinate").disabled = true;
 
