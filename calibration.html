@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VR Tracker - Calibration</title>
+
+<link href="css/bootstrap.min.css" rel="stylesheet">
+<link href="css/datepicker3.css" rel="stylesheet">
+<link href="css/bootstrap-table.css" rel="stylesheet">
+<link href="css/styles.css" rel="stylesheet">
+<link href="css/styles2.css" rel="stylesheet">
+
+<!--Icons-->
+<script src="js/lumino.glyphs.js"></script>
+
+<!--[if lt IE 9]>
+<script src="js/html5shiv.js"></script>
+<script src="js/respond.min.js"></script>
+<![endif]-->
+
+</head>
+
+<body>
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#sidebar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#"><span>VR Tracker</span> Master Control</a>
+			</div>
+
+		</div><!-- /.container-fluid -->
+	</nav>
+
+    <div class="col-sm-3 col-lg-2 sidebar">
+		<ul class="nav menu">
+			<li class="active"><a href="calibration.html"><svg class="glyph stroked table"><use xlink:href="#stroked-gear"></use></svg> Calibration</a></li>
+			<li><a href="visualizer.html"><svg class="glyph stroked calendar"><use xlink:href="#stroked-eye"></use></svg> Visualizer</a></li>
+		</ul>
+
+	</div><!--/.sidebar-->
+
+    <div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+		<div class="row">
+			<ol class="breadcrumb">
+				<li><a href="#"><svg class="glyph stroked home"><use xlink:href="#stroked-home"></use></svg></a></li>
+				<li class="active">Calibration</li>
+			</ol>
+		</div><!--/.row-->
+    </div>
+	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
+
+		<div class="row">
+			<div class="col-lg-12">
+				<h1 class="page-header">Calibration Tool</h1>
+			</div>
+		</div><!--/.row-->
+
+        <div class="row">
+			<div class="col-md-6">
+
+
+
+                </div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-6">
+                <div class="panel panel-default">
+					<div class="panel-heading">Connect to the Gateway</div>
+					<div class="panel-body" >
+                        - Plug-in your Gateway (it can take a few minutes to start)</br>- Connect to "VR Tracker Gateway" Wifi (password "vrtracker")</br>- Once you see the message "Successfully connected to the Gateway !" go to the next step ;)
+					</div>
+				</div>
+
+
+                <div class="alert bg-danger" id="ws_failed_alert" role="alert">
+                <svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Connection to the Gateway Failed  <a href="#"  style="font-style: italic; color: #fff; ">(help)</a> <a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a>
+				</div>
+            <div class="alert bg-success" id="ws_success_alert" role="alert">
+				<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Successfully connected to the Gateway !
+                </div>
+
+
+
+				<div class="panel panel-default">
+					<div class="panel-heading">Choose the Cameras to Calibrate</div>
+					<div class="panel-body" >
+                        Either choose every cameras for a full calibration or only a few of them if you need to re-calibrate.</br>
+                        <table class="tableau" id="available-cameras" style="margin-top: 15px;">
+            			  <tr class="header" id="test">
+            				<th style="width:25%;">Camera</th>
+            				<th style="width:35%;">MAC address</th>
+							<th style="width:40%; text-align:center;" class="count" >Associated point(s)</th>
+            			  </tr>
+                          <tr id="tableMessage">
+            				<th id="noCameraConnectedMessage" colspan="2" >There is no camera connected</th>
+            			  </tr>
+            			</table>
+					</div>
+				</div>
+
+                <p align="center" style="margin-top: 1px">
+					<button style="width:50%; margin-bottom: 10px" type="submit" class="btn btn-primary" id="calibrationBtn"  onclick="startCalibration()" style="margin-left: 10px">Start Calibration </button>
+				</p>
+
+
+				<div class="panel panel-default">
+					<div class="panel-heading">Tag 3D world coordinates</div>
+					<div class="panel-body" >
+						<div class="form-group">
+							<label>X</label>
+							<input class="form-control" id="x-coordinate" placeholder="x coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>Y</label>
+							<input class="form-control" id="y-coordinate" placeholder="y coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>Z</label>
+							<input class="form-control" id="z-coordinate" placeholder="z coordinate in meters">
+						</div>
+						<p align="center" style="padding-top: 10px">
+							<button class="btn btn-primary" id="add-coordinate" onclick="addNewPointCalibration()" disabled>Add new point calibration</button>
+						</p>
+					</div>
+				</div>
+
+
+
+				<div class="panel panel-default">
+					<div class="panel-heading">Cameras</div>
+					<div class="panel-body" >
+						<table class="tableau" id="points-camera">
+						  <tr class="header">
+							<th style="width:40%; height=100%;">Cameras' point3D</th>
+							<th style="width:30%;">Cameras tracked</th>
+							<th style="width:30%;"></th>
+						  </tr>
+						</table>
+					</div>
+				</div>
+
+				<p align="center" style="margin-top: 1px">
+					<button style="width:50%; margin-left: 10px; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Stop Calibration </button>
+				</p>
+			</div>
+			<div class="col-md-3"  >
+				<div class="panel panel-info" style="position:fixed; margin-right: 40px;">
+					<div class="panel-heading">
+						Info Panel
+					</div>
+					<div class="panel-body">
+						<p id="info-text">Welcome to VR Tracker calibrating tool ! This will guide you through the calibration process. Note that this has to be done every time you move the cameras.</p>
+					</div>
+				</div>
+			</div>
+
+		</div><!--/.row-->
+		</div>
+		<div id="messageScreen" class="panel panel-default">
+			<div class="alert bg-danger" id="calibration-failed" role="alert">
+			<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Calibration point not detected !
+			</div>
+		<div class="alert bg-warning" id="calibration-inprocess" role="alert">
+			<svg class="glyph stroked hourglass"><use xlink:href="#stroked-hourglass"/></svg> Detecting calibration point...
+			</div>
+		<div class="alert bg-success" id="calibration-success" role="alert">
+			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Calibration point detecte !
+			</div>
+			<p id="calibrationMessage">Bring Tag to Position : </p>
+			<p id="fullScreenMessage">Next Calibration Point : </p>
+			<p id="cross">
+				<a class="cancel" onclick="masquerAffichageMessage()">&times;</a>
+			</p>
+		</div>
+		<div id="cover" > </div>
+
+	<script src="js/jquery-1.11.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/chart.min.js"></script>
+	<script src="js/chart-data.js"></script>
+	<script src="js/easypiechart.js"></script>
+	<script src="js/easypiechart-data.js"></script>
+	<script src="js/bootstrap-datepicker.js"></script>
+	<script src="js/bootstrap-table.js"></script>
+	<script>
+		!function ($) {
+			$(document).on("click","ul.nav li.parent > a > span.icon", function(){
+				$(this).find('em:first').toggleClass("glyphicon-minus");
+			});
+			$(".sidebar span.icon").find('em:first').addClass("glyphicon-plus");
+		}(window.jQuery);
+
+		$(window).on('resize', function () {
+		  if ($(window).width() > 768) $('#sidebar-collapse').collapse('show')
+		})
+		$(window).on('resize', function () {
+		  if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
+		})
+
+
+	</script>
+	<script src="js/calibration.js"></script>
+	<script src="js/parser.js"></script>
+	<script src="js/keyboard.js"></script>
+	<script src="js/save.js"></script>
+
+</body>
+
+</html>

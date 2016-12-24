@@ -1,0 +1,107 @@
+[
+    {
+        "id": 0,
+        "type": "Item 0",
+        "contain": "$0"
+    },
+    {
+        "id": 1,
+        "type": "Item 1",
+        "contain": "$1"
+    },
+    {
+        "id": 2,
+        "type": "Item 2",
+        "contain": "$2"
+    },
+    {
+        "id": 3,
+        "type": "Item 3",
+        "contain": "$3"
+    },
+    {
+        "id": 4,
+        "type": "Item 4",
+        "contain": "$4"
+    },
+    {
+        "id": 5,
+        "type": "Item 5",
+        "contain": "$5"
+    },
+    {
+        "id": 6,
+        "type": "Item 6",
+        "contain": "$6"
+    },
+    {
+        "id": 7,
+        "type": "Item 7",
+        "contain": "$7"
+    },
+    {
+        "id": 8,
+        "type": "Item 8",
+        "contain": "$8"
+    },
+    {
+        "id": 9,
+        "type": "Item 9",
+        "contain": "$9"
+    },
+    {
+        "id": 10,
+        "type": "Item 10",
+        "contain": "$10"
+    },
+    {
+        "id": 11,
+        "type": "Item 11",
+        "contain": "$11"
+    },
+    {
+        "id": 12,
+        "type": "Item 12",
+        "contain": "$12"
+    },
+    {
+        "id": 13,
+        "type": "Item 13",
+        "contain": "$13"
+    },
+    {
+        "id": 14,
+        "type": "Item 14",
+        "contain": "$14"
+    },
+    {
+        "id": 15,
+        "type": "Item 15",
+        "contain": "$15"
+    },
+    {
+        "id": 16,
+        "type": "Item 16",
+        "contain": "$16"
+    },
+    {
+        "id": 17,
+        "type": "Item 17",
+        "contain": "$17"
+    },
+    {
+        "id": 18,
+        "type": "Item 18",
+        "contain": "$18"
+    },
+    {
+        "id": 19,
+        "type": "Item 19",
+        "contain": "$19"
+    },
+    {
+        "id": 20,
+        "type": "Item 20",
+        "contain": "$20"
+    }
+]
