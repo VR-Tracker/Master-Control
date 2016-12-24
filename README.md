@@ -3,7 +3,7 @@
 *Those tools will help you go through VR Tracker calibration*
 
 ## Installation
-* Download or Clone
+* Download or Clone this repo
 * Make sure VR Tracker system is running and you are connected to VR Tracker Gateway wifi (pwd: vrtracker)
 * Open index.html in your web browser
 
