@@ -1,4 +1,4 @@
-var websocketIP = "vrtracker.local";
+var websocketIP = "192.168.42.1";
 var askCamerasCameraPosition = "cmd=camerasposition"
 
 var wsFailedAlert = document.getElementById('ws_failed_alert');
@@ -80,10 +80,6 @@ function updateTagPosition(message){
         }
 
     }
-
-
-
-
 
     index++;
 }
@@ -256,7 +252,5 @@ function createWebsocket(){
         //getting the time of the message
         var message = event.data;
         parseMessage(message);
-
-    //    console.log(event.data);
     }
 }
