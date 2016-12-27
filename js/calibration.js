@@ -1,5 +1,5 @@
 
-var websocketIP = "vrtracker.local";
+var websocketIP = "192.168.42.1";
 var askCamerasInformation = "cmd=camerasinformation"
 
 var wsFailedAlert = document.getElementById('ws_failed_alert');
@@ -20,14 +20,18 @@ var pointAssociatedCamera = new Map();
 var cameraNumberPoints = new Map();
 var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
 var calibrationPoint = []; //Store the different calibration point
-var ChooseCameraInfos = "<p>Either choose every cameras for a full calibration or only a few of them if you need to re-calibrate.</br>To help you identify the cameras, you can see them slightly flash green when you select it in the list.</p>";
-var PointInfo = "<p>Now add a set of Real World Coordinates. At least 4 points must be seen by each camera. It's recommended to use meters as the default unit of measure during the calibration. You can add as many 3D positions as you want, the more add the better accuracy you will get.</br>Once you are ready, hit <strong>Space</strong> and follow the instructions.</p>";
-var CalibrationInfo = "<p>After adding all the different coordinate for the calibration, you have to possibility to do the calibration :"+
-"<p></p><ul><li>Press </li></ul></p>";
-var StopCalibrationInfoSucces = "<p>After adding all the different coordinate for the calibration, you have to possibility to do the calibration :"+
-"<p></p><ul><li>Press </li></ul></p>";
-var StopCalibrationInfoFailed = "<p>After adding all the different coordinate for the calibration, you have to possibility to do the calibration :"+
-"<p></p><ul><li>Press </li></ul></p>";
+var PointInfo = "<p>You are now in the calibration mode, you should be able to see the selected cameras with a blue light, and the calibration tag should have turned its light in purple."
++"</br></br>Add the different positions that you want to use for the calibration."
++" Each cameras have to see at least 4 points for the calibration.</br></br>"
++" The more calibration point you use the more precise the system will be.</p>";
+var CalibrationInfo = "<p>After adding all the different points for the calibration, place the tag on the selected position. You have to two possibilities to do the calibration :"+
+"<p></p><ul><li>Press the Space Bar. You will have the different instructions that will be displayed</li>"+
+"<li>Click on the right button on the tag. Make sure to follow the order of the calibration points that you have added</li></ul>"+
+"At each calibration point, you should see the tag flashing. The columns \"Associated point(s)\" and \"Cameras tracked\" will update at each detected calibration point."+
+"</br></br>Once you have finished with all the calibration points, press the \"Stop Calibration\" button. </p>";
+var StopCalibration = "<p>Now that the calibration is finished, you should be able to use the system. We have added a Visualizer window, so that you can see the tracking system in action."+
+"</br>Just click on the Visualizer tab on the menu :).</p>";
+
 
 /*
 * On window load, open a websocket between the window and the server
@@ -41,7 +45,6 @@ window.onload=function(){
         var send = false;
         var message;
         if(!calibrating){
-            console.log("sending message calibration");
             message = "cmd=startcalibration";
             calibrating = true;
         }
@@ -75,7 +78,6 @@ window.onload=function(){
                 numeroCamera++;
             }
         }
-        console.log(message);
         if(send){
             //If message is sent, we change the button
             calibrationBtn.className = "btn btn-danger btn-md";
@@ -88,7 +90,7 @@ window.onload=function(){
         }
         else {
             calibrating = false;
-            console.log("aucune camera selectionne");
+            console.log("No camera selected");
         }
     }
 }
@@ -141,7 +143,6 @@ function createWebsocket(){
         //getting the time of the message
         var message = event.data;
         parseMessage(message);
-        //console.log(event.data);
     }
 }
 
@@ -221,7 +222,6 @@ function changeColor(id, numeroCamera){
 * reset the color of the different row in the table
 */
 function resetColor(table){
-    console.log("mise a zero des choix");
     var liste = document.getElementById(table);
     var element = liste.getElementsByTagName("tr");
     var longueur = element.length;
@@ -261,7 +261,6 @@ function enterCalibrationView(){
 
 
 function addNewPointCalibration(){
-    console.log("sending message calibration");
     var send = false;
     var x = document.getElementById("x-coordinate").value;
     var y = document.getElementById("y-coordinate").value;
@@ -298,7 +297,7 @@ function addNewPointCalibration(){
             calibrationPoint.push([x, y, z]);
         }
         else {
-            console.log("aucune camera selectionne pour envoi point");
+            console.log("No camera selected for new calibration point");
         }
         
         // Enable button if at least 4 points are entered
@@ -351,6 +350,9 @@ function addNewPointCalibration(){
         }
         alert(errorMessage);
     }
+    if(calibrationPoint.length > 3){
+        document.getElementById("info-text").innerHTML = CalibrationInfo;
+    }
 }
 
 function startCalibration(){
@@ -373,14 +375,13 @@ function startCalibration(){
         
     }
     else {
-        console.log("aucune camera selectionne");
-        alert("aucune camera selectionne");
+        console.log("No camera selected");
+        alert("No camera selected");
     }
     CALIBRATING = true;
 }
 
 function stopCalibration(){
-    //TODO a verifier si on remet tout a zero ou non
     resetColor('available-cameras');
     var message = "cmd=stopcalibration";
     calibrationBtn.className = "btn btn-primary";
@@ -461,25 +462,17 @@ function resetTablePoint3D(){
 
 function updatePointCount(id){
     var countView = document.getElementsByClassName("count");
-    console.log("updating countable",countView);
     for (var i = 1; i < countView.length; i++) {
         countView[i].innerHTML = countTablePointCamera.get(macNumberMap.get(i));
     }
     var point = document.getElementById("associated-" + id);
-    console.log(pointToCameraMap);
     var description = "(" + pointToCameraMap.get(id).length + ")";
-    /*for (var i = 0; i < pointToCameraMap.get(id).length; i++) {
-        description += pointToCameraMap.get(id)[i];
-        if(i < pointToCameraMap.get(id).size - 1)
-        description += ", ";
-    }*/
     point.innerHTML = description;
 }
 
 function displayCount(){
     //Show the number of point detected by a camera
     var countView = document.getElementsByClassName("count");
-    console.log(countView);
     for (var i = 0; i < countView.length; i++) {
         countView[i].style.display = "table-cell";
     }
@@ -488,7 +481,6 @@ function displayCount(){
 function hideCount(){
     //Hide the number of point detected by a camera
     var countView = document.getElementsByClassName("count");
-    console.log(countView);
     for (var i = 0; i < countView.length; i++) {
         countView[i].style.display = "none";
     }
@@ -496,7 +488,6 @@ function hideCount(){
 
 function deletePoint(id){
     //Delete the selected point in the point table
-    console.log("On enleve le point:" + id);
     var point = document.getElementById(id);
     point.parentNode.removeChild(point);
     var tab = pointToCameraMap.get(id); // tableau contenant les points associes
@@ -507,23 +498,16 @@ function deletePoint(id){
                     countTablePointCamera.get(tab[i]) - 1);
         }
         var countView = document.getElementsByClassName("count");
-        console.log("updating countable",countView);
         for (var i = 1; i < countView.length; i++) {
             countView[i].innerHTML = countTablePointCamera.get(macNumberMap.get(i));
         }
         var point = document.getElementById("associated-" + id);
-        console.log(pointToCameraMap);
         var description = "(" + pointToCameraMap.get(id).length + ")";
-        /*for (var i = 0; i < pointToCameraMap.get(id).length; i++) {
-            description += pointToCameraMap.get(id)[i];
-            if(i < pointToCameraMap.get(id).size - 1)
-            description += ", ";
-        }*/
         point.innerHTML = description;
         //On supprime la cle de la map
         pointToCameraMap.delete(id);
     }else{
-        console.log("Point non associe");
+        console.log("Point not associated");
     }
     var coordinates = id.split("-");
     var message = "cmd=deletecalibpoint";
@@ -531,8 +515,6 @@ function deletePoint(id){
     message += "&y=" + coordinates[1];
     message += "&z=" + coordinates[2];
     //On envoie le point a supprimer
-
-    console.log("avant", calibrationPoint);
     for (var i = 0; i < calibrationPoint.length; i++) {
         if(calibrationPoint[i][0] == coordinates[0] && calibrationPoint[i][1] == coordinates[1] && calibrationPoint[i][2] == coordinates[2]){
             calibrationPoint.splice(i, 1);
@@ -542,7 +524,6 @@ function deletePoint(id){
             }
         }
     }
-    console.log("Apres",calibrationPoint);
     sendMessage(socket, message);
 }
 

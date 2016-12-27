@@ -13,3 +13,6 @@ More informations on the calibration process can be found on [VR Tracker Get Sta
 ### Visualization
 The visualization page shows you the position of the Tags. It is to be improved for a faster refresh of the datas.
 *visualization.js* file can be a start to implement a **User** in Javascript.
+
+![Visualizer](/img/visualizer.png)
+
