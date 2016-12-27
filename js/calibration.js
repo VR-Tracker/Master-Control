@@ -45,9 +45,24 @@ window.onload=function(){
             message = "cmd=startcalibration";
             calibrating = true;
         }
+        
+   //   FADE IN the next Panel
+        document.getElementById("add-3D-point-panel").style.opacity = 1;
+        document.getElementById("add-3D-point-panel").className += " fadein";
+        document.getElementById("add-3D-point-list").style.opacity = 1;
+        document.getElementById("add-3D-point-list").className += " fadein";
+        document.getElementById("not-enough-3d").style.opacity = 1;
+        document.getElementById("not-enough-3d").className += " fadein";
+        
+        
+            document.getElementById('x-coordinate').removeAttribute("disabled");
+    document.getElementById("y-coordinate").removeAttribute("disabled");
+    document.getElementById("z-coordinate").removeAttribute("disabled");
         console.log(document.getElementById("info-text"));
 
         document.getElementById("info-text").innerHTML = PointInfo;
+        
+        document.getElementById("add-coordinate").removeAttribute("disabled");
 
         var numeroCamera = 0; // variable pour distinguer les cameras
         for (var [mac, isSelected] of addedElementMap) {
@@ -68,7 +83,6 @@ window.onload=function(){
             calibrationBtn.disabled = true;
             //And we disable the reset button, enable the possibility to add a point
             document.getElementById("stop-calibration-btn").style.display = "table-cell";
-            document.getElementById("add-coordinate").disabled = false;
             sendMessage(socket, message);
             displayCount();
         }
@@ -108,7 +122,7 @@ function createWebsocket(){
         wsSuccessAlert.style.display = "block";
         console.log("connection master...");
         document.getElementById("info-text").innerHTML = ChooseCameraInfos;
-        document.getElementById("calibrationBtn").disabled = false;
+     //   document.getElementById("calibrationBtn").disabled = false;
 
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
@@ -177,6 +191,7 @@ function changeColor(id, numeroCamera){
             addedElementMap.set(macNumberMap.get(numeroCamera), true);
             //Envoie du message pour dire a la camera d'allumer sa led
             var message = "cmd=selectcamera&uid=" + macNumberMap.get(numeroCamera);
+            
             sendMessage(socket, message);
         }
         else{
@@ -186,6 +201,19 @@ function changeColor(id, numeroCamera){
             var message = "cmd=unselectcamera&uid=" + macNumberMap.get(numeroCamera);
             sendMessage(socket, message);
         }
+        
+            var countCameraSelected = 0;
+            for (cam in selectedTable){
+                if(selectedTable[cam] == true){
+                    countCameraSelected++;   
+                }
+            }
+            if(countCameraSelected < 1){
+                document.getElementById("calibrationBtn").disabled = true;
+            }
+            else {
+                document.getElementById("calibrationBtn").disabled = false;
+            }
     }
 }
 
@@ -225,6 +253,12 @@ function selectCamera(){
 function addTableSelectedCamera(camera, mac){
     addedElementMap.set(mac, true);
 }
+
+function enterCalibrationView(){
+    console.log("yoppp");
+    
+}
+
 
 function addNewPointCalibration(){
     console.log("sending message calibration");
@@ -266,6 +300,21 @@ function addNewPointCalibration(){
         else {
             console.log("aucune camera selectionne pour envoi point");
         }
+        
+        // Enable button if at least 4 points are entered
+        if(calibrationPoint.length >=4){
+            document.getElementById("not-enough-3d").style.display = "none";
+            document.getElementById("enough-3d").style.display = "block";
+             document.getElementById("enterCalibViewBtn").style.opacity = 1;
+        document.getElementById("enterCalibViewBtn").className += " fadein";
+        }
+        else{
+            document.getElementById("not-enough-3d").style.display = "block";
+            document.getElementById("enough-3d").style.display = "none";
+      document.getElementById("enterCalibViewBtn").style.opacity = 0;
+
+        }
+        
     }else{
         var errorMessage = "Point not valid : coordinate ";
         var number = 0;
@@ -310,6 +359,7 @@ function startCalibration(){
     //Create the corresponding message
     var message = "cmd=startcalibration";
     var numeroCamera = 0;
+    calibrationBtn.disabled = true;
     for (var [key, value] of addedElementMap) {
         if(value){
             message += "&camera" + numeroCamera + "=" +key;
@@ -320,10 +370,7 @@ function startCalibration(){
         //If there any selected camera we send the message
         sendMessage(socket, message);
         document.getElementById("stop-calibration-btn").style.display = "table-cell";
-        document.getElementById("x-coordinate").disabled = false;
-        document.getElementById("y-coordinate").disabled = false;
-        document.getElementById("z-coordinate").disabled = false;
-        calibrationBtn.disabled = true;
+        
     }
     else {
         console.log("aucune camera selectionne");
@@ -371,6 +418,9 @@ function stopCalibration(){
     }
     hideCount();
     CALIBRATING = false;
+    
+    document.getElementById("calibration-finished").style.opacity = 1;
+    document.getElementById("calibration-finished").className += " fadein";
 }
 
 function addPoint3DTable(x, y, z){

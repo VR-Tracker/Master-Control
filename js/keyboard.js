@@ -11,17 +11,10 @@ var enablePingAgain = false;
 var tagConnected = true;
 document.onkeydown = applyKey;
 document.addEventListener('keypress', stopEscAction, false);
-function applyKey (_event_){
-    //If calibration mode is on we enable the space press action
-    if(CALIBRATING){
-    	// --- Retrieve event object from current web explorer
-    	var winObj = checkEventObj(_event_);
 
-    	var intKeyCode = winObj.keyCode;
-
-    	// 1° --- Access with KEY SPACE
-    	if (intKeyCode == KEY_SPACE){
-            hideCalibrationMessages();
+function handleKeySpace(winObj){
+    
+    hideCalibrationMessages();
             if(tagConnected){
                 if(calibrationViewActivated){
         			// --- Display Message
@@ -68,12 +61,13 @@ function applyKey (_event_){
                                 //showNextCalibrationPoint();
                         }
                     }else{
-                        var text = "No Calibration point added !";
+                        masquerAffichageMessage();
+                       /* var text = "No Calibration point added !";
                         document.getElementById("calibration-failed").innerHTML = "ERROR";
                         document.getElementById("calibration-failed").style.display = "block";
                         calibrationMessage.display = "none";
                         fullScreenMessage.innerHTML = text;
-                        affichageMessage();
+                        affichageMessage();*/
                     }
         			// 2° --- Map the keyCode in another keyCode not used
         			winObj.keyCode = intKeyCode = REMAP_KEY_T;
@@ -96,6 +90,19 @@ function applyKey (_event_){
                 affichageMessage();
                 calibrationMessage.display = "none";
             }
+}
+
+function applyKey (_event_){
+    //If calibration mode is on we enable the space press action
+    if(CALIBRATING){
+    	// --- Retrieve event object from current web explorer
+    	var winObj = checkEventObj(_event_);
+
+    	var intKeyCode = winObj.keyCode;
+
+    	// 1° --- Access with KEY SPACE
+    	if (intKeyCode == KEY_SPACE){
+            handleKeySpace(winObj);
         }else{
             if(intKeyCode == KEY_ESCAPE){
                 if(calibrationViewActivated){
@@ -163,6 +170,7 @@ function showNextCalibrationPoint(){
             var text = "Calibration Finished !";
             calibrationMessage.display = "none";
             fullScreenMessage.innerHTML = text;
+            stopCalibration();
         }
     }
 }

@@ -200,7 +200,7 @@ span.round-tab:hover {
     top:3px;
     right:2px;
     /*background:rgb(245,245,245);*/
-    color:black;
+    color:white;
     height:30px;
     width:35px;
     font-size:30px;
@@ -241,3 +241,4 @@ span.round-tab:hover {
     left: 50%;
     text-align: center;
 }
+
