@@ -20,6 +20,7 @@ var pointAssociatedCamera = new Map();
 var cameraNumberPoints = new Map();
 var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
 var calibrationPoint = []; //Store the different calibration point
+var ChooseCameraInfos = "<p>Either choose every cameras for a full calibration or only a few of them if you need to re-calibrate.</br>To help you identify the cameras, you can see them slightly flash green when you select it in the list.</p>";
 var PointInfo = "<p>You are now in the calibration mode, you should be able to see the selected cameras with a blue light, and the calibration tag should have turned its light in purple."
 +"</br></br>Add the different positions that you want to use for the calibration."
 +" Each cameras have to see at least 4 points for the calibration.</br></br>"
