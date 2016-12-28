@@ -170,6 +170,10 @@ function parseMessage(message){
             addCameraPosition(datas);
             break;
         }
+        case "calibrationtagconnected":{
+            tagConnected = true;
+            break;
+        }
         case "error":{
 
             if(contentMap.has("msg")){
@@ -191,9 +195,13 @@ function parseMessage(message){
                         enablePingAgain = false;
                         break;
                     }
-
                     case "nocalibrationpoint":{
 
+                        break;
+                    }
+                    case "calibrationtagdisconnected":{
+                        tagConnected = false;
+                        alert("Calibration tag has been disconnected")
                         break;
                     }
                     default:

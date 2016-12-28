@@ -1,7 +1,7 @@
 KEY_SPACE			= 32;
 REMAP_KEY_T	= 5019;
 KEY_ESCAPE =  27;
-var CALIBRATING = true;
+var CALIBRATING = false;
 var nextCalibrationIndex = 0;
 var calibrationCount = 0;
 var calibrationDetected = 0;
@@ -13,7 +13,7 @@ document.onkeydown = applyKey;
 document.addEventListener('keypress', stopEscAction, false);
 
 function handleKeySpace(winObj){
-    
+
     hideCalibrationMessages();
             if(tagConnected){
                 if(calibrationViewActivated){
@@ -21,17 +21,6 @@ function handleKeySpace(winObj){
                     if(calibrationPoint.length > 0){
                         console.log(calibrationDetected, nextCalibrationIndex,calibrationCount + 1 == nextCalibrationIndex);
                         if(nextCalibrationIndex < calibrationPoint.length ){
-                            /*if(nextCalibrationIndex > 0 && (calibrationDetected + 1 == nextCalibrationIndex)){
-                                sendMessage(socket, pingMessage);
-                                document.getElementById("calibration-inprocess").style.display = "block";
-                                nextCalibrationIndex++;
-                            }else{
-                                if(nextCalibrationIndex == 0){
-                                    showNextCalibrationPoint();
-                                    nextCalibrationIndex++;
-                                }
-                            }*/
-
                             if(nextCalibrationIndex > 0){
                                 sendMessage(socket, pingMessage);
                                 document.getElementById("calibration-inprocess").style.display = "block";
@@ -42,7 +31,6 @@ function handleKeySpace(winObj){
                                 nextCalibrationIndex++;
                                 showNextCalibrationPoint();
                             }
-                            //A mettre dans la methode recevant la bonne calibration
                             enablePingAgain = true;
                         }else{
                                 if(nextCalibrationIndex == calibrationPoint.length){
@@ -58,21 +46,15 @@ function handleKeySpace(winObj){
                                     document.getElementById("calibration-inprocess").style.display = "block";
 
                                 }
-                                //showNextCalibrationPoint();
                         }
                     }else{
                         masquerAffichageMessage();
-                       /* var text = "No Calibration point added !";
-                        document.getElementById("calibration-failed").innerHTML = "ERROR";
-                        document.getElementById("calibration-failed").style.display = "block";
-                        calibrationMessage.display = "none";
-                        fullScreenMessage.innerHTML = text;
-                        affichageMessage();*/
                     }
         			// 2° --- Map the keyCode in another keyCode not used
         			winObj.keyCode = intKeyCode = REMAP_KEY_T;
         			winObj.returnValue = false;
         			return false;
+
                 }else{
                     calibrationViewActivated = true;
                     if(nextCalibrationIndex != 0){
