@@ -9,6 +9,7 @@ function parseMessage(message){
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
+    console.log(message);
     try{
         var cmdContent = messageContent[0].split("=");
         cmd = cmdContent[1];

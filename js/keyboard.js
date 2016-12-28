@@ -1,7 +1,7 @@
 KEY_SPACE			= 32;
 REMAP_KEY_T	= 5019;
 KEY_ESCAPE =  27;
-var CALIBRATING = false;
+var CALIBRATING = true;
 var nextCalibrationIndex = 0;
 var calibrationCount = 0;
 var calibrationDetected = 0;
@@ -75,6 +75,7 @@ function handleKeySpace(winObj){
 }
 
 function applyKey (_event_){
+    console.log("hello");
     //If calibration mode is on we enable the space press action
     if(CALIBRATING){
     	// --- Retrieve event object from current web explorer
@@ -84,6 +85,7 @@ function applyKey (_event_){
 
     	// 1° --- Access with KEY SPACE
     	if (intKeyCode == KEY_SPACE){
+            console.log("space");
             handleKeySpace(winObj);
         }else{
             if(intKeyCode == KEY_ESCAPE){
