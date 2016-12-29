@@ -44,7 +44,8 @@ function handleKeySpace(winObj){
                                         enablePingAgain = true;
                                     }
                                     document.getElementById("calibration-inprocess").style.display = "block";
-
+                                }else{
+                                    console.log("Ping non possible");
                                 }
                         }
                     }else{
@@ -75,7 +76,6 @@ function handleKeySpace(winObj){
 }
 
 function applyKey (_event_){
-    console.log("hello");
     //If calibration mode is on we enable the space press action
     if(CALIBRATING){
     	// --- Retrieve event object from current web explorer

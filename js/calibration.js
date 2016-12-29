@@ -49,7 +49,7 @@ window.onload=function(){
             message = "cmd=startcalibration";
             calibrating = true;
         }
-        
+
    //   FADE IN the next Panel
         document.getElementById("add-3D-point-panel").style.opacity = 1;
         document.getElementById("add-3D-point-panel").className += " fadein";
@@ -57,15 +57,15 @@ window.onload=function(){
         document.getElementById("add-3D-point-list").className += " fadein";
         document.getElementById("not-enough-3d").style.opacity = 1;
         document.getElementById("not-enough-3d").className += " fadein";
-        
-        
+
+
             document.getElementById('x-coordinate').removeAttribute("disabled");
     document.getElementById("y-coordinate").removeAttribute("disabled");
     document.getElementById("z-coordinate").removeAttribute("disabled");
         console.log(document.getElementById("info-text"));
 
         document.getElementById("info-text").innerHTML = PointInfo;
-        
+
         document.getElementById("add-coordinate").removeAttribute("disabled");
 
         var numeroCamera = 0; // variable pour distinguer les cameras
@@ -193,7 +193,7 @@ function changeColor(id, numeroCamera){
             addedElementMap.set(macNumberMap.get(numeroCamera), true);
             //Envoie du message pour dire a la camera d'allumer sa led
             var message = "cmd=selectcamera&uid=" + macNumberMap.get(numeroCamera);
-            
+
             sendMessage(socket, message);
         }
         else{
@@ -203,11 +203,11 @@ function changeColor(id, numeroCamera){
             var message = "cmd=unselectcamera&uid=" + macNumberMap.get(numeroCamera);
             sendMessage(socket, message);
         }
-        
+
             var countCameraSelected = 0;
             for (cam in selectedTable){
                 if(selectedTable[cam] == true){
-                    countCameraSelected++;   
+                    countCameraSelected++;
                 }
             }
             if(countCameraSelected < 1){
@@ -257,7 +257,7 @@ function addTableSelectedCamera(camera, mac){
 
 function enterCalibrationView(){
     console.log("yoppp");
-    
+
 }
 
 
@@ -277,44 +277,44 @@ function addNewPointCalibration(){
         x = changeNumberFormat(x);
         y = changeNumberFormat(y);
         z = changeNumberFormat(z);
-        var message = "cmd=xyzcalibration";
-        message += "&x=" + x;
-        message += "&y=" + y;
-        message += "&z=" + z;
-        var numeroCamera = 0;
-        for (var [key, value] of addedElementMap) {
-            if(value){
-                message += "&camera" + numeroCamera + "=" + key;
-                send = true;
-                numeroCamera++;
-                var tab = [x, y, z];
-                //ajout des points
-                pointAssociatedCamera.get(key).push(tab);
+        if(addPoint3DTable(x, y, z)){
+            var message = "cmd=xyzcalibration";
+            message += "&x=" + x;
+            message += "&y=" + y;
+            message += "&z=" + z;
+            var numeroCamera = 0;
+            for (var [key, value] of addedElementMap) {
+                if(value){
+                    message += "&camera" + numeroCamera + "=" + key;
+                    send = true;
+                    numeroCamera++;
+                    var tab = [x, y, z];
+                    //ajout des points
+                    pointAssociatedCamera.get(key).push(tab);
+                }
             }
-        }
-        if(send){
-            sendMessage(socket, message);
-            addPoint3DTable(x, y, z);
-            calibrationPoint.push([x, y, z]);
-        }
-        else {
-            console.log("No camera selected for new calibration point");
-        }
-        
-        // Enable button if at least 4 points are entered
-        if(calibrationPoint.length >=4){
-            document.getElementById("not-enough-3d").style.display = "none";
-            document.getElementById("enough-3d").style.display = "block";
-             document.getElementById("enterCalibViewBtn").style.opacity = 1;
-        document.getElementById("enterCalibViewBtn").className += " fadein";
-        }
-        else{
-            document.getElementById("not-enough-3d").style.display = "block";
-            document.getElementById("enough-3d").style.display = "none";
-      document.getElementById("enterCalibViewBtn").style.opacity = 0;
+            if(send){
+                sendMessage(socket, message);
+                calibrationPoint.push([x, y, z]);
+            }
+            else {
+                console.log("No camera selected for new calibration point");
+            }
 
+            // Enable button if at least 4 points are entered
+            if(calibrationPoint.length >=4){
+                document.getElementById("not-enough-3d").style.display = "none";
+                document.getElementById("enough-3d").style.display = "block";
+                 document.getElementById("enterCalibViewBtn").style.opacity = 1;
+            document.getElementById("enterCalibViewBtn").className += " fadein";
+            }else{
+                document.getElementById("not-enough-3d").style.display = "block";
+                document.getElementById("enough-3d").style.display = "none";
+                document.getElementById("enterCalibViewBtn").style.opacity = 0;
+            }
+        }else{
+            alert("Point already added !");
         }
-        
     }else{
         var errorMessage = "Point not valid : coordinate ";
         var number = 0;
@@ -373,7 +373,7 @@ function startCalibration(){
         //If there any selected camera we send the message
         sendMessage(socket, message);
         document.getElementById("stop-calibration-btn").style.display = "table-cell";
-        
+
     }
     else {
         console.log("No camera selected");
@@ -420,9 +420,12 @@ function stopCalibration(){
     }
     hideCount();
     CALIBRATING = false;
-    
+
     document.getElementById("calibration-finished").style.opacity = 1;
     document.getElementById("calibration-finished").className += " fadein";
+    document.getElementById("calibration-finished").style.opacity = 1;
+    document.getElementById("calibrationBtn").innerHTML = "Validate Camera Selection";
+
 }
 
 function addPoint3DTable(x, y, z){
@@ -441,8 +444,9 @@ function addPoint3DTable(x, y, z){
         + '#stroked-cancel"/></svg></div></th>';
         pointToCameraMap.set(id, [])
         liste.appendChild(newPoint);
+        return true;
     }else{
-        alert("Point already added !");
+        return false;
     }
 }
 
@@ -489,8 +493,8 @@ function hideCount(){
 
 function deletePoint(id){
     //Delete the selected point in the point table
-    var point = document.getElementById(id);
-    point.parentNode.removeChild(point);
+    console.log(id);
+
     var tab = pointToCameraMap.get(id); // tableau contenant les points associes
     //Mise a jour de du nombre de points apres suppression
     if(typeof tab !== 'undefined'){
@@ -503,6 +507,8 @@ function deletePoint(id){
             countView[i].innerHTML = countTablePointCamera.get(macNumberMap.get(i));
         }
         var point = document.getElementById("associated-" + id);
+        console.log("associated-" + id);
+        console.log("point", point);
         var description = "(" + pointToCameraMap.get(id).length + ")";
         point.innerHTML = description;
         //On supprime la cle de la map
@@ -526,9 +532,24 @@ function deletePoint(id){
         }
     }
     sendMessage(socket, message);
+    //removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], calibrationPoint);
+    removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(key));
+    console.log(calibrationPoint, pointAssociatedCamera);
+    var point = document.getElementById(id);
+    point.parentNode.removeChild(point);
 }
 
 function removeArrayPoint(array, indice){
     array[indice] = array.length - 1;
     array.pop();
+}
+
+function removeArrayElement(element, array){
+    for (var i = 0; i < array.length; i++) {
+        if(array[i] == element){
+            array[i] = array[array.length - 1];
+            array.pop();
+            break;
+        }
+    }
 }
