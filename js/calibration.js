@@ -10,6 +10,7 @@ var calibrationBtn = document.getElementById('calibrationBtn');
 var count = 0;
 var nombreCamera = 0;
 var countTable = [0];
+var numberOfSelectedCamera = 0;
 var selectedTable = [false];
 var cameraMac = [];
 var addedElementMap = new Map();// Map contenant les differentes cameras et sachant laquelle est selectionne
@@ -79,6 +80,7 @@ window.onload=function(){
                 numeroCamera++;
             }
         }
+        numberOfSelectedCamera = numeroCamera;
         if(send){
             //If message is sent, we change the button
             calibrationBtn.className = "btn btn-danger btn-md";
@@ -203,11 +205,12 @@ function changeColor(id, numeroCamera){
             var message = "cmd=unselectcamera&uid=" + macNumberMap.get(numeroCamera);
             sendMessage(socket, message);
         }
-
-            var countCameraSelected = 0;
+        var countCameraSelected = 0;
             for (cam in selectedTable){
                 if(selectedTable[cam] == true){
                     countCameraSelected++;
+                }else{
+                    countCameraSelected--;
                 }
             }
             if(countCameraSelected < 1){
@@ -402,6 +405,7 @@ function stopCalibration(){
     nextCalibrationIndex = 0;
     nombreCamera = 0;
     calibrationDetected = 0;
+
     //Restart the state of start calibration button
     calibrationBtn.className = "btn btn-primary btn-md";
     calibrationBtn.innerHTML = "Start Calibration";

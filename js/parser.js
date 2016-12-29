@@ -171,6 +171,22 @@ function parseMessage(message){
             addCameraPosition(datas);
             break;
         }
+        case "calibrationfailed":{
+            var errorMessage;
+            if(contentMap.size != 0){
+                if(contentMap.size == 1){
+                    errorMessage = "The camera " + contentMap[0] + " has not been calibrated";
+                }else{
+                    errorMessage = "The "+ contentMap.size +" cameras ";
+                    for (var [key, value] of contentMap) {
+                        errorMessage = value + ", ";
+                    }
+                    errorMessage = " have not been calibrated !";
+                }
+                alert(errorMessage);
+            }
+            break;
+        }
         case "calibrationtagconnected":{
             tagConnected = true;
             break;
