@@ -85,7 +85,6 @@ function applyKey (_event_){
 
     	// 1° --- Access with KEY SPACE
     	if (intKeyCode == KEY_SPACE){
-            console.log("space");
             handleKeySpace(winObj);
         }else{
             if(intKeyCode == KEY_ESCAPE){

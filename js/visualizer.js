@@ -1,5 +1,5 @@
-//var websocketIP = "192.168.42.1";
-var websocketIP = "localhost";
+var websocketIP = "192.168.42.1";
+//var websocketIP = "localhost";
 var askCamerasCameraPosition = "cmd=camerasposition"
 
 var wsFailedAlert = document.getElementById('ws_failed_alert');
@@ -39,12 +39,12 @@ window.onload=function(){
 
 function assingAllTags(){
     console.log("premier envoi");
-    cmd = messageMac = "cmd=mac&uid=1";
+    var messageMac = "cmd=mac&uid=1";
     sendMessage(socket, messageMac);
     var message = "cmd=assignalltag";
     console.log("second envoi");
-    //sendMessage(socket, message);
-    setTimeout(function(){sendMessage(socket, message);}, 500);
+    sendMessage(socket, message);
+    //setTimeout(function(){sendMessage(socket, message);}, 5000);
 }
 
 function clone(obj) {

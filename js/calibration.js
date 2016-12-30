@@ -209,8 +209,6 @@ function changeColor(id, numeroCamera){
             for (cam in selectedTable){
                 if(selectedTable[cam] == true){
                     countCameraSelected++;
-                }else{
-                    countCameraSelected--;
                 }
             }
             if(countCameraSelected < 1){
@@ -537,7 +535,13 @@ function deletePoint(id){
     }
     sendMessage(socket, message);
     //removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], calibrationPoint);
-    removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(key));
+    //removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(coordinates));
+    var tab = [coordinates[0],coordinates[1],coordinates[2]];
+    for (var [key, value] of pointAssociatedCamera) {
+        console.log([coordinates[0],coordinates[1],coordinates[2]]);
+        console.log((tab === ["1.0", "1.0", "1.0"]));
+        removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(key));
+    }
     console.log(calibrationPoint, pointAssociatedCamera);
     var point = document.getElementById(id);
     point.parentNode.removeChild(point);
@@ -550,7 +554,8 @@ function removeArrayPoint(array, indice){
 
 function removeArrayElement(element, array){
     for (var i = 0; i < array.length; i++) {
-        if(array[i] == element){
+        if(array[i] === element){
+            console.log("supprinsing");
             array[i] = array[array.length - 1];
             array.pop();
             break;
