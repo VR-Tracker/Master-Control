@@ -1,4 +1,3 @@
-
 var websocketIP = "192.168.42.1";
 var askCamerasInformation = "cmd=camerasinformation"
 
@@ -441,7 +440,7 @@ function addPoint3DTable(x, y, z){
         + '<th style="text-align:center;" id="associated-' + x + '-'
         + y + '-' + z + '">(0)</th><th><div>'
         + '<svg class="glyph stroked cancel" style="width:30%;height=auto%; '
-        + 'align:center; display:table-cell;" id="point-'+x+'-'+y+'-'+z+'" '
+        + 'align:center; display:table-cell; color:grey;" id="point-'+x+'-'+y+'-'+z+'" '
         + 'onclick="deletePoint(\''+x+'-'+y+'-'+z+'\')"><use xlink:href="'
         + '#stroked-cancel"/></svg></div></th>';
         pointToCameraMap.set(id, [])
