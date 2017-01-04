@@ -1,5 +1,4 @@
 var websocketIP = "192.168.42.1";
-//var websocketIP = "localhost";
 var askCamerasCameraPosition = "cmd=camerasposition"
 
 var wsFailedAlert = document.getElementById('ws_failed_alert');
@@ -81,11 +80,8 @@ function updateTagPosition(message){
     chart.redraw();
         }
 
-
         }
-
     }
-
     index++;
 }
 
