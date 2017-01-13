@@ -52,17 +52,19 @@ window.onload=function(){
 
    //   FADE IN the next Panel
         document.getElementById("add-3D-point-panel").style.opacity = 1;
+        document.getElementById("add-3D-point-panel").style.display = "block";
         document.getElementById("add-3D-point-panel").className += " fadein";
         document.getElementById("add-3D-point-list").style.opacity = 1;
+        document.getElementById("add-3D-point-list").style.display = "block";
         document.getElementById("add-3D-point-list").className += " fadein";
         document.getElementById("not-enough-3d").style.opacity = 1;
+        document.getElementById("not-enough-3d").style.display = "block";
         document.getElementById("not-enough-3d").className += " fadein";
 
 
-            document.getElementById('x-coordinate').removeAttribute("disabled");
-    document.getElementById("y-coordinate").removeAttribute("disabled");
-    document.getElementById("z-coordinate").removeAttribute("disabled");
-        console.log(document.getElementById("info-text"));
+        document.getElementById('x-coordinate').removeAttribute("disabled");
+        document.getElementById("y-coordinate").removeAttribute("disabled");
+        document.getElementById("z-coordinate").removeAttribute("disabled");
 
         document.getElementById("info-text").innerHTML = PointInfo;
 
@@ -256,8 +258,6 @@ function addTableSelectedCamera(camera, mac){
 }
 
 function enterCalibrationView(){
-    console.log("yoppp");
-
 }
 
 
@@ -380,6 +380,8 @@ function startCalibration(){
         alert("No camera selected");
     }
     CALIBRATING = true;
+    document.getElementById("calibrated-camera").style.display = "none";
+    document.getElementById("notCalibrated-camera").style.display = "none";
 }
 
 function stopCalibration(){
@@ -411,7 +413,7 @@ function stopCalibration(){
     document.getElementById("add-coordinate").disabled = true;
 
     sendMessage(socket, message);
-
+    showCalibratedCamera();
     resetTablePoint3D();
     var liste = document.getElementById('available-cameras');
     var ligne = liste.getElementsByTagName("tr");
@@ -426,7 +428,12 @@ function stopCalibration(){
     document.getElementById("calibration-finished").className += " fadein";
     document.getElementById("calibration-finished").style.opacity = 1;
     document.getElementById("calibrationBtn").innerHTML = "Validate Camera Selection";
-
+    document.getElementById("add-3D-point-panel").style.opacity = 0;
+    document.getElementById("add-3D-point-panel").style.display = "none";
+    document.getElementById("add-3D-point-list").style.opacity = 0;
+    document.getElementById("add-3D-point-list").style.display = "none";
+    document.getElementById("not-enough-3d").style.opacity = 0;
+    document.getElementById("not-enough-3d").style.display = "none";
 }
 
 function addPoint3DTable(x, y, z){
@@ -494,8 +501,6 @@ function hideCount(){
 
 function deletePoint(id){
     //Delete the selected point in the point table
-    console.log(id);
-
     var tab = pointToCameraMap.get(id); // tableau contenant les points associes
     //Mise a jour de du nombre de points apres suppression
     if(typeof tab !== 'undefined'){
@@ -508,8 +513,7 @@ function deletePoint(id){
             countView[i].innerHTML = countTablePointCamera.get(macNumberMap.get(i));
         }
         var point = document.getElementById("associated-" + id);
-        console.log("associated-" + id);
-        console.log("point", point);
+
         var description = "(" + pointToCameraMap.get(id).length + ")";
         point.innerHTML = description;
         //On supprime la cle de la map
@@ -533,15 +537,10 @@ function deletePoint(id){
         }
     }
     sendMessage(socket, message);
-    //removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], calibrationPoint);
-    //removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(coordinates));
     var tab = [coordinates[0],coordinates[1],coordinates[2]];
     for (var [key, value] of pointAssociatedCamera) {
-        console.log([coordinates[0],coordinates[1],coordinates[2]]);
-        console.log((tab === ["1.0", "1.0", "1.0"]));
         removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(key));
     }
-    console.log(calibrationPoint, pointAssociatedCamera);
     var point = document.getElementById(id);
     point.parentNode.removeChild(point);
 }
@@ -554,10 +553,31 @@ function removeArrayPoint(array, indice){
 function removeArrayElement(element, array){
     for (var i = 0; i < array.length; i++) {
         if(array[i] === element){
-            console.log("supprinsing");
             array[i] = array[array.length - 1];
             array.pop();
             break;
         }
     }
+}
+
+function showCalibratedCamera(){
+    var numberCalibrated = 0;
+    var numberNotCalibrated = 0;
+    var messageCameraCalibrated = "";
+    var messageCameraNotCalibrated = "";
+
+    for (var [key, value] of countTablePointCamera) {
+        if(value >= 4){
+            messageCameraCalibrated += "<li>camera" + " (" + key + ")</li>";
+            numberCalibrated++;
+        }else{
+            messageCameraNotCalibrated += "<li>camera" + " (" + key + ")</li>";
+            numberNotCalibrated++;
+        }
+    }
+    document.getElementById("CC").innerHTML = (messageCameraCalibrated);
+    document.getElementById("NCC").innerHTML = (messageCameraNotCalibrated);
+    document.getElementById("calibrated-camera").style.display = "block";
+    document.getElementById("notCalibrated-camera").style.display = "block";
+
 }

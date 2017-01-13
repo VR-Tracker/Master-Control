@@ -37,11 +37,9 @@ window.onload=function(){
 }
 
 function assingAllTags(){
-    console.log("premier envoi");
     var messageMac = "cmd=mac&uid=1";
     sendMessage(socket, messageMac);
     var message = "cmd=assignalltag";
-    console.log("second envoi");
     sendMessage(socket, message);
     //setTimeout(function(){sendMessage(socket, message);}, 5000);
 }
@@ -76,7 +74,6 @@ function updateTagPosition(message){
             colorByPoint: true,
             data: [[parseFloat(message[i].x), parseFloat(message[i].z), parseFloat(message[i].y)]]
         }, false);
-//console.log(message[i].x);
     chart.redraw();
         }
 
