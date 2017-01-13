@@ -434,6 +434,9 @@ function stopCalibration(){
     document.getElementById("add-3D-point-list").style.display = "none";
     document.getElementById("not-enough-3d").style.opacity = 0;
     document.getElementById("not-enough-3d").style.display = "none";
+    document.getElementById("enough-3d").style.display = "none";
+    document.getElementById("enterCalibViewBtn").style.opacity = 0;
+
 }
 
 function addPoint3DTable(x, y, z){
