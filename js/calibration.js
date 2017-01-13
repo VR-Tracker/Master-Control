@@ -577,7 +577,9 @@ function showCalibratedCamera(){
     }
     document.getElementById("CC").innerHTML = (messageCameraCalibrated);
     document.getElementById("NCC").innerHTML = (messageCameraNotCalibrated);
-    document.getElementById("calibrated-camera").style.display = "block";
-    document.getElementById("notCalibrated-camera").style.display = "block";
+    if(numberCalibrated)
+        document.getElementById("calibrated-camera").style.display = "block";
+    if(numberNotCalibrated)
+        document.getElementById("notCalibrated-camera").style.display = "block";
 
 }
