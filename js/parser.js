@@ -9,7 +9,6 @@ function parseMessage(message){
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
-    console.log(message);
     try{
         var cmdContent = messageContent[0].split("=");
         cmd = cmdContent[1];
@@ -53,6 +52,7 @@ function parseMessage(message){
             showNextCalibrationPoint();
             enablePingAgain = false;
             updatePointCount(coordinate);
+            console.log(countTablePointCamera);
             break;
         }
         case "camerasinformation":{
@@ -66,7 +66,7 @@ function parseMessage(message){
             if(contentMap.size > 0){
                 for (var [key, value] of contentMap) {
                     if(macToNumberMap.has(value)){
-                        console.log("camera:" + value + "already added");
+                        //console.log("camera:" + value + "already added");
                     }else{
                         //Ajout des cameras disponibles
                         addTableAvailableCamera(value);
@@ -142,7 +142,7 @@ function parseMessage(message){
             break;
         }
         case "camerasposition":{
-            var map = {};
+            /*var map = {};
             var datas = [];
             try{
                 var cmdContent = messageContent[0].split("=");
@@ -168,7 +168,7 @@ function parseMessage(message){
             }catch (e) {
                 console.error("Parsing error:", e);
             }
-            addCameraPosition(datas);
+            addCameraPosition(datas);*/
             break;
         }
         case "calibrationfailed":{
@@ -223,6 +223,14 @@ function parseMessage(message){
                     }
                     default:
                     break;
+                }
+            }
+            break;
+        }
+        case "info":{
+            if(contentMap.has("msg")){
+                if(contentMap.get("msg") == "assignmentsuccess"){
+                    //sendMessage(socket, "cmd=orientation&orientation=true&uid=" + contentMap.get("uid0"));
                 }
             }
             break;

@@ -155,8 +155,16 @@
 				</p>
                 </div>
 
-                <div class="alert bg-success" id="calibration-finished" role="alert" style="opacity:0;">
+            <div class="alert bg-success" id="calibration-finished" role="alert" style="opacity:0;">
 			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> YOUR CALIBRATION IS FINISHED !!!
+			</div>
+			<div class="alert bg-success" id="calibrated-camera" role="alert" style="display:none;">
+				<svg class="glyph stroked camera "><use xlink:href="#stroked-camera"/></svg>Calibrated Camera(s) :
+				<ul id="CC"></ul>
+			</div>
+			<div class="alert bg-danger" id="notCalibrated-camera" role="alert" style="display:none;">
+				<svg class="glyph stroked camera "><use xlink:href="#stroked-camera"/></svg>Camera(s) not calibrated :
+				<ul id="NCC"></ul>
 			</div>
 
                 <div id="stop-calibration-btn" style="opacity:0;">

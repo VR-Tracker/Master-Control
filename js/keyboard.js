@@ -19,7 +19,6 @@ function handleKeySpace(winObj){
                 if(calibrationViewActivated){
         			// --- Display Message
                     if(calibrationPoint.length > 0){
-                        console.log(calibrationDetected, nextCalibrationIndex,calibrationCount + 1 == nextCalibrationIndex);
                         if(nextCalibrationIndex < calibrationPoint.length ){
                             if(nextCalibrationIndex > 0){
                                 sendMessage(socket, pingMessage);
