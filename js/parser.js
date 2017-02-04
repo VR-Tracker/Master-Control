@@ -143,33 +143,6 @@ function parseMessage(message){
         }
         case "camerasposition":{
             console.log(contentMap);
-            /*var map = {};
-            var datas = [];
-            try{
-                var cmdContent = messageContent[0].split("=");
-                cmd = cmdContent[1];
-                var cameraPosition = messageContent[1].split("=");
-                cameraNumberPosition = parseFloat(cameraPosition[1]);
-                for (var i = 0; i < messageContent.length; i++ ) {
-                    information = messageContent[i].split("=");
-                    if(information[0] == "uid"){
-                        map.uid = information[1];
-                    }
-                    else if(information[0] == "x"){
-                        map.x = information[1];
-                    }
-                    else if(information[0] == "y"){
-                        map.y = information[1];
-                    }
-                    else if(information[0] == "z"){
-                        map.z = information[1];
-                        datas.splice(datas.length, 0, clone(map));
-                    }
-                }
-            }catch (e) {
-                console.error("Parsing error:", e);
-            }
-            addCameraPosition(datas);*/
             break;
         }
         case "calibrationfailed":{
@@ -237,6 +210,14 @@ function parseMessage(message){
             break;
         }
         case "gatewayversion":{
+            console.log("gateway version : ", contentMap.get("uid"));
+            break;
+        }
+        case "camerasversion":{
+            console.log("gateway version : ", contentMap.get("uid"));
+            break;
+        }
+        case "tagsversion":{
             console.log("gateway version : ", contentMap.get("uid"));
             break;
         }

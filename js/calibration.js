@@ -42,6 +42,8 @@ var StopCalibration = "<p>Now that the calibration is finished, you should be ab
 window.onload=function(){
     createWebsocket();
     // Send a message when the button start calibration is clicked.
+    udpateGatewayVersion();
+    updateCamerasVersion();
     calibrationBtn.onclick = function(e) {
         e.preventDefault();
         var send = false;
@@ -263,6 +265,9 @@ function addTableSelectedCamera(camera, mac){
 function enterCalibrationView(){
 }
 
+function isEmpty(str) {
+    return (!str || 0 === str.length);
+}
 
 function addNewPointCalibration(){
     var send = false;
@@ -270,89 +275,118 @@ function addNewPointCalibration(){
     var y = document.getElementById("y-coordinate").value;
     var z = document.getElementById("z-coordinate").value;
     //Replace comma with dot
-    x = x.replace(/,/,".");
-    y = y.replace(/,/,".");
-    z = z.replace(/,/,".");
-    var xValue = isNumeric(x);
-    var yValue = isNumeric(y);
-    var zValue = isNumeric(z);
-    if(xValue && yValue && zValue){
-        x = changeNumberFormat(x);
-        y = changeNumberFormat(y);
-        z = changeNumberFormat(z);
-        if(addPoint3DTable(x, y, z)){
-            var message = "cmd=xyzcalibration";
-            message += "&x=" + x;
-            message += "&y=" + y;
-            message += "&z=" + z;
-            var numeroCamera = 0;
-            for (var [key, value] of addedElementMap) {
-                if(value){
-                    message += "&camera" + numeroCamera + "=" + key;
-                    send = true;
-                    numeroCamera++;
-                    var tab = [x, y, z];
-                    //ajout des points
-                    pointAssociatedCamera.get(key).push(tab);
+    if(!isEmpty(x) && !isEmpty(y) && !isEmpty(z)){
+        x = x.replace(/,/,".");
+        y = y.replace(/,/,".");
+        z = z.replace(/,/,".");
+        var xValue = isNumeric(x);
+        var yValue = isNumeric(y);
+        var zValue = isNumeric(z);
+        if(xValue && yValue && zValue){
+            x = changeNumberFormat(x);
+            y = changeNumberFormat(y);
+            z = changeNumberFormat(z);
+            if(addPoint3DTable(x, y, z)){
+                var message = "cmd=xyzcalibration";
+                message += "&x=" + x;
+                message += "&y=" + y;
+                message += "&z=" + z;
+                var numeroCamera = 0;
+                for (var [key, value] of addedElementMap) {
+                    if(value){
+                        message += "&camera" + numeroCamera + "=" + key;
+                        send = true;
+                        numeroCamera++;
+                        var tab = [x, y, z];
+                        //ajout des points
+                        pointAssociatedCamera.get(key).push(tab);
+                    }
                 }
-            }
-            if(send){
-                sendMessage(socket, message);
-                calibrationPoint.push([x, y, z]);
-            }
-            else {
-                console.log("No camera selected for new calibration point");
-            }
+                if(send){
+                    sendMessage(socket, message);
+                    calibrationPoint.push([x, y, z]);
+                }
+                else {
+                    console.log("No camera selected for new calibration point");
+                }
 
-            // Enable button if at least 4 points are entered
-            if(calibrationPoint.length >=4){
-                document.getElementById("not-enough-3d").style.display = "none";
-                document.getElementById("enough-3d").style.display = "block";
-                 document.getElementById("enterCalibViewBtn").style.opacity = 1;
-            document.getElementById("enterCalibViewBtn").className += " fadein";
+                // Enable button if at least 4 points are entered
+                if(calibrationPoint.length >=4){
+                    document.getElementById("not-enough-3d").style.display = "none";
+                    document.getElementById("enough-3d").style.display = "block";
+                     document.getElementById("enterCalibViewBtn").style.opacity = 1;
+                document.getElementById("enterCalibViewBtn").className += " fadein";
+                }else{
+                    document.getElementById("not-enough-3d").style.display = "block";
+                    document.getElementById("enough-3d").style.display = "none";
+                    document.getElementById("enterCalibViewBtn").style.opacity = 0;
+                }
             }else{
-                document.getElementById("not-enough-3d").style.display = "block";
-                document.getElementById("enough-3d").style.display = "none";
-                document.getElementById("enterCalibViewBtn").style.opacity = 0;
+                alert("Point already added !");
             }
         }else{
-            alert("Point already added !");
-        }
-    }else{
-        var errorMessage = "Point not valid : coordinate ";
-        var number = 0;
-        if(!xValue){
-            errorMessage += "x";
-            number++;
-        }
-        if(number > 0 && !yValue){
-            errorMessage += ", y";
-            number++;
-            if(!zValue){
-                errorMessage += ", z";
+            var errorMessage = "Point not valid : coordinate ";
+            var number = 0;
+            if(!xValue){
+                errorMessage += "x";
                 number++;
             }
-        }else{
-            if(!yValue){
-                errorMessage += "y";
+            if(number > 0 && !yValue){
+                errorMessage += ", y";
                 number++;
                 if(!zValue){
                     errorMessage += ", z";
                     number++;
                 }
             }else{
-                if(!zValue){
-                    errorMessage += "z";
+                if(!yValue){
+                    errorMessage += "y";
                     number++;
+                    if(!zValue){
+                        errorMessage += ", z";
+                        number++;
+                    }
+                }else{
+                    if(!zValue){
+                        errorMessage += "z";
+                        number++;
+                    }
                 }
             }
+            if(number == 1){
+                errorMessage += " is not valid";
+            }else{
+                errorMessage += " are not valid";
+            }
+            alert(errorMessage);
         }
-        if(number == 1){
-            errorMessage += " is not valid";
-        }else{
-            errorMessage += " are not valid";
+    }else{
+        var points = document.getElementById("multiple-coordinates").value;
+        console.log(points);
+        //points = points.replace(/,/,".");
+        pointsTable = points.split(";");
+        console.log(pointsTable);
+        for (var i = 0; i < pointsTable.length; i++) {
+            point = pointsTable[i].split(",");
+            console.log(point);
+            if(point.length === 3){
+                var xValue = isNumeric(point[0]);
+                var yValue = isNumeric(point[1]);
+                var zValue = isNumeric(point[2]);
+                if(xValue && yValue && zValue){
+                    x = changeNumberFormat(x);
+                    y = changeNumberFormat(y);
+                    z = changeNumberFormat(z);
+                    hey = addPoint3DTable(x, y, z);
+                    console.log(point, hey);
+
+                }
+            }else{
+                console.log("Input error !");
+            }
+
         }
-        alert(errorMessage);
+
     }
     if(calibrationPoint.length > 3){
         document.getElementById("info-text").innerHTML = CalibrationInfo;
@@ -596,4 +630,30 @@ function showCalibratedCamera(){
 
 function calibrate(){
     handleKeySpace();
+}
+
+function udpateGatewayVersion(){
+    //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway
+    $.get(
+        "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway",
+        {},
+        function(data) {
+           console.log('page content: ' + data);
+        }
+    );
+}
+
+function updateCamerasVersion(){
+    //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera
+    var xmlHttp = new XMLHttpRequest();
+   xmlHttp.onreadystatechange = function() {
+       if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+           console.log(xmlHttp.responseText);
+   }
+   xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
+   xmlHttp.send(null);
+}
+
+function updateTagsVersion(){
+    //http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag
 }

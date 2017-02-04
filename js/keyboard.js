@@ -51,7 +51,7 @@ function handleKeySpace(winObj){
                         masquerAffichageMessage();
                     }
         			// 2° --- Map the keyCode in another keyCode not used
-        			winObj.keyCode = intKeyCode = REMAP_KEY_T;
+        			winObj.keyCode = intKeyCode ;//= REMAP_KEY_T;
         			winObj.returnValue = false;
         			return false;
 
