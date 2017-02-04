@@ -11,14 +11,6 @@ var nombreCamera = 0;
 var countTable = [0];
 var selectedTable = [false];
 var cameraMac = [];
-var addedElementMap = new Map();// Map contenant les differentes cameras et sachant laquelle est selectionne
-var macNumberMap = new Map();// Map de correspondance entre numero et mac
-var macToNumberMap = new Map();
-var selectedCameraCoordinateMap = new Map(); //
-var pointAssociatedCamera = new Map();
-var cameraNumberPoints = new Map();
-var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
-var calibrationPoint = []; //Store the different calibration point
 
 var tagPositions = {};
 var chart;

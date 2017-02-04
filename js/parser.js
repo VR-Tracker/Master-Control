@@ -142,6 +142,7 @@ function parseMessage(message){
             break;
         }
         case "camerasposition":{
+            console.log(contentMap);
             /*var map = {};
             var datas = [];
             try{
@@ -233,6 +234,10 @@ function parseMessage(message){
                     //sendMessage(socket, "cmd=orientation&orientation=true&uid=" + contentMap.get("uid0"));
                 }
             }
+            break;
+        }
+        case "gatewayversion":{
+            console.log("gateway version : ", contentMap.get("uid"));
             break;
         }
         default:

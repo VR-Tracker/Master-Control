@@ -1,4 +1,5 @@
 var websocketIP = "192.168.42.1";
+//var websocketIP = "localhost";
 var askCamerasInformation = "cmd=camerasinformation"
 
 var wsFailedAlert = document.getElementById('ws_failed_alert');
@@ -61,6 +62,8 @@ window.onload=function(){
         document.getElementById("not-enough-3d").style.display = "block";
         document.getElementById("not-enough-3d").className += " fadein";
 
+        document.getElementById("calibration-finished").style.opacity = 0;
+        document.getElementById("calibration-finished").display += " none";
 
         document.getElementById('x-coordinate').removeAttribute("disabled");
         document.getElementById("y-coordinate").removeAttribute("disabled");
@@ -404,7 +407,7 @@ function stopCalibration(){
     nextCalibrationIndex = 0;
     nombreCamera = 0;
     calibrationDetected = 0;
-
+    calibrationCount = 0;
     //Restart the state of start calibration button
     calibrationBtn.className = "btn btn-primary btn-md";
     calibrationBtn.innerHTML = "Start Calibration";
@@ -424,9 +427,13 @@ function stopCalibration(){
     hideCount();
     CALIBRATING = false;
 
-    document.getElementById("calibration-finished").style.opacity = 1;
-    document.getElementById("calibration-finished").className += " fadein";
-    document.getElementById("calibration-finished").style.opacity = 1;
+    calibrated = false;
+    if(calibrated){
+        document.getElementById("calibration-finished").style.opacity = 1;
+        document.getElementById("calibration-finished").className += " fadein";
+
+    }
+
     document.getElementById("calibrationBtn").innerHTML = "Validate Camera Selection";
     document.getElementById("add-3D-point-panel").style.opacity = 0;
     document.getElementById("add-3D-point-panel").style.display = "none";
@@ -585,4 +592,8 @@ function showCalibratedCamera(){
     if(numberNotCalibrated)
         document.getElementById("notCalibrated-camera").style.display = "block";
 
+}
+
+function calibrate(){
+    handleKeySpace();
 }
