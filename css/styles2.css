@@ -263,3 +263,7 @@ span.round-tab:hover {
     background-color: #06c;
     color: white;
 }
+
+.update-info{
+    display : none;
+}

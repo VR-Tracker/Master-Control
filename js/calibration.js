@@ -21,6 +21,13 @@ var pointAssociatedCamera = new Map();
 var cameraNumberPoints = new Map();
 var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
 var calibrationPoint = []; //Store the different calibration point
+
+var gatewayLatestVersion;
+var cameraLatestVersion;
+var tagLatestVersion;
+var gatewayVersion;
+var camerasVersion = {};
+var tagsVersion = {};
 var ChooseCameraInfos = "<p>Either choose every cameras for a full calibration or only a few of them if you need to re-calibrate.</br>To help you identify the cameras, you can see them slightly flash green when you select it in the list.</p>";
 var PointInfo = "<p>You are now in the calibration mode, you should be able to see the selected cameras with a blue light, and the calibration tag should have turned its light in purple."
 +"</br></br>Add the different positions that you want to use for the calibration."
@@ -42,8 +49,8 @@ var StopCalibration = "<p>Now that the calibration is finished, you should be ab
 window.onload=function(){
     createWebsocket();
     // Send a message when the button start calibration is clicked.
-    udpateGatewayVersion();
-    updateCamerasVersion();
+    getGatewayLatestVersion();
+    getCameraLatestVersion();
     calibrationBtn.onclick = function(e) {
         e.preventDefault();
         var send = false;
@@ -138,6 +145,7 @@ function createWebsocket(){
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
         setInterval(getCamerasInformation, 5000);
+        //setInterval(askSystemInfo,3000);
         //Envoi du message apres un certain temps
     };
     // Handle any errors that occur.
@@ -153,6 +161,12 @@ function createWebsocket(){
         var message = event.data;
         parseMessage(message);
     }
+}
+
+function askSystemInfo(){
+    var message = "cmd=systemversions";
+    console.log("demande d'info", message);
+    sendMessage(socket, message);
 }
 
 /*
@@ -362,9 +376,10 @@ function addNewPointCalibration(){
         }
     }else{
         var points = document.getElementById("multiple-coordinates").value;
-        console.log(points);
+        console.log("points",points);
         //points = points.replace(/,/,".");
         pointsTable = points.split(";");
+        pointsTable.pop();
         console.log(pointsTable);
         for (var i = 0; i < pointsTable.length; i++) {
             point = pointsTable[i].split(",");
@@ -373,13 +388,48 @@ function addNewPointCalibration(){
                 var xValue = isNumeric(point[0]);
                 var yValue = isNumeric(point[1]);
                 var zValue = isNumeric(point[2]);
+                console.log(xValue, yValue, zValue);
                 if(xValue && yValue && zValue){
-                    x = changeNumberFormat(x);
-                    y = changeNumberFormat(y);
-                    z = changeNumberFormat(z);
-                    hey = addPoint3DTable(x, y, z);
-                    console.log(point, hey);
+                    point[0] = changeNumberFormat(point[0]);
+                    point[1] = changeNumberFormat(point[1]);
+                    point[2] = changeNumberFormat(point[2]);
+                    //= addPoint3DTable();
+                    if(addPoint3DTable(point[0],point[1],point[2])){
+                        var message = "cmd=xyzcalibration";
+                        message += "&x=" + point[0];
+                        message += "&y=" + point[1];
+                        message += "&z=" + point[2];
+                        var numeroCamera = 0;
+                        for (var [key, value] of addedElementMap) {
+                            if(value){
+                                message += "&camera" + numeroCamera + "=" + key;
+                                send = true;
+                                numeroCamera++;
+                                var tab = [point[0],point[1],point[2]];
+                                //ajout des points
+                                pointAssociatedCamera.get(key).push(tab);
+                            }
+                        }
+                        if(send){
+                            sendMessage(socket, message);
+                            calibrationPoint.push([point[0],point[1],point[2]]);
+                        }
+                        else {
+                            console.log("No camera selected for new calibration point");
+                        }
 
+                        // Enable button if at least 4 points are entered
+                        if(calibrationPoint.length >=4){
+                            document.getElementById("not-enough-3d").style.display = "none";
+                            document.getElementById("enough-3d").style.display = "block";
+                             document.getElementById("enterCalibViewBtn").style.opacity = 1;
+                        document.getElementById("enterCalibViewBtn").className += " fadein";
+                        }else{
+                            document.getElementById("not-enough-3d").style.display = "block";
+                            document.getElementById("enough-3d").style.display = "none";
+                            document.getElementById("enterCalibViewBtn").style.opacity = 0;
+                        }
+                    }
                 }
             }else{
                 console.log("Input error !");
@@ -394,6 +444,9 @@ function addNewPointCalibration(){
 }
 
 function startCalibration(){
+    console.log("hello");
+    //askSystemInfo();
+
     console.log("sending message calibration");
     var send = false;
     //Create the corresponding message
@@ -632,28 +685,91 @@ function calibrate(){
     handleKeySpace();
 }
 
-function udpateGatewayVersion(){
+function getGatewayLatestVersion(){
     //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway
-    $.get(
+    var test = $.get(
         "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway",
         {},
         function(data) {
-           console.log('page content: ' + data);
+            var split = data.split(".");
+            var version = split[1] + "." + split[2];
+            gatewayLatestVersion = version;
+            return data;
         }
     );
+    return test;
 }
 
-function updateCamerasVersion(){
+function getCameraLatestVersion(){
     //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera
     var xmlHttp = new XMLHttpRequest();
    xmlHttp.onreadystatechange = function() {
        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
            console.log(xmlHttp.responseText);
+           var split = xmlHttp.responseText.split(".");
+           var version = split[1] + "." + split[2];
+           cameraLatestVersion = version;
    }
    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
    xmlHttp.send(null);
+   //xmlHttp.close();
 }
 
-function updateTagsVersion(){
+function getTagLatestVersion(){
     //http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag
+    var xmlHttp = new XMLHttpRequest();
+   xmlHttp.onreadystatechange = function() {
+       if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+           console.log(xmlHttp.responseText);
+           console.log(xmlHttp.responseText);
+           var split = xmlHttp.responseText.split(".");
+           var version = split[1] + "." + split[2];
+           tagLatestVersion = version;
+   }
+   xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
+   xmlHttp.send(null);
+}
+
+function updateGatewayVersionDisplay(version, newversion){
+    var success = document.getElementById("gateway-software-state");//.style.display = "block";
+    var fail = document.getElementById("gateway-software-state-fail");//.innerHTML = (messageCameraCalibrated);
+
+    if(version === newversion){
+        success.style.display = "block";
+        fail.style.display = "none";
+        success.children[1].innerHTML = "Current version: " + gatewayVersion;
+    }else{
+        success.style.display = "none";
+        fail.style.display = "block";
+        var message = "Current version: " + gatewayVersion;
+        message += "Latest version: " + gatewayLatestVersion;
+        fail.children[1].innerHTML = message;
+    }
+}
+
+function updateCameraVersionDisplay(versions, newversion){
+    var success = document.getElementById("camera-software-state");
+    var fail = document.getElementById("camera-software-state-fail");
+    var camerasToUpdate = [];
+    for (var i = 0; i < versions.length; i++) {
+        if(!(versions === newversion)){
+            camerasToUpdate.append(i);
+        }
+    }
+    if(camerasToUpdate.length === 0){
+        success.style.display = "block";
+        fail.style.display = "none";
+        success.children[1].innerHTML = "Current version: " + cameraLatestVersion;
+    }else{
+        success.style.display = "none";
+        fail.style.display = "block";
+        var message = "Current version: ";
+        message += "<ul>"
+        for (var i = 0; i < camerasToUpdate.length; i++) {
+                message += "<li>" + versions[camerasToUpdate[i]] + "</li>";
+        }
+        message += "</ul>"
+        message += "Latest version: " + cameraLatestVersion;
+        fail.children[1].innerHTML = message;
+    }
 }

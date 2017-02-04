@@ -9,6 +9,7 @@ function parseMessage(message){
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
+    console.log(messageContent);
     try{
         var cmdContent = messageContent[0].split("=");
         cmd = cmdContent[1];
@@ -166,7 +167,6 @@ function parseMessage(message){
             break;
         }
         case "error":{
-
             if(contentMap.has("msg")){
                 switch (contentMap.get("msg")) {
                     case "tagdisconnected":{
@@ -205,20 +205,25 @@ function parseMessage(message){
             if(contentMap.has("msg")){
                 if(contentMap.get("msg") == "assignmentsuccess"){
                     //sendMessage(socket, "cmd=orientation&orientation=true&uid=" + contentMap.get("uid0"));
+                    console.log(contentMap);
                 }
             }
             break;
         }
         case "gatewayversion":{
             console.log("gateway version : ", contentMap.get("uid"));
+            (getGatewayLatestVersion());
+            gatewayVersion = contentMap.get("uid");
+            console.log(gatewayVersion);
+            updateGatewayVersionDisplay(contentMap.get("uid"), gatewayVersion);
             break;
         }
         case "camerasversion":{
-            console.log("gateway version : ", contentMap.get("uid"));
+            console.log("camera version : ", contentMap);
             break;
         }
         case "tagsversion":{
-            console.log("gateway version : ", contentMap.get("uid"));
+            console.log("tag version : ", contentMap);
             break;
         }
         default:
@@ -241,8 +246,9 @@ function isNumeric(n) {
 }
 
 function changeNumberFormat(string){
+    console.log("changeNumberFormat",string);
     var part = string.split(".");
-    if(part.length == 2 ){
+    if(part.length == 2){
         var indice = part[1].length - 1;
         while(part[1][indice] == "0" && indice > 0){
             indice--;

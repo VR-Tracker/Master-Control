@@ -58,35 +58,42 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<h1 class="page-header">Calibration Tool</h1>
-				<div class="alert bg-danger" id="update-state" role="alert" >
+				<div class="alert bg-danger update-info" id="update-state-fail" role="alert" >
 					<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Your system need to be updated !
+					<p align="center" style="color:white;" ></p>
 				</div>
-				<div class="alert bg-success" id="update-state" role="alert" >
-					<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Your system is be updated !
+				<div class="alert bg-success update-info" id="update-state" role="alert" >
+					<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Your system is up to date !
+					<p align="center" style="color:white;"></p>
 				</div>
 				<div class="col-md-4">
-					<div class="alert bg-danger" id="gateway-software-state" role="alert">
+					<div class="alert bg-danger update-info" id="gateway-software-state-fail" role="alert" align="center">
 						<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Your Gateway need to be updated !
+						<p align="center" style="color:white;" ></p>
 					</div>
-					<div class="alert bg-success" id="gateway-software-state" role="alert">
-						<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Your Gateway is be updated !
+					<div class="alert bg-success update-info" id="gateway-software-state" role="alert" align="center">
+						<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Your Gateway is up to date !
+						<p align="center" style="color:white;" ></p>
 					</div>
 				</div>
 				<div class="col-md-4">
-					<div class="alert bg-danger" id="camera-software-state" role="alert">
+					<div class="alert bg-danger update-info" id="camera-software-state-fail" role="alert">
 						<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Yours Cameras need to be updated !
+						<p align="center" style="color:white;" ></p>
 					</div>
-					<div class="alert bg-success" id="camera-software-state" role="alert">
-						<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Yours Cameras is be updated !
+					<div class="alert bg-success update-info" id="camera-software-state" role="alert">
+						<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Yours Cameras is up to date !
+						<p align="center" style="color:white;" ></p>
 					</div>
 				</div>
 				<div class="col-md-4">
-					<div class="alert bg-danger" id="tag-software-state" role="alert">
+					<div class="alert bg-danger update-info" id="tag-software-state-fail" role="alert">
 						<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Yours Tags need to be updated !
+						<p align="center" style="color:white;" ></p>
 					</div>
-					<div class="alert bg-success" id="tag-software-state" role="alert">
-						<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Yours Tags is be updated !
-						<p align="center">current version : xxx</p>
+					<div class="alert bg-success update-info" id="tag-software-state" role="alert">
+						<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Yours Tags is up to date !
+						<p align="center" style="color:white;" ></p>
 					</div>
 				</div>
 
@@ -162,7 +169,7 @@
 
 				<div class="col-md-6">
 					<label>multiple coordinates</label>
-					<textarea class="form-control" rows="6" id="multiple-coordinates" placeholder="enter the points separted by ;/n And the coordinates separated by ,"></textarea>
+					<textarea class="form-control" rows="6" id="multiple-coordinates" placeholder="enter the points separted by ; And the coordinates separated by ,"></textarea>
 				</div>
 			</div>
 			<div align="center" style="padding-bottom: 10px">
