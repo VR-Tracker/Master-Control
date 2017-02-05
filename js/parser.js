@@ -118,7 +118,13 @@ function parseMessage(message){
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
                     //console.log(messageContent);
-                    for (var i = 0; i < messageContent.length; i++ ) {
+                    //contentMap
+                    pointData = {};
+                    for (var i = 1; i < messageContent.length; i++ ) {
+                        information = messageContent[i].split("=");
+                        //pointData.set(information[0], information[1]);
+                    }
+                    for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
                             map.uid = information[1];
@@ -133,6 +139,7 @@ function parseMessage(message){
                             map.z = information[1];
                             datas.splice(datas.length, 0, clone(map));
                         }
+                        //console.log(datas);
                     }
                     updateTagPosition(datas);
                 }catch (e) {
@@ -205,14 +212,14 @@ function parseMessage(message){
         case "info":{
             if(contentMap.has("msg")){
                 if(contentMap.get("msg") == "assignmentsuccess"){
-                    sendMessage(socket, "cmd=orientation&orientation=true&uid=" + contentMap.get("uid0"));
+                    sendMessage(socket, "cmd=orientation&orientation=false&uid=" + contentMap.get("uid0"));
                     console.log(contentMap);
                 }
             }
             break;
         }
         case "gatewayversion":{
-            console.log("gateway version : ", contentMap.get("uid"));
+            //console.log("gateway version : ", contentMap.get("uid"));
             //(getGatewayLatestVersion());
             gatewayVersion = contentMap.get("uid");
             //console.log(gatewayVersion);
@@ -220,15 +227,15 @@ function parseMessage(message){
             break;
         }
         case "camerasversion":{
-            console.log("camera version : ", contentMap);
+            //console.log("camera version : ", contentMap);
             //(getCameraLatestVersion());
-            console.log(cameraLatestVersion);
+            //console.log(cameraLatestVersion);
             updateCameraVersionDisplay(contentMap, cameraLatestVersion);
             break;
         }
         case "tagsversion":{
             //(getTagLatestVersion());
-            console.log("tag version : ", contentMap);
+            //console.log("tag version : ", contentMap);
             updateTagVersionDisplay(contentMap, tagLatestVersion);
             break;
         }

@@ -18,6 +18,7 @@ var cameraNumberPosition = 0;
 var maxX = 3;
 var maxY = 3;
 var maxZ = 3;
+var tagTracked = new Map();
 /*
 * On window load, open a websocket between the window and the server
 * Create a master on opening window
@@ -49,9 +50,11 @@ var index = 0;
 
 function updateTagPosition(message){
     //console.log("message", message);
-    console.log("chart", chart.series);
+    //console.log("chart", chart.series);
     for (var i = 1; i < message.length; i++ ) {
-        if(i > chart.series.length){
+        //if(i > chart.series.length){
+        if(!tagTracked.has(message[i].uid)){
+            tagTracked.set(message[i].uid, true)
             chart.addSeries({
             name: 'Tag ' + message[i].uid,
             colorByPoint: true,
@@ -67,7 +70,7 @@ function updateTagPosition(message){
             colorByPoint: true,
             data: [[parseFloat(message[i].x), parseFloat(message[i].z), parseFloat(message[i].y)]]
         }, false);
-    chart.redraw();
+            chart.redraw();
         }
 
         }
