@@ -112,11 +112,12 @@ function parseMessage(message){
         }
         case "position":{
             var map = {};
-            var datas = [];
+            var datas = [0];
             if((positionCount % 3) == 0){
                 try{
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
+                    //console.log(messageContent);
                     for (var i = 0; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
@@ -133,10 +134,10 @@ function parseMessage(message){
                             datas.splice(datas.length, 0, clone(map));
                         }
                     }
+                    updateTagPosition(datas);
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }
-                updateTagPosition(datas);
             }else{
                 positionCount++;
             }
@@ -204,7 +205,7 @@ function parseMessage(message){
         case "info":{
             if(contentMap.has("msg")){
                 if(contentMap.get("msg") == "assignmentsuccess"){
-                    //sendMessage(socket, "cmd=orientation&orientation=true&uid=" + contentMap.get("uid0"));
+                    sendMessage(socket, "cmd=orientation&orientation=true&uid=" + contentMap.get("uid0"));
                     console.log(contentMap);
                 }
             }
@@ -212,18 +213,23 @@ function parseMessage(message){
         }
         case "gatewayversion":{
             console.log("gateway version : ", contentMap.get("uid"));
-            (getGatewayLatestVersion());
+            //(getGatewayLatestVersion());
             gatewayVersion = contentMap.get("uid");
-            console.log(gatewayVersion);
-            updateGatewayVersionDisplay(contentMap.get("uid"), gatewayVersion);
+            //console.log(gatewayVersion);
+            updateGatewayVersionDisplay(contentMap.get("uid"), gatewayLatestVersion);
             break;
         }
         case "camerasversion":{
             console.log("camera version : ", contentMap);
+            //(getCameraLatestVersion());
+            console.log(cameraLatestVersion);
+            updateCameraVersionDisplay(contentMap, cameraLatestVersion);
             break;
         }
         case "tagsversion":{
+            //(getTagLatestVersion());
             console.log("tag version : ", contentMap);
+            updateTagVersionDisplay(contentMap, tagLatestVersion);
             break;
         }
         default:

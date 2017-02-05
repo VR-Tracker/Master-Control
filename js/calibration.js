@@ -26,8 +26,8 @@ var gatewayLatestVersion;
 var cameraLatestVersion;
 var tagLatestVersion;
 var gatewayVersion;
-var camerasVersion = {};
-var tagsVersion = {};
+//var camerasVersion = {};
+//var tagsVersion = {};
 var ChooseCameraInfos = "<p>Either choose every cameras for a full calibration or only a few of them if you need to re-calibrate.</br>To help you identify the cameras, you can see them slightly flash green when you select it in the list.</p>";
 var PointInfo = "<p>You are now in the calibration mode, you should be able to see the selected cameras with a blue light, and the calibration tag should have turned its light in purple."
 +"</br></br>Add the different positions that you want to use for the calibration."
@@ -51,6 +51,7 @@ window.onload=function(){
     // Send a message when the button start calibration is clicked.
     getGatewayLatestVersion();
     getCameraLatestVersion();
+    getTagLatestVersion();
     calibrationBtn.onclick = function(e) {
         e.preventDefault();
         var send = false;
@@ -145,7 +146,7 @@ function createWebsocket(){
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
         setInterval(getCamerasInformation, 5000);
-        //setInterval(askSystemInfo,3000);
+        setInterval(askSystemInfo,3000);
         //Envoi du message apres un certain temps
     };
     // Handle any errors that occur.
@@ -687,7 +688,7 @@ function calibrate(){
 
 function getGatewayLatestVersion(){
     //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway
-    var test = $.get(
+    var gVersion = $.get(
         "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway",
         {},
         function(data) {
@@ -697,7 +698,7 @@ function getGatewayLatestVersion(){
             return data;
         }
     );
-    return test;
+    return gVersion;
 }
 
 function getCameraLatestVersion(){
@@ -705,9 +706,10 @@ function getCameraLatestVersion(){
     var xmlHttp = new XMLHttpRequest();
    xmlHttp.onreadystatechange = function() {
        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-           console.log(xmlHttp.responseText);
+           console.log("camera lastest version",xmlHttp.responseText);
            var split = xmlHttp.responseText.split(".");
            var version = split[1] + "." + split[2];
+           console.log("camera latest version parsed", version);
            cameraLatestVersion = version;
    }
    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
@@ -721,9 +723,9 @@ function getTagLatestVersion(){
    xmlHttp.onreadystatechange = function() {
        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
            console.log(xmlHttp.responseText);
-           console.log(xmlHttp.responseText);
            var split = xmlHttp.responseText.split(".");
-           var version = split[1] + "." + split[2];
+           var version = 0 + "." + split[0][3];
+           console.log("tag latest version", version);
            tagLatestVersion = version;
    }
    xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
@@ -751,9 +753,20 @@ function updateCameraVersionDisplay(versions, newversion){
     var success = document.getElementById("camera-software-state");
     var fail = document.getElementById("camera-software-state-fail");
     var camerasToUpdate = [];
-    for (var i = 0; i < versions.length; i++) {
-        if(!(versions === newversion)){
-            camerasToUpdate.append(i);
+    var camerasVersion = [];
+    var macList = [];
+    for (var [cmd, info] of versions) {
+        if(cmd.includes("uid")){
+            macList.push(info);
+        }
+        if(cmd.includes("version")){
+            camerasVersion.push(info);
+        }
+    }
+
+    for (var i = 0; i < camerasVersion.length; i++) {
+        if(!(camerasVersion[i] === newversion)){
+            camerasToUpdate.push(i);
         }
     }
     if(camerasToUpdate.length === 0){
@@ -766,10 +779,50 @@ function updateCameraVersionDisplay(versions, newversion){
         var message = "Current version: ";
         message += "<ul>"
         for (var i = 0; i < camerasToUpdate.length; i++) {
-                message += "<li>" + versions[camerasToUpdate[i]] + "</li>";
+            message += "<li> MAC: " + macList[i] + ", version:";
+            message += camerasVersion[camerasToUpdate[i]] + "</li>";
         }
         message += "</ul>"
         message += "Latest version: " + cameraLatestVersion;
+        fail.children[1].innerHTML = message;
+    }
+}
+
+function updateTagVersionDisplay(versions, newversion){
+    var success = document.getElementById("tag-software-state");
+    var fail = document.getElementById("tag-software-state-fail");
+    var tagsToUpdate = [];
+    var tagsVersion = [];
+    var macList = [];
+    for (var [cmd, info] of versions) {
+        if(cmd.includes("uid")){
+            macList.push(info);
+        }
+        if(cmd.includes("version")){
+            tagsVersion.push(info);
+        }
+    }
+
+    for (var i = 0; i < tagsVersion.length; i++) {
+        if(!(tagsVersion[i] === newversion)){
+            tagsToUpdate.push(i);
+        }
+    }
+    if(tagsToUpdate.length === 0){
+        success.style.display = "block";
+        fail.style.display = "none";
+        success.children[1].innerHTML = "Current version: " + tagLatestVersion;
+    }else{
+        success.style.display = "none";
+        fail.style.display = "block";
+        var message = "Current version: (Tags need update)";
+        message += "<ul>"
+        for (var i = 0; i < tagsToUpdate.length; i++) {
+                message += "<li> MAC: " + macList[i] + ", version:" +
+                 + tagsVersion[tagsToUpdate[i]] + "</li>";
+        }
+        message += "</ul>"
+        message += "Latest version: " + tagLatestVersion;
         fail.children[1].innerHTML = message;
     }
 }

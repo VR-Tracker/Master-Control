@@ -48,9 +48,10 @@ function clone(obj) {
 var index = 0;
 
 function updateTagPosition(message){
-
-    for (var i = 0; i < message.length; i++ ) {
-        if(i > chart.series.length - cameraNumberPosition){
+    //console.log("message", message);
+    console.log("chart", chart.series);
+    for (var i = 1; i < message.length; i++ ) {
+        if(i > chart.series.length){
             chart.addSeries({
             name: 'Tag ' + message[i].uid,
             colorByPoint: true,
