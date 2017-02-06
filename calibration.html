@@ -202,7 +202,7 @@
 			</p>
 		</div>
 		<div align="center" style="margin-top: 1px">
-			<button style="width:50%; margin-left: 10px; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Stop Calibration </button>
+			<button style="width:50%; margin-left: 10px; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Exit Calibration </button>
 		</div>
 		<div class="alert bg-success" id="calibration-finished" role="alert" style="opacity:0;">
 			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> YOUR CALIBRATION IS FINISHED !!!
@@ -249,7 +249,7 @@
 	<div id="fullScreenMessage">Next Calibration Point : </div>
 
 	<div align="center" style=" margin: auto; margin-bottom: 4px;" >
-		<button type="submit" class="btn btn-md" id="next-point-btn">Next Point</button>
+		<button type="submit" class="btn btn-md" id="next-point-btn" onclick="moveToNextPoint()" style="display:none">Next Point</button>
 		<button type="submit" class="btn btn-md" id="calibrate-btn" onclick="calibrate()">Calibrate</button>
 	</div>
 

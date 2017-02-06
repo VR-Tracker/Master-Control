@@ -721,12 +721,15 @@ function getTagLatestVersion(){
     //http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag
     var xmlHttp = new XMLHttpRequest();
    xmlHttp.onreadystatechange = function() {
-       if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+       if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
            console.log(xmlHttp.responseText);
            var split = xmlHttp.responseText.split(".");
            var version = 0 + "." + split[0][3];
            console.log("tag latest version", version);
            tagLatestVersion = version;
+       }else{
+         console.log("No log");
+       }
    }
    xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
    xmlHttp.send(null);
@@ -825,4 +828,30 @@ function updateTagVersionDisplay(versions, newversion){
         message += "Latest version: " + tagLatestVersion;
         fail.children[1].innerHTML = message;
     }
+}
+
+function hostReachable() {
+
+  // Handle IE and more capable browsers
+  var xhr = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
+  var status;
+
+  // Open new request as a HEAD to the root hostname with a random param to bust the cache
+  xhr.open( "HEAD", "//" + window.location.hostname + "/?rand=" + Math.floor((1 + Math.random()) * 0x10000), false );
+
+  // Issue request and handle response
+  try {
+    xhr.send();
+    return ( xhr.status >= 200 && (xhr.status < 300 || xhr.status === 304) );
+  } catch (error) {
+    return false;
+  }
+
+}
+
+function moveToNextPoint(){
+    var calibrationPosition = calibrationPoint[calibrationCount];
+    var point = calibrationPosition[0]+'-'+calibrationPosition[1]+'-'+calibrationPosition[2];
+    updateCalibration();
+    deletePoint(point);
 }

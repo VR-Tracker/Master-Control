@@ -214,6 +214,8 @@ function parseMessage(message){
                 if(contentMap.get("msg") == "assignmentsuccess"){
                     sendMessage(socket, "cmd=orientation&orientation=false&uid=" + contentMap.get("uid0"));
                     console.log(contentMap);
+                }else if (contentMap.get("msg") == "ping") {
+                    updateCalibration();
                 }
             }
             break;
