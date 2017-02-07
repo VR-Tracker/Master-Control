@@ -151,7 +151,7 @@ function parseMessage(message){
             break;
         }
         case "camerasposition":{
-            console.log(contentMap);
+            console.log("position", contentMap);
             break;
         }
         case "calibrationfailed":{

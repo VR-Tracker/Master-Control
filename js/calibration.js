@@ -147,6 +147,7 @@ function createWebsocket(){
         socket.send(askCamerasInformation);
         setInterval(getCamerasInformation, 5000);
         setInterval(askSystemInfo,3000);
+        socket.send("cmd=camerasposition");
         //Envoi du message apres un certain temps
     };
     // Handle any errors that occur.
@@ -412,7 +413,8 @@ function addNewPointCalibration(){
                             }
                         }
                         if(send){
-                            sendMessage(socket, message);
+                            setTimeout(function(){sendMessage(socket, message);}, 200*i);
+
                             calibrationPoint.push([point[0],point[1],point[2]]);
                         }
                         else {
@@ -692,6 +694,7 @@ function getGatewayLatestVersion(){
         "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway",
         {},
         function(data) {
+            console.log("Gateway last version", data);
             var split = data.split(".");
             var version = split[1] + "." + split[2];
             gatewayLatestVersion = version;
