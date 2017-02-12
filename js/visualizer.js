@@ -27,6 +27,17 @@ var tagTracked = new Map();
 window.onload=function(){
     drawChart();
     createWebsocket();
+    //chart.xAxis.update = 5
+    console.log("chart", chart.xAxis[0]);
+    console.log("chart", chart.xAxis[0].max);
+
+    chart.xAxis[0].update({
+        min: -2,
+        max: 5,
+        gridLineWidth: 1,
+        title: "x"
+    });
+
 }
 
 function assingAllTags(){
@@ -34,6 +45,7 @@ function assingAllTags(){
     sendMessage(socket, messageMac);
     var message = "cmd=assignalltag";
     sendMessage(socket, message);
+    sendMessage(socket,"cmd=camerasposition");
     //setTimeout(function(){sendMessage(socket, message);}, 5000);
 }
 
@@ -152,17 +164,20 @@ function drawChart(){
         yAxis: {
             min: 0,
             max: 2,
-            title: null
+            title: "y"
         },
         xAxis: {
             min: 0,
             max: 2,
-            gridLineWidth: 1
+            gridLineWidth: 1,
+            title: "x"
         },
+
         zAxis: {
             min: 0,
             max: 2,
-            showFirstLabel: false
+            showFirstLabel: false,
+            title: "z"
         },
         legend: {
             enabled: false

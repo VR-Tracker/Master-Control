@@ -61,7 +61,7 @@ window.onload=function(){
             calibrating = true;
         }
 
-   //   FADE IN the next Panel
+        //   FADE IN the next Panel
         document.getElementById("add-3D-point-panel").style.opacity = 1;
         document.getElementById("add-3D-point-panel").style.display = "block";
         document.getElementById("add-3D-point-panel").className += " fadein";
@@ -120,9 +120,9 @@ window.onclose=function(){
 }
 
 window.setInterval(function(){
-  if(socket.readyState === socket.CLOSED){
-      createWebsocket();
-  }
+    if(socket.readyState === socket.CLOSED){
+        createWebsocket();
+    }
 }, 2000);
 
 function sendMessage(websocket, message){
@@ -131,7 +131,7 @@ function sendMessage(websocket, message){
 
 function getCamerasInformation(){
     if(!calibrating)
-        socket.send(askCamerasInformation);
+    socket.send(askCamerasInformation);
 }
 
 function createWebsocket(){
@@ -141,12 +141,12 @@ function createWebsocket(){
         wsSuccessAlert.style.display = "block";
         console.log("connection master...");
         document.getElementById("info-text").innerHTML = ChooseCameraInfos;
-     //   document.getElementById("calibrationBtn").disabled = false;
+        //   document.getElementById("calibrationBtn").disabled = false;
 
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
         setInterval(getCamerasInformation, 5000);
-        setInterval(askSystemInfo,3000);
+        setTimeout(askSystemInfo,3000);
         socket.send("cmd=camerasposition");
         //Envoi du message apres un certain temps
     };
@@ -177,9 +177,9 @@ function askSystemInfo(){
 */
 function addTableAvailableCamera(mac){
 
- /*   var nocameraconnected = document.getElementById("noCameraConnectedMessage");
+    /*   var nocameraconnected = document.getElementById("noCameraConnectedMessage");
     return nocameraconnected.parentNode.removeChild(nocameraconnected);
-   */
+    */
     nombreCamera++;
     //Get the html element
     var liste = document.getElementById("available-cameras");
@@ -228,17 +228,17 @@ function changeColor(id, numeroCamera){
             sendMessage(socket, message);
         }
         var countCameraSelected = 0;
-            for (cam in selectedTable){
-                if(selectedTable[cam] == true){
-                    countCameraSelected++;
-                }
+        for (cam in selectedTable){
+            if(selectedTable[cam] == true){
+                countCameraSelected++;
             }
-            if(countCameraSelected < 1){
-                document.getElementById("calibrationBtn").disabled = true;
-            }
-            else {
-                document.getElementById("calibrationBtn").disabled = false;
-            }
+        }
+        if(countCameraSelected < 1){
+            document.getElementById("calibrationBtn").disabled = true;
+        }
+        else {
+            document.getElementById("calibrationBtn").disabled = false;
+        }
     }
 }
 
@@ -330,8 +330,8 @@ function addNewPointCalibration(){
                 if(calibrationPoint.length >=4){
                     document.getElementById("not-enough-3d").style.display = "none";
                     document.getElementById("enough-3d").style.display = "block";
-                     document.getElementById("enterCalibViewBtn").style.opacity = 1;
-                document.getElementById("enterCalibViewBtn").className += " fadein";
+                    document.getElementById("enterCalibViewBtn").style.opacity = 1;
+                    document.getElementById("enterCalibViewBtn").className += " fadein";
                 }else{
                     document.getElementById("not-enough-3d").style.display = "block";
                     document.getElementById("enough-3d").style.display = "none";
@@ -378,19 +378,19 @@ function addNewPointCalibration(){
         }
     }else{
         var points = document.getElementById("multiple-coordinates").value;
-        console.log("points",points);
+        //console.log("points",points);
         //points = points.replace(/,/,".");
         pointsTable = points.split(";");
         pointsTable.pop();
-        console.log(pointsTable);
+        //console.log(pointsTable);
         for (var i = 0; i < pointsTable.length; i++) {
             point = pointsTable[i].split(",");
-            console.log(point);
+            //console.log(point);
             if(point.length === 3){
                 var xValue = isNumeric(point[0]);
                 var yValue = isNumeric(point[1]);
                 var zValue = isNumeric(point[2]);
-                console.log(xValue, yValue, zValue);
+                //console.log(xValue, yValue, zValue);
                 if(xValue && yValue && zValue){
                     point[0] = changeNumberFormat(point[0]);
                     point[1] = changeNumberFormat(point[1]);
@@ -413,8 +413,9 @@ function addNewPointCalibration(){
                             }
                         }
                         if(send){
-                            setTimeout(function(){sendMessage(socket, message);}, 200*i);
-
+                            //setTimeout(function(socket, message){socket.sendMessage(message);
+                            //console.log(message);}, 300*(i+1));
+                            sendMessage(socket, message);
                             calibrationPoint.push([point[0],point[1],point[2]]);
                         }
                         else {
@@ -425,8 +426,8 @@ function addNewPointCalibration(){
                         if(calibrationPoint.length >=4){
                             document.getElementById("not-enough-3d").style.display = "none";
                             document.getElementById("enough-3d").style.display = "block";
-                             document.getElementById("enterCalibViewBtn").style.opacity = 1;
-                        document.getElementById("enterCalibViewBtn").className += " fadein";
+                            document.getElementById("enterCalibViewBtn").style.opacity = 1;
+                            document.getElementById("enterCalibViewBtn").className += " fadein";
                         }else{
                             document.getElementById("not-enough-3d").style.display = "block";
                             document.getElementById("enough-3d").style.display = "none";
@@ -447,7 +448,6 @@ function addNewPointCalibration(){
 }
 
 function startCalibration(){
-    console.log("hello");
     //askSystemInfo();
 
     console.log("sending message calibration");
@@ -606,139 +606,157 @@ function deletePoint(id){
     if(typeof tab !== 'undefined'){
         for (var i = 0; i < tab.length; i++) {
             countTablePointCamera.set(tab[i],
-                    countTablePointCamera.get(tab[i]) - 1);
-        }
-        var countView = document.getElementsByClassName("count");
-        for (var i = 1; i < countView.length; i++) {
-            countView[i].innerHTML = countTablePointCamera.get(macNumberMap.get(i));
-        }
-        var point = document.getElementById("associated-" + id);
+                countTablePointCamera.get(tab[i]) - 1);
+            }
+            var countView = document.getElementsByClassName("count");
+            for (var i = 1; i < countView.length; i++) {
+                countView[i].innerHTML = countTablePointCamera.get(macNumberMap.get(i));
+            }
+            var point = document.getElementById("associated-" + id);
 
-        var description = "(" + pointToCameraMap.get(id).length + ")";
-        point.innerHTML = description;
-        //On supprime la cle de la map
-        pointToCameraMap.delete(id);
-    }else{
-        console.log("Point not associated");
+            var description = "(" + pointToCameraMap.get(id).length + ")";
+            point.innerHTML = description;
+            //On supprime la cle de la map
+            pointToCameraMap.delete(id);
+        }else{
+            console.log("Point not associated");
+        }
+        var coordinates = id.split("-");
+        var message = "cmd=deletecalibpoint";
+        message += "&x=" + coordinates[0];
+        message += "&y=" + coordinates[1];
+        message += "&z=" + coordinates[2];
+        //On envoie le point a supprimer
+        for (var i = 0; i < calibrationPoint.length; i++) {
+            if(calibrationPoint[i][0] == coordinates[0] && calibrationPoint[i][1] == coordinates[1] && calibrationPoint[i][2] == coordinates[2]){
+                calibrationPoint.splice(i, 1);
+                if(i < calibrationDetected){
+                    calibrationCount--;
+                    calibrationDetected--;
+                }
+            }
+        }
+        sendMessage(socket, message);
+        var tab = [coordinates[0],coordinates[1],coordinates[2]];
+        for (var [key, value] of pointAssociatedCamera) {
+            removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(key));
+        }
+        var point = document.getElementById(id);
+        point.parentNode.removeChild(point);
     }
-    var coordinates = id.split("-");
-    var message = "cmd=deletecalibpoint";
-    message += "&x=" + coordinates[0];
-    message += "&y=" + coordinates[1];
-    message += "&z=" + coordinates[2];
-    //On envoie le point a supprimer
-    for (var i = 0; i < calibrationPoint.length; i++) {
-        if(calibrationPoint[i][0] == coordinates[0] && calibrationPoint[i][1] == coordinates[1] && calibrationPoint[i][2] == coordinates[2]){
-            calibrationPoint.splice(i, 1);
-            if(i < calibrationDetected){
-                calibrationCount--;
-                calibrationDetected--;
+
+    function removeArrayPoint(array, indice){
+        array[indice] = array.length - 1;
+        array.pop();
+    }
+
+    function removeArrayElement(element, array){
+        for (var i = 0; i < array.length; i++) {
+            if(array[i] === element){
+                array[i] = array[array.length - 1];
+                array.pop();
+                break;
             }
         }
     }
-    sendMessage(socket, message);
-    var tab = [coordinates[0],coordinates[1],coordinates[2]];
-    for (var [key, value] of pointAssociatedCamera) {
-        removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(key));
-    }
-    var point = document.getElementById(id);
-    point.parentNode.removeChild(point);
-}
 
-function removeArrayPoint(array, indice){
-    array[indice] = array.length - 1;
-    array.pop();
-}
+    function showCalibratedCamera(){
+        var numberCalibrated = 0;
+        var numberNotCalibrated = 0;
+        var messageCameraCalibrated = "";
+        var messageCameraNotCalibrated = "";
 
-function removeArrayElement(element, array){
-    for (var i = 0; i < array.length; i++) {
-        if(array[i] === element){
-            array[i] = array[array.length - 1];
-            array.pop();
-            break;
+        for (var [key, value] of countTablePointCamera) {
+            if(value >= 4){
+                messageCameraCalibrated += "<li>camera" + " (" + key + ")</li>";
+                numberCalibrated++;
+            }else{
+                messageCameraNotCalibrated += "<li>camera" + " (" + key + ")</li>";
+                numberNotCalibrated++;
+            }
         }
-    }
-}
-
-function showCalibratedCamera(){
-    var numberCalibrated = 0;
-    var numberNotCalibrated = 0;
-    var messageCameraCalibrated = "";
-    var messageCameraNotCalibrated = "";
-
-    for (var [key, value] of countTablePointCamera) {
-        if(value >= 4){
-            messageCameraCalibrated += "<li>camera" + " (" + key + ")</li>";
-            numberCalibrated++;
-        }else{
-            messageCameraNotCalibrated += "<li>camera" + " (" + key + ")</li>";
-            numberNotCalibrated++;
-        }
-    }
-    document.getElementById("CC").innerHTML = (messageCameraCalibrated);
-    document.getElementById("NCC").innerHTML = (messageCameraNotCalibrated);
-    if(numberCalibrated)
+        document.getElementById("CC").innerHTML = (messageCameraCalibrated);
+        document.getElementById("NCC").innerHTML = (messageCameraNotCalibrated);
+        if(numberCalibrated)
         document.getElementById("calibrated-camera").style.display = "block";
-    if(numberNotCalibrated)
+        if(numberNotCalibrated)
         document.getElementById("notCalibrated-camera").style.display = "block";
 
-}
+    }
 
-function calibrate(){
-    handleKeySpace();
-}
+    function calibrate(){
+        handleKeySpace();
+    }
 
-function getGatewayLatestVersion(){
-    //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway
-    var gVersion = $.get(
+    function getGatewayLatestVersion(){
+        //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway
+        /*var gVersion = $.get(
         "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway",
         {},
         function(data) {
-            console.log("Gateway last version", data);
-            var split = data.split(".");
-            var version = split[1] + "." + split[2];
-            gatewayLatestVersion = version;
-            return data;
+        console.log("Gateway last version", data);
+        var split = data.split(".");
+        var version = split[1] + "." + split[2];
+        gatewayLatestVersion = version;
+        return data;
+            }
+        );
+        return gVersion;*/
+
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onreadystatechange = function() {
+            if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+                console.log("gateway lastest version",xmlHttp.responseText);
+                var split = xmlHttp.responseText.split(".");
+                var version = split[1] + "." + split[2];
+                gatewayLatestVersion = version;
+            }else{
+                console.log("No log");
+            }
         }
-    );
-    return gVersion;
+        xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway", true); // true for asynchronous
+        xmlHttp.send(null);
 }
 
 function getCameraLatestVersion(){
     //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera
     var xmlHttp = new XMLHttpRequest();
-   xmlHttp.onreadystatechange = function() {
-       if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-           console.log("camera lastest version",xmlHttp.responseText);
-           var split = xmlHttp.responseText.split(".");
-           var version = split[1] + "." + split[2];
-           console.log("camera latest version parsed", version);
-           cameraLatestVersion = version;
-   }
-   xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
-   xmlHttp.send(null);
-   //xmlHttp.close();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            //console.log("camera lastest version",xmlHttp.responseText);
+            var split = xmlHttp.responseText.split(".");
+            var version = split[1] + "." + split[2];
+            // console.log("camera latest version parsed", version);
+            cameraLatestVersion = version;
+        }else{
+            console.log("No log");
+        }
+    }
+    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
+    xmlHttp.send(null);
+    //xmlHttp.close();
 }
 
 function getTagLatestVersion(){
     //http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag
     var xmlHttp = new XMLHttpRequest();
-   xmlHttp.onreadystatechange = function() {
-       if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-           console.log(xmlHttp.responseText);
-           var split = xmlHttp.responseText.split(".");
-           var version = 0 + "." + split[0][3];
-           console.log("tag latest version", version);
-           tagLatestVersion = version;
-       }else{
-         console.log("No log");
-       }
-   }
-   xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
-   xmlHttp.send(null);
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            console.log(xmlHttp.responseText);
+            var split = xmlHttp.responseText.split(".");
+            var version = 0 + "." + split[0].replace("tag","");
+            console.log("tag latest version", version);
+            tagLatestVersion = version;
+        }else{
+            console.log("No log");
+        }
+    }
+    xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
+    xmlHttp.send(null);
 }
 
 function updateGatewayVersionDisplay(version, newversion){
+    console.log("updating gateway version");
     var success = document.getElementById("gateway-software-state");//.style.display = "block";
     var fail = document.getElementById("gateway-software-state-fail");//.innerHTML = (messageCameraCalibrated);
 
@@ -824,8 +842,8 @@ function updateTagVersionDisplay(versions, newversion){
         var message = "Current version: (Tags need update)";
         message += "<ul>"
         for (var i = 0; i < tagsToUpdate.length; i++) {
-                message += "<li> MAC: " + macList[i] + ", version:" +
-                 + tagsVersion[tagsToUpdate[i]] + "</li>";
+            message += "<li> MAC: " + macList[i] + ", version:" +
+            + tagsVersion[tagsToUpdate[i]] + "</li>";
         }
         message += "</ul>"
         message += "Latest version: " + tagLatestVersion;
@@ -835,20 +853,20 @@ function updateTagVersionDisplay(versions, newversion){
 
 function hostReachable() {
 
-  // Handle IE and more capable browsers
-  var xhr = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
-  var status;
+    // Handle IE and more capable browsers
+    var xhr = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
+    var status;
 
-  // Open new request as a HEAD to the root hostname with a random param to bust the cache
-  xhr.open( "HEAD", "//" + window.location.hostname + "/?rand=" + Math.floor((1 + Math.random()) * 0x10000), false );
+    // Open new request as a HEAD to the root hostname with a random param to bust the cache
+    xhr.open( "HEAD", "//" + window.location.hostname + "/?rand=" + Math.floor((1 + Math.random()) * 0x10000), false );
 
-  // Issue request and handle response
-  try {
-    xhr.send();
-    return ( xhr.status >= 200 && (xhr.status < 300 || xhr.status === 304) );
-  } catch (error) {
-    return false;
-  }
+    // Issue request and handle response
+    try {
+        xhr.send();
+        return ( xhr.status >= 200 && (xhr.status < 300 || xhr.status === 304) );
+    } catch (error) {
+        return false;
+    }
 
 }
 

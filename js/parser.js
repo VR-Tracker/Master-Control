@@ -9,7 +9,6 @@ function parseMessage(message){
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
-    console.log(messageContent);
     try{
         var cmdContent = messageContent[0].split("=");
         cmd = cmdContent[1];
@@ -53,7 +52,6 @@ function parseMessage(message){
             showNextCalibrationPoint();
             enablePingAgain = false;
             updatePointCount(coordinate);
-            console.log(countTablePointCamera);
             break;
         }
         case "camerasinformation":{
@@ -111,6 +109,7 @@ function parseMessage(message){
             break;
         }
         case "position":{
+            console.log("position", contentMap);
             var map = {};
             var datas = [0];
             if((positionCount % 3) == 0){
@@ -120,10 +119,6 @@ function parseMessage(message){
                     //console.log(messageContent);
                     //contentMap
                     pointData = {};
-                    for (var i = 1; i < messageContent.length; i++ ) {
-                        information = messageContent[i].split("=");
-                        //pointData.set(information[0], information[1]);
-                    }
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
@@ -152,9 +147,41 @@ function parseMessage(message){
         }
         case "camerasposition":{
             console.log("position", contentMap);
+            var camerasPositionMap = {};
+            var datas = [];
+            if((positionCount % 3) == 0){
+                try{
+                    var cmdContent = messageContent[0].split("=");
+                    cmd = cmdContent[1];
+                    console.log("message", messageContent);
+                    for (var i = 1; i < messageContent.length; i++ ) {
+                        information = messageContent[i].split("=");
+                        if(information[0] == "uid"){
+                            camerasPositionMap.uid = information[1];
+                        }
+                        else if(information[0] == "x"){
+                            camerasPositionMap.x = information[1];
+                        }
+                        else if(information[0] == "y"){
+                            camerasPositionMap.y = information[1];
+                        }
+                        else if(information[0] == "z"){
+                            camerasPositionMap.z = information[1];
+                            datas.splice(datas.length, 0, clone(camerasPositionMap));
+                        }
+                        //console.log(datas);
+                    }
+                    console.log("camera position", datas);
+                }catch (e) {
+                    console.error("Parsing error:", e);
+                }
+            }else{
+                positionCount++;
+            }
             break;
         }
         case "calibrationfailed":{
+            console.log("Calibration fail", contentMap);
             var errorMessage;
             if(contentMap.size != 0){
                 if(contentMap.size == 1){
@@ -213,7 +240,6 @@ function parseMessage(message){
             if(contentMap.has("msg")){
                 if(contentMap.get("msg") == "assignmentsuccess"){
                     sendMessage(socket, "cmd=orientation&orientation=false&uid=" + contentMap.get("uid0"));
-                    console.log(contentMap);
                 }else if (contentMap.get("msg") == "ping") {
                     updateCalibration();
                 }
@@ -237,7 +263,7 @@ function parseMessage(message){
         }
         case "tagsversion":{
             //(getTagLatestVersion());
-            //console.log("tag version : ", contentMap);
+            console.log("tag version : ", contentMap);
             updateTagVersionDisplay(contentMap, tagLatestVersion);
             break;
         }
@@ -261,7 +287,6 @@ function isNumeric(n) {
 }
 
 function changeNumberFormat(string){
-    console.log("changeNumberFormat",string);
     var part = string.split(".");
     if(part.length == 2){
         var indice = part[1].length - 1;
