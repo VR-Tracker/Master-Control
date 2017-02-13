@@ -250,7 +250,7 @@ function parseMessage(message){
             updateTagVersionDisplay(contentMap, tagLatestVersion);
             break;
         }
-        case "calibratedCamera":{
+        case "calibratedcamera":{
             console.log("message", message);
             var camerasPositionMap = {};
             var datas = [];
