@@ -39,7 +39,6 @@ function handleKeySpace(winObj){
                     }
                 }else{
                     if(nextCalibrationIndex == calibrationPoint.length){
-                        console.log("Dernier ping", nextCalibrationIndex == calibrationPoint.length);
                         if(calibrationDetected == calibrationCount){
                             //document.getElementById("calibration-inprocess").style.display = "block";
                             calibrationCount++;
@@ -81,7 +80,6 @@ function handleKeySpace(winObj){
 }
 
 function updateCalibration(ping){
-    console.log("Updating calibration view");
     hideCalibrationMessages();
     if(tagConnected){
         if(calibrationViewActivated){
@@ -106,7 +104,6 @@ function updateCalibration(ping){
                     }
                 }else{
                     if(nextCalibrationIndex == calibrationPoint.length){
-                        console.log("Dernier ping", nextCalibrationIndex == calibrationPoint.length);
                         if(calibrationDetected == calibrationCount){
                             //document.getElementById("calibration-inprocess").style.display = "block";
                             calibrationCount++;
@@ -132,7 +129,6 @@ function updateCalibration(ping){
             }else{
                 if(ping)
                     calibrationCount++;
-                console.log("Premier image");
                 nextCalibrationIndex++;
                 showNextCalibrationPoint();
             }

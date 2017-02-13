@@ -274,7 +274,6 @@ function parseMessage(message){
                             datas.splice(datas.length, 0, clone(camerasPositionMap));
                         }
                     }
-                    console.log(datas);
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }
@@ -285,7 +284,6 @@ function parseMessage(message){
             var numberNotCalibrated = 0;
             var messageCameraCalibrated = "";
             for (var i = 0; i < datas.length; i++) {
-                console.log(datas[i]);
                 messageCameraCalibrated += "<li>camera" + " (" + datas[i].uid + "), position : ";
                 numberCalibrated++;
                 messageCameraCalibrated += "("+ datas[i].x + ",  ";
