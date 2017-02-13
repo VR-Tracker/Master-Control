@@ -96,6 +96,7 @@ window.onload=function(){
         }
         numberOfSelectedCamera = numeroCamera;
         if(send){
+            CALIBRATING = true;
             //If message is sent, we change the button
             calibrationBtn.className = "btn btn-danger btn-md";
             calibrationBtn.innerHTML = "Calibrating...";
@@ -438,6 +439,7 @@ function startCalibration(){
     //Create the corresponding message
     var message = "cmd=startcalibration";
     var numeroCamera = 0;
+    CALIBRATING = true;
     calibrationBtn.disabled = true;
     for (var [key, value] of addedElementMap) {
         if(value){
@@ -455,7 +457,6 @@ function startCalibration(){
         console.log("No camera selected");
         alert("No camera selected");
     }
-    CALIBRATING = true;
     document.getElementById("calibrated-camera").style.display = "none";
     document.getElementById("notCalibrated-camera").style.display = "none";
 }

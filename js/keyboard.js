@@ -150,7 +150,6 @@ function applyKey (_event_){
         var winObj = checkEventObj(_event_);
 
         var intKeyCode = winObj.keyCode;
-
         // 1° --- Access with KEY SPACE
         if (intKeyCode == KEY_SPACE){
             handleKeySpace(winObj);
@@ -161,6 +160,8 @@ function applyKey (_event_){
                 }
             }
         }
+    }else{
+        console.log("Not Calibrating");
     }
 }
 

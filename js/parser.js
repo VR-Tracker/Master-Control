@@ -251,8 +251,7 @@ function parseMessage(message){
             break;
         }
         case "calibratedcamera":{
-            console.log("message", message);
-            var camerasPositionMap = {};
+            /*var camerasPositionMap = {};
             var datas = [];
             if((positionCount % 3) == 0){
                 try{
@@ -292,7 +291,7 @@ function parseMessage(message){
             }
             document.getElementById("CC").innerHTML = (messageCameraCalibrated);
             if(numberCalibrated>0)
-                document.getElementById("calibrated-camera").style.display = "block";
+                document.getElementById("calibrated-camera").style.display = "block";*/
             break;
         }
         default:
