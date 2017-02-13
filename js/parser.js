@@ -251,6 +251,7 @@ function parseMessage(message){
             break;
         }
         case "calibratedCamera":{
+            console.log("message", message);
             var camerasPositionMap = {};
             var datas = [];
             if((positionCount % 3) == 0){
@@ -273,6 +274,7 @@ function parseMessage(message){
                             datas.splice(datas.length, 0, clone(camerasPositionMap));
                         }
                     }
+                    console.log(datas);
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }
@@ -283,21 +285,12 @@ function parseMessage(message){
             var numberNotCalibrated = 0;
             var messageCameraCalibrated = "";
             for (var i = 0; i < datas.length; i++) {
-                for (var [key, value] of datas[i]) {
-                    if(key == "uid"){
-                        messageCameraCalibrated += "<li>camera" + " (" + datas.uid + "), position : ";
-                        numberCalibrated++;
-                    }
-                    else if(key == "x"){
-                        messageCameraCalibrated += "("+ datas.x + ",  ";
-                    }
-                    else if(key == "y"){
-                        messageCameraCalibrated +=  datas.y + ", ";
-                    }
-                    else if(key == "z"){
-                        messageCameraCalibrated +=  datas.z + ") </li> ";
-                    }
-                }
+                console.log(datas[i]);
+                messageCameraCalibrated += "<li>camera" + " (" + datas[i].uid + "), position : ";
+                numberCalibrated++;
+                messageCameraCalibrated += "("+ datas[i].x + ",  ";
+                messageCameraCalibrated +=  datas[i].y + ", ";
+                messageCameraCalibrated +=  datas[i].z + ") </li> ";
             }
             document.getElementById("CC").innerHTML = (messageCameraCalibrated);
             if(numberCalibrated>0)
