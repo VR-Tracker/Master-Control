@@ -21,7 +21,7 @@ var pointAssociatedCamera = new Map();
 var cameraNumberPoints = new Map();
 var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
 var calibrationPoint = []; //Store the different calibration point
-
+var timeOutMessage = "";
 var gatewayLatestVersion;
 var cameraLatestVersion;
 var tagLatestVersion;
@@ -107,7 +107,6 @@ window.onload=function(){
         }
         else {
             calibrating = false;
-            console.log("No camera selected");
         }
     }
 }
@@ -115,7 +114,6 @@ window.onload=function(){
 
 window.onclose=function(){
     socket.close();
-    console.log("connection closed");
     document.getElementById("calibrationBtn").disabled = true;
 }
 
@@ -139,9 +137,7 @@ function createWebsocket(){
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
-        console.log("connection master...");
         document.getElementById("info-text").innerHTML = ChooseCameraInfos;
-        //   document.getElementById("calibrationBtn").disabled = false;
 
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
@@ -167,7 +163,6 @@ function createWebsocket(){
 
 function askSystemInfo(){
     var message = "cmd=systemversions";
-    console.log("demande d'info", message);
     sendMessage(socket, message);
 }
 
@@ -321,8 +316,7 @@ function addNewPointCalibration(){
                 if(send){
                     sendMessage(socket, message);
                     calibrationPoint.push([x, y, z]);
-                }
-                else {
+                }else{
                     console.log("No camera selected for new calibration point");
                 }
 
@@ -378,19 +372,15 @@ function addNewPointCalibration(){
         }
     }else{
         var points = document.getElementById("multiple-coordinates").value;
-        //console.log("points",points);
-        //points = points.replace(/,/,".");
+        points = removeBreaks();
         pointsTable = points.split(";");
         pointsTable.pop();
-        //console.log(pointsTable);
         for (var i = 0; i < pointsTable.length; i++) {
             point = pointsTable[i].split(",");
-            //console.log(point);
             if(point.length === 3){
                 var xValue = isNumeric(point[0]);
                 var yValue = isNumeric(point[1]);
                 var zValue = isNumeric(point[2]);
-                //console.log(xValue, yValue, zValue);
                 if(xValue && yValue && zValue){
                     point[0] = changeNumberFormat(point[0]);
                     point[1] = changeNumberFormat(point[1]);
@@ -413,9 +403,7 @@ function addNewPointCalibration(){
                             }
                         }
                         if(send){
-                            //setTimeout(function(socket, message){socket.sendMessage(message);
-                            //console.log(message);}, 300*(i+1));
-                            sendMessage(socket, message);
+                            setTimeout(sendMessage.bind(null, socket, message), 50*(i+1));
                             calibrationPoint.push([point[0],point[1],point[2]]);
                         }
                         else {
@@ -438,9 +426,7 @@ function addNewPointCalibration(){
             }else{
                 console.log("Input error !");
             }
-
         }
-
     }
     if(calibrationPoint.length > 3){
         document.getElementById("info-text").innerHTML = CalibrationInfo;
@@ -448,9 +434,6 @@ function addNewPointCalibration(){
 }
 
 function startCalibration(){
-    //askSystemInfo();
-
-    console.log("sending message calibration");
     var send = false;
     //Create the corresponding message
     var message = "cmd=startcalibration";
@@ -538,17 +521,17 @@ function stopCalibration(){
 
 function addPoint3DTable(x, y, z){
     //create the row in the point 3D table for associated x, y, z
-    var id = x + "-" + y + "-" + z;
+    var id = x + "&" + y + "&" + z;
     if(!pointToCameraMap.has(id)){
         var liste = document.getElementById("points-camera");
         var newPoint = document.createElement('tr');
         newPoint.setAttribute("id", id);
         newPoint.innerHTML = '<th>(x=' + x + ", y=" + y + ", z=" + z + ')</th>'
-        + '<th style="text-align:center;" id="associated-' + x + '-'
-        + y + '-' + z + '">(0)</th><th><div>'
+        + '<th style="text-align:center;" id="associated-' + x + "&"
+        + y + "&" + z + '">(0)</th><th><div>'
         + '<svg class="glyph stroked cancel" style="width:30%;height=auto%; '
-        + 'align:center; display:table-cell; color:grey;" id="point-'+x+'-'+y+'-'+z+'" '
-        + 'onclick="deletePoint(\''+x+'-'+y+'-'+z+'\')"><use xlink:href="'
+        + 'align:center; display:table-cell;" id="point-'+x+'-'+y+'-'+z+'" '
+        + 'onclick="deletePoint(\''+x+'&'+y+'&'+z+'\')"><use xlink:href="'
         + '#stroked-cancel"/></svg></div></th>';
         pointToCameraMap.set(id, [])
         liste.appendChild(newPoint);
@@ -621,7 +604,7 @@ function deletePoint(id){
         }else{
             console.log("Point not associated");
         }
-        var coordinates = id.split("-");
+        var coordinates = id.split("&");
         var message = "cmd=deletecalibpoint";
         message += "&x=" + coordinates[0];
         message += "&y=" + coordinates[1];
@@ -677,10 +660,10 @@ function deletePoint(id){
         }
         document.getElementById("CC").innerHTML = (messageCameraCalibrated);
         document.getElementById("NCC").innerHTML = (messageCameraNotCalibrated);
-        if(numberCalibrated)
-        document.getElementById("calibrated-camera").style.display = "block";
-        if(numberNotCalibrated)
-        document.getElementById("notCalibrated-camera").style.display = "block";
+        if(numberCalibrated>0)
+            document.getElementById("calibrated-camera").style.display = "block";
+        if(numberNotCalibrated>0)
+            document.getElementById("notCalibrated-camera").style.display = "block";
 
     }
 
@@ -689,29 +672,12 @@ function deletePoint(id){
     }
 
     function getGatewayLatestVersion(){
-        //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway
-        /*var gVersion = $.get(
-        "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway",
-        {},
-        function(data) {
-        console.log("Gateway last version", data);
-        var split = data.split(".");
-        var version = split[1] + "." + split[2];
-        gatewayLatestVersion = version;
-        return data;
-            }
-        );
-        return gVersion;*/
-
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-                console.log("gateway lastest version",xmlHttp.responseText);
                 var split = xmlHttp.responseText.split(".");
                 var version = split[1] + "." + split[2];
                 gatewayLatestVersion = version;
-            }else{
-                console.log("No log");
             }
         }
         xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway", true); // true for asynchronous
@@ -723,13 +689,9 @@ function getCameraLatestVersion(){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            //console.log("camera lastest version",xmlHttp.responseText);
             var split = xmlHttp.responseText.split(".");
             var version = split[1] + "." + split[2];
-            // console.log("camera latest version parsed", version);
             cameraLatestVersion = version;
-        }else{
-            console.log("No log");
         }
     }
     xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
@@ -742,13 +704,9 @@ function getTagLatestVersion(){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            console.log(xmlHttp.responseText);
             var split = xmlHttp.responseText.split(".");
             var version = 0 + "." + split[0].replace("tag","");
-            console.log("tag latest version", version);
             tagLatestVersion = version;
-        }else{
-            console.log("No log");
         }
     }
     xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
@@ -756,7 +714,6 @@ function getTagLatestVersion(){
 }
 
 function updateGatewayVersionDisplay(version, newversion){
-    console.log("updating gateway version");
     var success = document.getElementById("gateway-software-state");//.style.display = "block";
     var fail = document.getElementById("gateway-software-state-fail");//.innerHTML = (messageCameraCalibrated);
 
@@ -870,9 +827,38 @@ function hostReachable() {
 
 }
 
+function sendMessageWithTimeOut(){
+    socket.send(timeOutMessage);
+}
+
 function moveToNextPoint(){
-    var calibrationPosition = calibrationPoint[calibrationCount];
-    var point = calibrationPosition[0]+'-'+calibrationPosition[1]+'-'+calibrationPosition[2];
-    updateCalibration();
-    deletePoint(point);
+        document.getElementById("next-point-btn").style.display = "inline-block";
+        var calibrationPosition = calibrationPoint[calibrationCount];
+        var point = calibrationPosition[0]+'&'+calibrationPosition[1]+'&'+calibrationPosition[2];
+        //updateCalibration();
+        deletePoint(point);
+        showNextCalibrationPoint();
+}
+
+function removeBreaks(){
+
+    var noBreaksText = document.getElementById("multiple-coordinates").value;
+
+    noBreaksText = noBreaksText.replace(/(\r\n|\n|\r)/gm,"<1br />");
+
+    re1 = /<1br \/><1br \/>/gi;
+    re1a = /<1br \/><1br \/><1br \/>/gi;
+
+    noBreaksText = noBreaksText.replace(re1a,"<1br /><2br />");
+    noBreaksText = noBreaksText.replace(re1,"<2br />");
+
+    re2 = /\<1br \/>/gi;
+    noBreaksText = noBreaksText.replace(re2, "");
+
+    re3 = /\s+/g;
+    noBreaksText = noBreaksText.replace(re3,"");
+
+    re4 = /<2br \/>/gi;
+    noBreaksText = noBreaksText.replace(re4,"\n\n");
+    return noBreaksText;
 }

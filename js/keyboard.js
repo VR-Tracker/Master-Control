@@ -57,8 +57,8 @@ function handleKeySpace(winObj){
                 masquerAffichageMessage();
             }
             // 2° --- Map the keyCode in another keyCode not used
-            winObj.keyCode = intKeyCode ;//= REMAP_KEY_T;
-            winObj.returnValue = false;
+            //winObj.keyCode = intKeyCode ;//= REMAP_KEY_T;
+            //winObj.returnValue = false;
             return false;
 
         }else{
@@ -80,7 +80,8 @@ function handleKeySpace(winObj){
     }
 }
 
-function updateCalibration(){
+function updateCalibration(ping){
+    console.log("Updating calibration view");
     hideCalibrationMessages();
     if(tagConnected){
         if(calibrationViewActivated){
@@ -121,9 +122,7 @@ function updateCalibration(){
             }else{
                 masquerAffichageMessage();
             }
-            // 2° --- Map the keyCode in another keyCode not used
-            winObj.keyCode = intKeyCode ;//= REMAP_KEY_T;
-            winObj.returnValue = false;
+
             return false;
 
         }else{
@@ -131,6 +130,9 @@ function updateCalibration(){
             if(nextCalibrationIndex != 0){
                 affichageMessage();
             }else{
+                if(ping)
+                    calibrationCount++;
+                console.log("Premier image");
                 nextCalibrationIndex++;
                 showNextCalibrationPoint();
             }
@@ -206,6 +208,8 @@ function showNextCalibrationPoint(){
             fullScreenMessage.innerHTML = message;
             affichageMessage();
         }
+        if(calibrationCount == calibrationPoint.length - 1)
+            document.getElementById("next-point-btn").style.display = "none";
     }else{
         if(calibrationDetected == nextCalibrationIndex){
             var calibrationPosition = calibrationPoint[calibrationCount - 1];

@@ -30,7 +30,7 @@ function parseMessage(message){
             contentMap.delete("y");
             contentMap.delete("z");
             var message = "Calibration point detected by " + contentMap.size + " camera(s) ";
-            coordinate = changeNumberFormat(x) + "-" + changeNumberFormat(y) + "-" + changeNumberFormat(z);
+            coordinate = changeNumberFormat(x) + "&" + changeNumberFormat(y) + "&" + changeNumberFormat(z);
             message += coordinate + " : ";
             for (var [key, value] of contentMap){
                 if(countTablePointCamera.has(value)){
@@ -51,7 +51,8 @@ function parseMessage(message){
             nextCalibrationIndex++;
             showNextCalibrationPoint();
             enablePingAgain = false;
-            updatePointCount(coordinate);
+            if(nextCalibrationIndex < calibrationPoint.length )
+                updatePointCount(coordinate);
             break;
         }
         case "camerasinformation":{
@@ -65,7 +66,6 @@ function parseMessage(message){
             if(contentMap.size > 0){
                 for (var [key, value] of contentMap) {
                     if(macToNumberMap.has(value)){
-                        //console.log("camera:" + value + "already added");
                     }else{
                         //Ajout des cameras disponibles
                         addTableAvailableCamera(value);
@@ -109,15 +109,12 @@ function parseMessage(message){
             break;
         }
         case "position":{
-            console.log("position", contentMap);
             var map = {};
             var datas = [0];
             if((positionCount % 3) == 0){
                 try{
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
-                    //console.log(messageContent);
-                    //contentMap
                     pointData = {};
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
@@ -134,7 +131,6 @@ function parseMessage(message){
                             map.z = information[1];
                             datas.splice(datas.length, 0, clone(map));
                         }
-                        //console.log(datas);
                     }
                     updateTagPosition(datas);
                 }catch (e) {
@@ -146,14 +142,12 @@ function parseMessage(message){
             break;
         }
         case "camerasposition":{
-            console.log("position", contentMap);
             var camerasPositionMap = {};
             var datas = [];
             if((positionCount % 3) == 0){
                 try{
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
-                    console.log("message", messageContent);
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
@@ -169,9 +163,7 @@ function parseMessage(message){
                             camerasPositionMap.z = information[1];
                             datas.splice(datas.length, 0, clone(camerasPositionMap));
                         }
-                        //console.log(datas);
                     }
-                    console.log("camera position", datas);
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }
@@ -181,7 +173,6 @@ function parseMessage(message){
             break;
         }
         case "calibrationfailed":{
-            console.log("Calibration fail", contentMap);
             var errorMessage;
             if(contentMap.size != 0){
                 if(contentMap.size == 1){
@@ -241,30 +232,76 @@ function parseMessage(message){
                 if(contentMap.get("msg") == "assignmentsuccess"){
                     sendMessage(socket, "cmd=orientation&orientation=false&uid=" + contentMap.get("uid0"));
                 }else if (contentMap.get("msg") == "ping") {
-                    updateCalibration();
+                    updateCalibration(true);
                 }
             }
             break;
         }
         case "gatewayversion":{
-            //console.log("gateway version : ", contentMap.get("uid"));
-            //(getGatewayLatestVersion());
             gatewayVersion = contentMap.get("uid");
-            //console.log(gatewayVersion);
             updateGatewayVersionDisplay(contentMap.get("uid"), gatewayLatestVersion);
             break;
         }
         case "camerasversion":{
-            //console.log("camera version : ", contentMap);
-            //(getCameraLatestVersion());
-            //console.log(cameraLatestVersion);
             updateCameraVersionDisplay(contentMap, cameraLatestVersion);
             break;
         }
         case "tagsversion":{
-            //(getTagLatestVersion());
-            console.log("tag version : ", contentMap);
             updateTagVersionDisplay(contentMap, tagLatestVersion);
+            break;
+        }
+        case "calibratedCamera":{
+            var camerasPositionMap = {};
+            var datas = [];
+            if((positionCount % 3) == 0){
+                try{
+                    var cmdContent = messageContent[0].split("=");
+                    cmd = cmdContent[1];
+                    for (var i = 1; i < messageContent.length; i++ ) {
+                        information = messageContent[i].split("=");
+                        if(information[0] == "uid"){
+                            camerasPositionMap.uid = information[1];
+                        }
+                        else if(information[0] == "x"){
+                            camerasPositionMap.x = information[1];
+                        }
+                        else if(information[0] == "y"){
+                            camerasPositionMap.y = information[1];
+                        }
+                        else if(information[0] == "z"){
+                            camerasPositionMap.z = information[1];
+                            datas.splice(datas.length, 0, clone(camerasPositionMap));
+                        }
+                    }
+                }catch (e) {
+                    console.error("Parsing error:", e);
+                }
+            }else{
+                positionCount++;
+            }
+            var numberCalibrated = 0;
+            var numberNotCalibrated = 0;
+            var messageCameraCalibrated = "";
+            for (var i = 0; i < datas.length; i++) {
+                for (var [key, value] of datas[i]) {
+                    if(key == "uid"){
+                        messageCameraCalibrated += "<li>camera" + " (" + datas.uid + "), position : ";
+                        numberCalibrated++;
+                    }
+                    else if(key == "x"){
+                        messageCameraCalibrated += "("+ datas.x + ",  ";
+                    }
+                    else if(key == "y"){
+                        messageCameraCalibrated +=  datas.y + ", ";
+                    }
+                    else if(key == "z"){
+                        messageCameraCalibrated +=  datas.z + ") </li> ";
+                    }
+                }
+            }
+            document.getElementById("CC").innerHTML = (messageCameraCalibrated);
+            if(numberCalibrated>0)
+                document.getElementById("calibrated-camera").style.display = "block";
             break;
         }
         default:
