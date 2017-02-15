@@ -404,7 +404,7 @@ function addNewPointCalibration(){
                             }
                         }
                         if(send){
-                            setTimeout(sendMessage.bind(null, socket, message), 50*(i+1));
+                            setTimeout(sendMessage.bind(null, socket, message), 100*(i+1));
                             calibrationPoint.push([point[0],point[1],point[2]]);
                         }
                         else {
