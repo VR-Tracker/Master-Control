@@ -11,14 +11,6 @@ var nombreCamera = 0;
 var countTable = [0];
 var selectedTable = [false];
 var cameraMac = [];
-var addedElementMap = new Map();// Map contenant les differentes cameras et sachant laquelle est selectionne
-var macNumberMap = new Map();// Map de correspondance entre numero et mac
-var macToNumberMap = new Map();
-var selectedCameraCoordinateMap = new Map(); //
-var pointAssociatedCamera = new Map();
-var cameraNumberPoints = new Map();
-var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
-var calibrationPoint = []; //Store the different calibration point
 
 var tagPositions = {};
 var chart;
@@ -26,6 +18,7 @@ var cameraNumberPosition = 0;
 var maxX = 3;
 var maxY = 3;
 var maxZ = 3;
+var tagTracked = new Map();
 /*
 * On window load, open a websocket between the window and the server
 * Create a master on opening window
@@ -34,6 +27,17 @@ var maxZ = 3;
 window.onload=function(){
     drawChart();
     createWebsocket();
+    //chart.xAxis.update = 5
+    console.log("chart", chart.xAxis[0]);
+    console.log("chart", chart.xAxis[0].max);
+
+    chart.xAxis[0].update({
+        min: -2,
+        max: 5,
+        gridLineWidth: 1,
+        title: "x"
+    });
+
 }
 
 function assingAllTags(){
@@ -41,6 +45,7 @@ function assingAllTags(){
     sendMessage(socket, messageMac);
     var message = "cmd=assignalltag";
     sendMessage(socket, message);
+    sendMessage(socket,"cmd=camerasposition");
     //setTimeout(function(){sendMessage(socket, message);}, 5000);
 }
 
@@ -56,9 +61,12 @@ function clone(obj) {
 var index = 0;
 
 function updateTagPosition(message){
-
-    for (var i = 0; i < message.length; i++ ) {
-        if(i > chart.series.length - cameraNumberPosition){
+    //console.log("message", message);
+    //console.log("chart", chart.series);
+    for (var i = 1; i < message.length; i++ ) {
+        //if(i > chart.series.length){
+        if(!tagTracked.has(message[i].uid)){
+            tagTracked.set(message[i].uid, true)
             chart.addSeries({
             name: 'Tag ' + message[i].uid,
             colorByPoint: true,
@@ -74,7 +82,7 @@ function updateTagPosition(message){
             colorByPoint: true,
             data: [[parseFloat(message[i].x), parseFloat(message[i].z), parseFloat(message[i].y)]]
         }, false);
-    chart.redraw();
+            chart.redraw();
         }
 
         }
@@ -156,17 +164,20 @@ function drawChart(){
         yAxis: {
             min: 0,
             max: 2,
-            title: null
+            title: "y"
         },
         xAxis: {
             min: 0,
             max: 2,
-            gridLineWidth: 1
+            gridLineWidth: 1,
+            title: "x"
         },
+
         zAxis: {
             min: 0,
             max: 2,
-            showFirstLabel: false
+            showFirstLabel: false,
+            title: "z"
         },
         legend: {
             enabled: false

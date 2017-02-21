@@ -209,6 +209,21 @@ span.round-tab:hover {
     font-weight:bold;
 }
 
+.quit-view {
+    display:block;
+    position:absolute;
+    top:30px;
+    right:2px;
+    /*background:rgb(245,245,245);*/
+    color:white;
+    height:30px;
+    width:35px;
+    font-size:30px;
+    text-decoration:none;
+    text-align:center;
+    font-weight:bold;
+}
+
 #fullScreenMessage{
     /*position: absolute;
     height: 50px;*/
@@ -242,3 +257,13 @@ span.round-tab:hover {
     text-align: center;
 }
 
+#calibrate-btn{
+    width:30%;
+    margin-left: 10px;
+    background-color: #06c;
+    color: white;
+}
+
+.update-info{
+    display : none;
+}

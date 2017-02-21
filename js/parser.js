@@ -30,7 +30,7 @@ function parseMessage(message){
             contentMap.delete("y");
             contentMap.delete("z");
             var message = "Calibration point detected by " + contentMap.size + " camera(s) ";
-            coordinate = changeNumberFormat(x) + "-" + changeNumberFormat(y) + "-" + changeNumberFormat(z);
+            coordinate = changeNumberFormat(x) + "&" + changeNumberFormat(y) + "&" + changeNumberFormat(z);
             message += coordinate + " : ";
             for (var [key, value] of contentMap){
                 if(countTablePointCamera.has(value)){
@@ -51,8 +51,8 @@ function parseMessage(message){
             nextCalibrationIndex++;
             showNextCalibrationPoint();
             enablePingAgain = false;
-            updatePointCount(coordinate);
-            console.log(countTablePointCamera);
+            if(nextCalibrationIndex < calibrationPoint.length )
+                updatePointCount(coordinate);
             break;
         }
         case "camerasinformation":{
@@ -66,7 +66,6 @@ function parseMessage(message){
             if(contentMap.size > 0){
                 for (var [key, value] of contentMap) {
                     if(macToNumberMap.has(value)){
-                        //console.log("camera:" + value + "already added");
                     }else{
                         //Ajout des cameras disponibles
                         addTableAvailableCamera(value);
@@ -111,12 +110,13 @@ function parseMessage(message){
         }
         case "position":{
             var map = {};
-            var datas = [];
+            var datas = [0];
             if((positionCount % 3) == 0){
                 try{
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
-                    for (var i = 0; i < messageContent.length; i++ ) {
+                    pointData = {};
+                    for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
                             map.uid = information[1];
@@ -132,43 +132,44 @@ function parseMessage(message){
                             datas.splice(datas.length, 0, clone(map));
                         }
                     }
+                    updateTagPosition(datas);
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }
-                updateTagPosition(datas);
             }else{
                 positionCount++;
             }
             break;
         }
         case "camerasposition":{
-            /*var map = {};
+            var camerasPositionMap = {};
             var datas = [];
-            try{
-                var cmdContent = messageContent[0].split("=");
-                cmd = cmdContent[1];
-                var cameraPosition = messageContent[1].split("=");
-                cameraNumberPosition = parseFloat(cameraPosition[1]);
-                for (var i = 0; i < messageContent.length; i++ ) {
-                    information = messageContent[i].split("=");
-                    if(information[0] == "uid"){
-                        map.uid = information[1];
+            if((positionCount % 3) == 0){
+                try{
+                    var cmdContent = messageContent[0].split("=");
+                    cmd = cmdContent[1];
+                    for (var i = 1; i < messageContent.length; i++ ) {
+                        information = messageContent[i].split("=");
+                        if(information[0] == "uid"){
+                            camerasPositionMap.uid = information[1];
+                        }
+                        else if(information[0] == "x"){
+                            camerasPositionMap.x = information[1];
+                        }
+                        else if(information[0] == "y"){
+                            camerasPositionMap.y = information[1];
+                        }
+                        else if(information[0] == "z"){
+                            camerasPositionMap.z = information[1];
+                            datas.splice(datas.length, 0, clone(camerasPositionMap));
+                        }
                     }
-                    else if(information[0] == "x"){
-                        map.x = information[1];
-                    }
-                    else if(information[0] == "y"){
-                        map.y = information[1];
-                    }
-                    else if(information[0] == "z"){
-                        map.z = information[1];
-                        datas.splice(datas.length, 0, clone(map));
-                    }
+                }catch (e) {
+                    console.error("Parsing error:", e);
                 }
-            }catch (e) {
-                console.error("Parsing error:", e);
+            }else{
+                positionCount++;
             }
-            addCameraPosition(datas);*/
             break;
         }
         case "calibrationfailed":{
@@ -192,7 +193,6 @@ function parseMessage(message){
             break;
         }
         case "error":{
-
             if(contentMap.has("msg")){
                 switch (contentMap.get("msg")) {
                     case "tagdisconnected":{
@@ -230,9 +230,68 @@ function parseMessage(message){
         case "info":{
             if(contentMap.has("msg")){
                 if(contentMap.get("msg") == "assignmentsuccess"){
-                    //sendMessage(socket, "cmd=orientation&orientation=true&uid=" + contentMap.get("uid0"));
+                    sendMessage(socket, "cmd=orientation&orientation=false&uid=" + contentMap.get("uid0"));
+                }else if (contentMap.get("msg") == "ping") {
+                    updateCalibration(true);
                 }
             }
+            break;
+        }
+        case "gatewayversion":{
+            gatewayVersion = contentMap.get("uid");
+            updateGatewayVersionDisplay(contentMap.get("uid"), gatewayLatestVersion);
+            break;
+        }
+        case "camerasversion":{
+            updateCameraVersionDisplay(contentMap, cameraLatestVersion);
+            break;
+        }
+        case "tagsversion":{
+            updateTagVersionDisplay(contentMap, tagLatestVersion);
+            break;
+        }
+        case "calibratedcamera":{
+            var camerasPositionMap = {};
+            var datas = [];
+            if((positionCount % 3) == 0){
+                try{
+                    var cmdContent = messageContent[0].split("=");
+                    cmd = cmdContent[1];
+                    for (var i = 1; i < messageContent.length; i++ ) {
+                        information = messageContent[i].split("=");
+                        if(information[0] == "uid"){
+                            camerasPositionMap.uid = information[1];
+                        }
+                        else if(information[0] == "x"){
+                            camerasPositionMap.x = information[1];
+                        }
+                        else if(information[0] == "y"){
+                            camerasPositionMap.y = information[1];
+                        }
+                        else if(information[0] == "z"){
+                            camerasPositionMap.z = information[1];
+                            datas.splice(datas.length, 0, clone(camerasPositionMap));
+                        }
+                    }
+                }catch (e) {
+                    console.error("Parsing error:", e);
+                }
+            }else{
+                positionCount++;
+            }
+            var numberCalibrated = 0;
+            var numberNotCalibrated = 0;
+            var messageCameraCalibrated = "";
+            for (var i = 0; i < datas.length; i++) {
+                messageCameraCalibrated += "<li>camera" + " (" + datas[i].uid + "), position : ";
+                numberCalibrated++;
+                messageCameraCalibrated += "("+ datas[i].x + ",  ";
+                messageCameraCalibrated +=  datas[i].y + ", ";
+                messageCameraCalibrated +=  datas[i].z + ") </li> ";
+            }
+            document.getElementById("CC").innerHTML = (messageCameraCalibrated);
+            if(numberCalibrated>0)
+                document.getElementById("calibrated-camera").style.display = "block";
             break;
         }
         default:
@@ -256,7 +315,7 @@ function isNumeric(n) {
 
 function changeNumberFormat(string){
     var part = string.split(".");
-    if(part.length == 2 ){
+    if(part.length == 2){
         var indice = part[1].length - 1;
         while(part[1][indice] == "0" && indice > 0){
             indice--;
