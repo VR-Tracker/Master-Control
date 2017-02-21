@@ -68,35 +68,48 @@
 					<p align="center" style="color:white;"></p>
 				</div>
 				<div class="col-md-4">
-					<div class="alert bg-danger update-info" id="gateway-software-state-fail" role="alert" align="center">
-						<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Your Gateway need to be updated !
-						<p align="center" style="color:white;" ></p>
-					</div>
-
-					<div class="alert bg-success update-info" id="gateway-software-state" role="alert" align="center">
-						<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Your Gateway is up to date !
-						<p align="center" style="color:white;" ></p>
-					</div>
-				</div>
-				
-				<div class="col-md-4">
-					<div class="alert bg-danger update-info" id="camera-software-state-fail" role="alert">
-						<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Your Cameras need to be updated !
-						<p align="center" style="color:white;" ></p>
-					</div>
-					<div class="alert bg-success update-info" id="camera-software-state" role="alert">
-						<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Your Cameras is up to date !
-						<p align="center" style="color:white;" ></p>
+					<div class="panel panel-info" >
+						<div class="panel-heading">
+							<strong>Gateway Information</strong>
+						</div>
+						<div class="panel-body update-info" id="gateway-software-state-fail" role="alert" align="center">
+							<p>Your Gateway need to be updated !</p>
+							<p align="center" style="" ></p>
+						</div>
+						<div class="panel-body update-info" id="gateway-software-state" role="alert" align="center">
+							<p>Your Gateway is up to date !</p>
+							<p align="center" style="" ></p>
+						</div>
 					</div>
 				</div>
 				<div class="col-md-4">
-					<div class="alert bg-danger update-info" id="tag-software-state-fail" role="alert">
-						<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Your Tags need to be updated !
-						<p align="center" style="color:white;" ></p>
+					<div class="panel panel-info" >
+						<div class="panel-heading">
+							<strong>Camera Information</strong>
+						</div>
+						<div class="panel-body update-info" id="camera-software-state-fail" role="alert" align="center">
+							<p>Your Cameras need to be updated !</p>
+							<p align="center" style="" ></p>
+						</div>
+						<div class="panel-body update-info" id="camera-software-state" role="alert" align="center">
+							<p>Your Cameras are up to date !</p>
+							<p align="center" style="" ></p>
+						</div>
 					</div>
-					<div class="alert bg-success update-info" id="tag-software-state" role="alert">
-						<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Your Tags is up to date !
-						<p align="center" style="color:white;" ></p>
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-info" >
+						<div class="panel-heading">
+							<strong>Tag Information</strong>
+						</div>
+						<div class="panel-body update-info" id="tag-software-state-fail" role="alert" align="center">
+							<p>Your Tags need to be updated !</p>
+							<p align="center" style="" ></p>
+						</div>
+						<div class="panel-body update-info" id="tag-software-state" role="alert" align="center">
+							<p>Your tags are up to date !</p>
+							<p align="center" style="" ></p>
+						</div>
 					</div>
 				</div>
 
@@ -172,7 +185,7 @@
 
 				<div class="col-md-6">
 					<label>multiple coordinates</label>
-					<textarea class="form-control" rows="6" id="multiple-coordinates" placeholder="enter the points separted by ; And the coordinates separated by ,"></textarea>
+					<textarea class="form-control" rows="8" id="multiple-coordinates" placeholder="enter the points separated by ; And the coordinates separated by , Ex:1,1,1;2,2,2;"></textarea>
 				</div>
 			</div>
 			<div align="center" style="padding-bottom: 10px">
@@ -226,7 +239,7 @@
 		</div>
 	</div>
 	<div class="col-md-3"  >
-		<div class="panel panel-info" style="position:fixed; margin-right: 40px;">
+		<div class="panel panel-info" style="position:fixed; margin-right: 4`0px;">
 			<div class="panel-heading">
 				<strong>Info Panel</strong>
 			</div>

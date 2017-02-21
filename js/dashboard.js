@@ -1,5 +1,4 @@
 var websocketIP = "192.168.42.1";
-//var websocketIP = "localhost";
 
 
 /*
@@ -71,5 +70,5 @@ function askCamerasInformation(){
 }
 
 function createElement(type, version, info){
-    
+
 }

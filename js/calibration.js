@@ -1,5 +1,4 @@
 var websocketIP = "192.168.42.1";
-//var websocketIP = "localhost";
 var askCamerasInformation = "cmd=camerasinformation"
 
 var wsFailedAlert = document.getElementById('ws_failed_alert');
@@ -35,9 +34,9 @@ var PointInfo = "<p>You are now in the calibration mode, you should be able to s
 +" The more calibration point you use the more precise the system will be.</p>";
 var CalibrationInfo = "<p>After adding all the different points for the calibration, place the tag on the selected position. You have to two possibilities to do the calibration :"+
 "<p></p><ul><li>Press the Space Bar. You will have the different instructions that will be displayed</li>"+
-"<li>Click on the right button on the tag. Make sure to follow the order of the calibration points that you have added</li></ul>"+
+"<li>Click on the Calibrate button in the Calibration view.</li></ul>"+
 "At each calibration point, you should see the tag flashing. The columns \"Associated point(s)\" and \"Cameras tracked\" will update at each detected calibration point."+
-"</br></br>Once you have finished with all the calibration points, press the \"Stop Calibration\" button. </p>";
+"</br>You should save the points entered in the <strong>multiple coordinates area</strong> in a text file if you need to recalibrate :)."
 var StopCalibration = "<p>Now that the calibration is finished, you should be able to use the system. We have added a Visualizer window, so that you can see the tracking system in action."+
 "</br>Just click on the Visualizer tab on the menu :).</p>";
 
@@ -725,8 +724,11 @@ function updateGatewayVersionDisplay(version, newversion){
     }else{
         success.style.display = "none";
         fail.style.display = "block";
-        var message = "Current version: " + gatewayVersion;
-        message += "</br>Latest version: " + gatewayLatestVersion;
+        var message = "";
+        if (typeof gatewayVersion != 'undefined')
+            message = "Current version: " + gatewayVersion;
+        if (typeof gatewayLatestVersion != 'undefined')
+            message += "</br>Latest version: " + gatewayLatestVersion;
         fail.children[1].innerHTML = message;
     }
 }
@@ -765,7 +767,8 @@ function updateCameraVersionDisplay(versions, newversion){
             message += camerasVersion[camerasToUpdate[i]] + "</li>";
         }
         message += "</ul>"
-        message += "Latest version: " + cameraLatestVersion;
+        if (typeof cameraLatestVersion != 'undefined')
+            message += "Latest version: " + cameraLatestVersion;
         fail.children[1].innerHTML = message;
     }
 }
@@ -804,7 +807,8 @@ function updateTagVersionDisplay(versions, newversion){
             + tagsVersion[tagsToUpdate[i]] + "</li>";
         }
         message += "</ul>"
-        message += "Latest version: " + tagLatestVersion;
+        if (typeof tagLatestVersion != 'undefined')
+            message += "Latest version: " + tagLatestVersion;
         fail.children[1].innerHTML = message;
     }
 }
