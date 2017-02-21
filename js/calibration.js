@@ -726,7 +726,7 @@ function updateGatewayVersionDisplay(version, newversion){
         success.style.display = "none";
         fail.style.display = "block";
         var message = "Current version: " + gatewayVersion;
-        message += "Latest version: " + gatewayLatestVersion;
+        message += "</br>Latest version: " + gatewayLatestVersion;
         fail.children[1].innerHTML = message;
     }
 }
