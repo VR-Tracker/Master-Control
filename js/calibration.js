@@ -725,10 +725,15 @@ function updateGatewayVersionDisplay(version, newversion){
         success.style.display = "none";
         fail.style.display = "block";
         var message = "";
-        if (typeof gatewayVersion != 'undefined')
+        if (typeof gatewayVersion != 'undefined'){
             message = "Current version: " + gatewayVersion;
-        if (typeof gatewayLatestVersion != 'undefined')
-            message += "</br>Latest version: " + gatewayLatestVersion;
+            if (typeof gatewayLatestVersion != 'undefined'){
+                message += "</br>Latest version: " + gatewayLatestVersion;
+            }
+        }else{
+            message = "Can't retrieve gateway version </br> You can try an other browser"
+        }
+
         fail.children[1].innerHTML = message;
     }
 }
@@ -760,15 +765,19 @@ function updateCameraVersionDisplay(versions, newversion){
     }else{
         success.style.display = "none";
         fail.style.display = "block";
-        var message = "Current version: ";
-        message += "<ul>"
-        for (var i = 0; i < camerasToUpdate.length; i++) {
-            message += "<li> MAC: " + macList[i] + ", version:";
-            message += camerasVersion[camerasToUpdate[i]] + "</li>";
-        }
-        message += "</ul>"
-        if (typeof cameraLatestVersion != 'undefined')
+        var message = "";
+        if((typeof cameraLatestVersion != 'undefined')){
+            message += "Current version: <ul>"
+            for (var i = 0; i < camerasToUpdate.length; i++) {
+                message += "<li> MAC: " + macList[i] + ", version:";
+                message += camerasVersion[camerasToUpdate[i]] + "</li>";
+            }
+            message += "</ul>"
             message += "Latest version: " + cameraLatestVersion;
+        }else{
+            fail.children[0].innerHTML = "";
+            message = "Can't retrieve camera version";
+        }
         fail.children[1].innerHTML = message;
     }
 }
@@ -800,15 +809,19 @@ function updateTagVersionDisplay(versions, newversion){
     }else{
         success.style.display = "none";
         fail.style.display = "block";
-        var message = "Current version: (Tags need update)";
-        message += "<ul>"
-        for (var i = 0; i < tagsToUpdate.length; i++) {
-            message += "<li> MAC: " + macList[i] + ", version:" +
-            + tagsVersion[tagsToUpdate[i]] + "</li>";
-        }
-        message += "</ul>"
-        if (typeof tagLatestVersion != 'undefined')
+        var message = "";
+        if(typeof tagLatestVersion != 'undefined'){
+            message += "Current version: <ul>"
+            for (var i = 0; i < tagsToUpdate.length; i++) {
+                message += "<li> MAC: " + macList[i] + ", version:" +
+                + tagsVersion[tagsToUpdate[i]] + "</li>";
+            }
+            message += "</ul>"
             message += "Latest version: " + tagLatestVersion;
+        }else {
+            fail.children[0].innerHTML = "";
+            message = "Can't retrieve tag version";
+        }
         fail.children[1].innerHTML = message;
     }
 }
