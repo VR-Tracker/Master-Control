@@ -27,16 +27,6 @@ var tagTracked = new Map();
 window.onload=function(){
     drawChart();
     createWebsocket();
-    //chart.xAxis.update = 5
-    console.log("chart", chart.xAxis[0]);
-    console.log("chart", chart.xAxis[0].max);
-
-    chart.xAxis[0].update({
-        min: -2,
-        max: 5,
-        gridLineWidth: 1,
-        title: "x"
-    });
 
 }
 
@@ -46,7 +36,6 @@ function assingAllTags(){
     var message = "cmd=assignalltag";
     sendMessage(socket, message);
     sendMessage(socket,"cmd=camerasposition");
-    //setTimeout(function(){sendMessage(socket, message);}, 5000);
 }
 
 function clone(obj) {
@@ -61,32 +50,28 @@ function clone(obj) {
 var index = 0;
 
 function updateTagPosition(message){
-    //console.log("message", message);
-    //console.log("chart", chart.series);
-    for (var i = 1; i < message.length; i++ ) {
-        //if(i > chart.series.length){
+    for (var i = 0; i < message.length; i++ ) {
         if(!tagTracked.has(message[i].uid)){
             tagTracked.set(message[i].uid, true)
             chart.addSeries({
-            name: 'Tag ' + message[i].uid,
-            colorByPoint: true,
-            data: [[parseFloat(message[i].x), parseFloat(message[i].z), parseFloat(message[i].y)]]
+                name: 'Tag ' + message[i].uid,
+                colorByPoint: true,
+                data: [[parseFloat(message[i].x), parseFloat(message[i].z), parseFloat(message[i].y)]]
             }, false);
 
-            chart.redraw();
         }
         else {
             if(index % 10 == 0){
-        chart.series[i].update({
-            name: 'Tag ' + message[i].uid,
-            colorByPoint: true,
-            data: [[parseFloat(message[i].x), parseFloat(message[i].z), parseFloat(message[i].y)]]
-        }, false);
-            chart.redraw();
-        }
-
+                chart.series[i].update({
+                    name: 'Tag ' + message[i].uid,
+                    colorByPoint: true,
+                    data: [[parseFloat(message[i].x), parseFloat(message[i].z), parseFloat(message[i].y)]]
+                }, false);
+            }
         }
     }
+    chart.redraw();
+
     index++;
 }
 
@@ -163,19 +148,18 @@ function drawChart(){
         },
         yAxis: {
             min: 0,
-            max: 2,
+            max: 3,
             title: "y"
         },
         xAxis: {
-            min: 0,
-            max: 2,
+            min: -2,
+            max: 3,
             gridLineWidth: 1,
             title: "x"
         },
-
         zAxis: {
             min: 0,
-            max: 2,
+            max: 3,
             showFirstLabel: false,
             title: "z"
         },

@@ -110,7 +110,7 @@ function parseMessage(message){
         }
         case "position":{
             var map = {};
-            var datas = [0];
+            var datas = [];
             if((positionCount % 3) == 0){
                 try{
                     var cmdContent = messageContent[0].split("=");
