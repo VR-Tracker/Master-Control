@@ -27,7 +27,6 @@ var tagTracked = new Map();
 window.onload=function(){
     drawChart();
     createWebsocket();
-
 }
 
 function assingAllTags(){
@@ -36,6 +35,7 @@ function assingAllTags(){
     var message = "cmd=assignalltag";
     sendMessage(socket, message);
     sendMessage(socket,"cmd=camerasposition");
+    //setTimeout(function(){sendMessage(socket, message);}, 5000);
 }
 
 function clone(obj) {
@@ -58,7 +58,7 @@ function updateTagPosition(message){
                 colorByPoint: true,
                 data: [[parseFloat(message[i].x), parseFloat(message[i].z), parseFloat(message[i].y)]]
             }, false);
-
+            chart.redraw();
         }
         else {
             if(index % 10 == 0){
@@ -67,17 +67,16 @@ function updateTagPosition(message){
                     colorByPoint: true,
                     data: [[parseFloat(message[i].x), parseFloat(message[i].z), parseFloat(message[i].y)]]
                 }, false);
+                chart.redraw();
             }
         }
     }
-    chart.redraw();
 
     index++;
 }
 
 function addCameraPosition(message){
     for (var i = 0; i < cameraNumberPosition; i++ ) {
-        console.log("chart :", chart.series);
         if(i > chart.series.length){
             chart.addSeries({
             name: 'Camera ' + message[i].uid,
