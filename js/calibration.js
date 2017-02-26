@@ -731,7 +731,7 @@ function updateGatewayVersionDisplay(version, newversion){
                 message += "</br>Latest version: " + gatewayLatestVersion;
             }
         }else{
-            message = "Can't retrieve gateway version </br> You can try an other browser"
+            message = "Can't retrieve latest gateway version </br> You can try an other browser"
         }
 
         fail.children[1].innerHTML = message;
@@ -766,17 +766,20 @@ function updateCameraVersionDisplay(versions, newversion){
         success.style.display = "none";
         fail.style.display = "block";
         var message = "";
+        
+        message += "Current version: </br><ul>"
+        for (var i = 0; i < camerasToUpdate.length; i++) {
+            message += "<li> MAC: " + macList[i] + ", version:";
+            message += camerasVersion[camerasToUpdate[i]] + "</li>";
+        }
+        message += "</ul>"
+
         if((typeof cameraLatestVersion != 'undefined')){
-            message += "Current version: <ul>"
-            for (var i = 0; i < camerasToUpdate.length; i++) {
-                message += "<li> MAC: " + macList[i] + ", version:";
-                message += camerasVersion[camerasToUpdate[i]] + "</li>";
-            }
-            message += "</ul>"
+            
             message += "Latest version: " + cameraLatestVersion;
         }else{
             fail.children[0].innerHTML = "";
-            message = "Can't retrieve camera version";
+            message += "Can't retrieve latest camera version</br> You can try an other browser";
         }
         fail.children[1].innerHTML = message;
     }
@@ -810,17 +813,18 @@ function updateTagVersionDisplay(versions, newversion){
         success.style.display = "none";
         fail.style.display = "block";
         var message = "";
+        message += "Current version: </br><ul>"
+        for (var i = 0; i < tagsToUpdate.length; i++) {
+            message += "<li> MAC: " + macList[i] + ", version:" +
+            + tagsVersion[tagsToUpdate[i]] + "</li>";
+        }
+        message += "</ul>"
         if(typeof tagLatestVersion != 'undefined'){
-            message += "Current version: <ul>"
-            for (var i = 0; i < tagsToUpdate.length; i++) {
-                message += "<li> MAC: " + macList[i] + ", version:" +
-                + tagsVersion[tagsToUpdate[i]] + "</li>";
-            }
-            message += "</ul>"
+            
             message += "Latest version: " + tagLatestVersion;
         }else {
             fail.children[0].innerHTML = "";
-            message = "Can't retrieve tag version";
+            message += "Can't retrieve latest tag version</br> You can try an other browser";
         }
         fail.children[1].innerHTML = message;
     }
