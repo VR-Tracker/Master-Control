@@ -221,6 +221,9 @@ function parseMessage(message){
                         alert("Calibration tag has been disconnected")
                         break;
                     }
+                    case "notenoughtag":{
+                        alert("You need at least two tags for auto-calibration");
+                    }
                     default:
                     break;
                 }

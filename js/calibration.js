@@ -887,3 +887,47 @@ function removeBreaks(){
     noBreaksText = noBreaksText.replace(re4,"\n\n");
     return noBreaksText;
 }
+
+function autoCalibration(){
+    var send = false;
+    //Create the corresponding message
+    var message = "cmd=startautocalibration";
+    var numeroCamera = 0;
+    CALIBRATING = true;
+    calibrationBtn.disabled = true;
+    for (var [key, value] of addedElementMap) {
+        if(value){
+            message += "&camera" + numeroCamera + "=" +key;
+            send = true;
+        }
+    }
+    console.log(message);
+    if(send){
+        //If there any selected camera we send the message
+        sendMessage(socket, message);
+        document.getElementById("stop-calibration-btn").style.display = "inline";
+        document.getElementById("auto-calibration-btn").style.display = "none";
+        document.getElementById("stop-auto-calibration-btn").style.display = "inline";
+
+    }
+    else {
+        console.log("No camera selected");
+        alert("No camera selected");
+    }
+    document.getElementById("calibrated-camera").style.display = "none";
+    document.getElementById("notCalibrated-camera").style.display = "none";
+
+}
+
+function stopAutoCalibration(){
+    var send = false;
+    //Create the corresponding message
+    var message = "cmd=stopautocalibration";
+    //If there any selected camera we send the message
+    sendMessage(socket, message);
+    document.getElementById("stop-calibration-btn").style.display = "inline";
+    document.getElementById("auto-calibration-btn").style.display = "inline";
+    document.getElementById("stop-auto-calibration-btn").style.display = "none";
+    document.getElementById("calibrated-camera").style.display = "none";
+    document.getElementById("notCalibrated-camera").style.display = "none";
+}
