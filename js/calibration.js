@@ -101,7 +101,8 @@ window.onload=function(){
             calibrationBtn.innerHTML = "Calibrating...";
             calibrationBtn.disabled = true;
             //And we disable the reset button, enable the possibility to add a point
-            document.getElementById("stop-calibration-btn").style.display = "table-cell";
+            document.getElementById("stop-calibration-btn").style.display = "inline";
+            document.getElementById("auto-calibration-btn").style.display = "inline";
             sendMessage(socket, message);
             displayCount();
         }
@@ -325,11 +326,13 @@ function addNewPointCalibration(){
                     document.getElementById("not-enough-3d").style.display = "none";
                     document.getElementById("enough-3d").style.display = "block";
                     document.getElementById("enterCalibViewBtn").style.opacity = 1;
+                    document.getElementById("enterCalibViewBtn").style.display = "block";
                     document.getElementById("enterCalibViewBtn").className += " fadein";
                 }else{
                     document.getElementById("not-enough-3d").style.display = "block";
                     document.getElementById("enough-3d").style.display = "none";
                     document.getElementById("enterCalibViewBtn").style.opacity = 0;
+                    document.getElementById("enterCalibViewBtn").style.display = "none";
                 }
             }else{
                 alert("Point already added !");
@@ -415,11 +418,13 @@ function addNewPointCalibration(){
                             document.getElementById("not-enough-3d").style.display = "none";
                             document.getElementById("enough-3d").style.display = "block";
                             document.getElementById("enterCalibViewBtn").style.opacity = 1;
+                            document.getElementById("enterCalibViewBtn").style.display = "block";
                             document.getElementById("enterCalibViewBtn").className += " fadein";
                         }else{
                             document.getElementById("not-enough-3d").style.display = "block";
                             document.getElementById("enough-3d").style.display = "none";
                             document.getElementById("enterCalibViewBtn").style.opacity = 0;
+                            document.getElementById("enterCalibViewBtn").style.display = "none";
                         }
                     }
                 }
@@ -449,8 +454,8 @@ function startCalibration(){
     if(send){
         //If there any selected camera we send the message
         sendMessage(socket, message);
-        document.getElementById("stop-calibration-btn").style.display = "table-cell";
-
+        document.getElementById("stop-calibration-btn").style.display = "inline";
+        document.getElementById("auto-calibration-btn").style.display = "inline";
     }
     else {
         console.log("No camera selected");
@@ -486,6 +491,7 @@ function stopCalibration(){
     calibrationBtn.innerHTML = "Start Calibration";
     calibrationBtn.disabled = true;
     document.getElementById("stop-calibration-btn").style.display = "none";
+    document.getElementById("auto-calibration-btn").style.display = "none";
     document.getElementById("add-coordinate").disabled = true;
 
     sendMessage(socket, message);
@@ -516,6 +522,7 @@ function stopCalibration(){
     document.getElementById("not-enough-3d").style.display = "none";
     document.getElementById("enough-3d").style.display = "none";
     document.getElementById("enterCalibViewBtn").style.opacity = 0;
+    document.getElementById("enterCalibViewBtn").style.display = "none";
 
 }
 

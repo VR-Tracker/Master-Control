@@ -214,11 +214,14 @@
 		</div>
 		<div>
 			<p align="center" style="margin-top: 1px">
-				<button style="width:50%; margin-bottom: 10px; opacity:0;" class="btn btn-primary" id="enterCalibViewBtn" onclick="handleKeySpace()" >Enter Calibration View</button>
+				<button style="width:50%; margin-bottom: 10px; opacity:0; display: none;" class="btn btn-primary" id="enterCalibViewBtn" onclick="handleKeySpace()" >Enter Calibration View</button>
 			</p>
 		</div>
 		<div align="center" style="margin-top: 1px">
 			<button style="width:50%; margin-left: 10px; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Exit Calibration </button>
+		</div>
+		<div align="center" style="margin-top: 1px">
+			<button style="width:50%; margin-left: 10px; display: none;" type="submit" class="btn btn-primary" id="auto-calibration-btn" onclick="stopCalibration()">Auto Calibration </button>
 		</div>
 		<div class="alert bg-success" id="calibration-finished" role="alert" style="opacity:0;">
 			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> YOUR CALIBRATION IS FINISHED !!!
