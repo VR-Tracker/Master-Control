@@ -1,4 +1,5 @@
-var websocketIP = "192.168.42.1";
+//var websocketIP = "192.168.42.1";
+var websocketIP = "localhost";
 
 
 /*
@@ -33,9 +34,9 @@ function sendMessage(websocket, message){
 function createWebsocket(){
     socket = new WebSocket('ws://' + websocketIP + ':7777/master/');
     socket.onopen = function(event) {
-        wsFailedAlert.style.display = "none";
-        wsSuccessAlert.style.display = "block";
-        document.getElementById("info-text").innerHTML = ChooseCameraInfos;
+        //wsFailedAlert.style.display = "none";
+        //wsSuccessAlert.style.display = "block";
+        //document.getElementById("info-text").innerHTML = ChooseCameraInfos;
 
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
@@ -46,8 +47,8 @@ function createWebsocket(){
     };
     // Handle any errors that occur.
     socket.onerror = function(error) {
-        wsFailedAlert.style.display = "block";
-        wsSuccessAlert.style.display = "none";
+        //wsFailedAlert.style.display = "block";
+        //wsSuccessAlert.style.display = "none";
         console.log('WebSocket Error: ' + error);
         //document.getElementById("calibrationBtn").disabled = true;
     }

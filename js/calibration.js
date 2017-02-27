@@ -439,6 +439,7 @@ function addNewPointCalibration(){
 }
 
 function startCalibration(){
+    //Fonction on utlise
     var send = false;
     //Create the corresponding message
     var message = "cmd=startcalibration";
@@ -450,7 +451,9 @@ function startCalibration(){
             message += "&camera" + numeroCamera + "=" +key;
             send = true;
         }
+        numeroCamera++;
     }
+    console.log(message);
     if(send){
         //If there any selected camera we send the message
         sendMessage(socket, message);
@@ -900,6 +903,7 @@ function autoCalibration(){
             message += "&camera" + numeroCamera + "=" +key;
             send = true;
         }
+        numeroCamera++;
     }
     console.log(message);
     if(send){
