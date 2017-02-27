@@ -162,6 +162,12 @@
 			<p align="center" style="margin-top: 1px">
 				<button style="width:50%; margin-bottom: 10px" type="submit" class="btn btn-primary" id="calibrationBtn"   onclick="startCalibration()" style="margin-left: 10px;">Validate Camera Selection</button>
 			</p>
+			<div align="center" style="margin-top: 1px">
+				<button style="width:50%; " type="submit" class="btn btn-primary" id="auto-calibration-btn" onclick="autoCalibration()">Auto Calibration </button>
+			</div>
+			<div align="center" style="margin-top: 1px">
+				<button style="width:50%; display: none;" type="submit" class="btn btn-primary" id="stop-auto-calibration-btn" onclick="stopAutoCalibration()">Stop Auto Calibration </button>
+			</div>
 		</div>
 
 		<div class="panel panel-default" id="add-3D-point-panel" style="opacity:0;">
@@ -214,11 +220,11 @@
 		</div>
 		<div>
 			<p align="center" style="margin-top: 1px">
-				<button style="width:50%; margin-bottom: 10px; opacity:0;" class="btn btn-primary" id="enterCalibViewBtn" onclick="handleKeySpace()" >Enter Calibration View</button>
+				<button style="width:50%; margin-bottom: 10px; opacity:0; display: none;" class="btn btn-primary" id="enterCalibViewBtn" onclick="handleKeySpace()" >Enter Calibration View</button>
 			</p>
 		</div>
 		<div align="center" style="margin-top: 1px">
-			<button style="width:50%; margin-left: 10px; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Exit Calibration </button>
+			<button style="width:50%; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Exit Calibration </button>
 		</div>
 		<div class="alert bg-success" id="calibration-finished" role="alert" style="opacity:0;">
 			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> YOUR CALIBRATION IS FINISHED !!!
