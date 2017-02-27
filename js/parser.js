@@ -285,9 +285,9 @@ function parseMessage(message){
             for (var i = 0; i < datas.length; i++) {
                 messageCameraCalibrated += "<li>camera" + " (" + datas[i].uid + "), position : ";
                 numberCalibrated++;
-                messageCameraCalibrated += "("+ datas[i].x + ",  ";
-                messageCameraCalibrated +=  datas[i].y + ", ";
-                messageCameraCalibrated +=  datas[i].z + ") </li> ";
+                messageCameraCalibrated += "</br>X: "+ datas[i].x + "</br>Y: ";
+                messageCameraCalibrated +=  datas[i].y + "</br>Z: ";
+                messageCameraCalibrated +=  datas[i].z + "</li> ";
             }
             document.getElementById("CC").innerHTML = (messageCameraCalibrated);
             if(numberCalibrated>0)
