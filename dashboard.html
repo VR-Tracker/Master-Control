@@ -57,7 +57,12 @@
 				<h1 class="page-header">Dashboard</h1>
 			</div>
 		</div><!--/.row-->
-
+		<div class="alert bg-danger" id="ws_failed_alert" role="alert">
+			<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Connection to the Gateway Failed  <a href="#"  style="font-style: italic; color: #fff; ">(help)</a> <a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a>
+		</div>
+		<div class="alert bg-success" id="ws_success_alert" role="alert">
+			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Successfully connected to the Gateway !
+		</div>
 		<div class="row"><!-- Partie barre avec les rectangles -->
 			<div class="col-xs-12 col-md-6 col-lg-3">
 				<div class="panel panel-blue panel-widget ">
@@ -153,24 +158,73 @@
 		</div><!--/.row-->
 
 		<div class="row">
-		<div class="col-lg-12">
-			<div class="panel panel-default">
-				<div class="panel-heading">Cameras</div>
-				<div class="panel-body">
-					<div class="canvas-wrapper">
-						<canvas class="main-chart" id="line-chart" height="200" width="600"></canvas>
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Cameras</div>
+					<div class="panel-body">
+						<!--<div class="canvas-wrapper">
+							<canvas class="main-chart" id="line-chart" height="200" width="600"></canvas>
+						</div>-->
+						<div class="icon-grid" id="cameras-grid">
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</div><!--/.row-->
+		</div><!--/.row-->
+
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default" >
+					<div class="panel-heading">Tags</div>
+					<div class="panel-body">
+						<!--<div class="canvas-wrapper">
+							<canvas class="main-chart" id="line-chart" height="200" width="600"></canvas>
+						</div>-->
+						<div class="icon-grid" id="tags-grid">
+							<!--<<div class="col-lg-3 col-md-4 col-sm-6">
+								<svg class="glyph stroked app window with content"><use xlink:href="#stroked-app-window-with-content"/></svg>
+								<pre>&lt;svg class="glyph stroked app window with content">&lt;use xlink:href="#stroked-app-window-with-content"/>&lt;/svg></pre>
+							</div>
+							<div class="col-lg-3 col-md-4 col-sm-6">
+								<svg class="glyph stroked app window with content"><use xlink:href="#stroked-app-window-with-content"/></svg>
+								<pre>&lt;svg class="glyph stroked app window with content">&lt;use xlink:href="#stroked-app-window-with-content"/>&lt;/svg></pre>
+								<div class="alert bg-success" id="" role="alert">
+								 	Calibrated
+								</div>
+								<div class="easypiechart" id="easypiechart-blue" data-percent="92"><span class="percent">92%</span>
+									<canvas height="220" width="220" style="height: 110px; width: 110px;"></canvas>
+								</div>
+							</div>
+						-->
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!--/.row-->
+
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Users</div>
+					<div class="panel-body">
+						<!--<div class="canvas-wrapper">
+							<canvas class="main-chart" id="line-chart" height="200" width="600"></canvas>
+						</div>-->
+						<div class="icon-grid" id="users-grid">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div><!--/.row-->
 	</div>	<!--/.main-->
 
 	<script src="js/jquery-1.11.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
 	<script src="js/bootstrap-datepicker.js"></script>
-	<script src="js/dashboard.js"></script>
 	<script src="js/parser.js"></script>
+
+	<script src="js/dashboard.js"></script>
 	<script src="js/bootstrap-table.js"></script>
 
 

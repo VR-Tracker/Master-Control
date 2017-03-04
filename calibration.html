@@ -310,7 +310,26 @@ $(window).on('resize', function () {
 <script src="js/parser.js"></script>
 <script src="js/keyboard.js"></script>
 <script src="js/save.js"></script>
+<script
+	src='https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway?callback=myCallbackFunction?'>
 
+</script>
+<script>
+$.get("middleman.php", {"site":"http://www.google.com"}, function(results){
+  alert(results); // middleman gives Google's HTML to jQuery
+});
+function myCallbackFunction(data){
+	console.log(data);
+	//alert(data.response);
+}
+</script>
+<?php
+
+  // Do not use as-is, this is only an example.
+  // $_GET["site"] set by jQuery as "http://www.google.com"
+  print file_get_contents($_GET["site"]);
+
+?>
 </body>
 
 </html>
