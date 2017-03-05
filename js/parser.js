@@ -223,6 +223,8 @@ function parseMessage(message){
                     }
                     case "notenoughtag":{
                         alert("You need at least two tags for auto-calibration");
+                        document.getElementById("auto-calibration-btn").style.display = "block";
+                        document.getElementById("stop-auto-calibration-btn").style.display = "none";
                     }
                     default:
                     break;

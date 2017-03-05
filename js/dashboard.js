@@ -1,5 +1,5 @@
-//var websocketIP = "192.168.42.1";
-var websocketIP = "localhost";
+var websocketIP = "192.168.42.1";
+//var websocketIP = "localhost";
 
 
 /*
@@ -237,9 +237,9 @@ function parseMessage(message){
     }catch (e) {
         console.error("Parsing error:", e);
     }
+    console.log("message", messageContent);
     switch (cmd) {
         case "camerasinformation":{
-            console.log("message", messageContent);
             if(messageContent.length > 0){
                 var currentMac = "";
                 console.log("treating message");
