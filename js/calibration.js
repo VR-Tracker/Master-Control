@@ -673,102 +673,104 @@ function deletePoint(id){
     //Mise a jour de du nombre de points apres suppression
     if(typeof tab !== 'undefined'){
         for (var i = 0; i < tab.length; i++) {
-            countTablePointCamera.set(tab[i],
-                countTablePointCamera.get(tab[i]) - 1);
-            }
-            var countView = document.getElementsByClassName("count");
-            for (var i = 1; i < countView.length; i++) {
-                countView[i].innerHTML = countTablePointCamera.get(macNumberMap.get(i));
-            }
-            var point = document.getElementById("associated-" + id);
+            countTablePointCamera.set(tab[i], countTablePointCamera.get(tab[i]) - 1);
+        }
+        var countView = document.getElementsByClassName("count");
+        for (var i = 1; i < countView.length; i++) {
+            countView[i].innerHTML = countTablePointCamera.get(macNumberMap.get(i));
+        }
+        var point = document.getElementById("associated-" + id);
 
-            var description = "(" + pointToCameraMap.get(id).length + ")";
-            point.innerHTML = description;
-            //On supprime la cle de la map
-            pointToCameraMap.delete(id);
-        }else{
-            console.log("Point not associated");
-        }
-        var coordinates = id.split("&");
-        var message = "cmd=deletecalibpoint";
-        message += "&x=" + coordinates[0];
-        message += "&y=" + coordinates[1];
-        message += "&z=" + coordinates[2];
-        //On envoie le point a supprimer
-        for (var i = 0; i < calibrationPoint.length; i++) {
-            if(calibrationPoint[i][0] == coordinates[0] && calibrationPoint[i][1] == coordinates[1] && calibrationPoint[i][2] == coordinates[2]){
-                calibrationPoint.splice(i, 1);
-                if(i < calibrationDetected){
-                    calibrationCount--;
-                    calibrationDetected--;
-                }
-            }
-        }
-        sendMessage(socket, message);
-        var tab = [coordinates[0],coordinates[1],coordinates[2]];
-        for (var [key, value] of pointAssociatedCamera) {
-            removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(key));
-        }
-        var point = document.getElementById(id);
-        point.parentNode.removeChild(point);
+        var description = "(" + pointToCameraMap.get(id).length + ")";
+        point.innerHTML = description;
+        //On supprime la cle de la map
+        pointToCameraMap.delete(id);
+    }else{
+        console.log("Point not associated");
     }
-
-    function removeArrayPoint(array, indice){
-        array[indice] = array.length - 1;
-        array.pop();
-    }
-
-    function removeArrayElement(element, array){
-        for (var i = 0; i < array.length; i++) {
-            if(array[i] === element){
-                array[i] = array[array.length - 1];
-                array.pop();
-                break;
+    var coordinates = id.split("&");
+    var message = "cmd=deletecalibpoint";
+    message += "&x=" + coordinates[0];
+    message += "&y=" + coordinates[1];
+    message += "&z=" + coordinates[2];
+    //On envoie le point a supprimer
+    for (var i = 0; i < calibrationPoint.length; i++) {
+        if(calibrationPoint[i][0] == coordinates[0] && calibrationPoint[i][1] == coordinates[1] && calibrationPoint[i][2] == coordinates[2]){
+            calibrationPoint.splice(i, 1);
+            if(i < calibrationDetected){
+                calibrationCount--;
+                calibrationDetected--;
             }
         }
     }
-
-    function showCalibratedCamera(){
-        var numberCalibrated = 0;
-        var numberNotCalibrated = 0;
-        var messageCameraCalibrated = "";
-        var messageCameraNotCalibrated = "";
-
-        for (var [key, value] of countTablePointCamera) {
-            if(value >= 4){
-                messageCameraCalibrated += "<li>camera" + " (" + key + ")</li>";
-                numberCalibrated++;
-            }else{
-                messageCameraNotCalibrated += "<li>camera" + " (" + key + ")</li>";
-                numberNotCalibrated++;
-            }
-        }
-        document.getElementById("CC").innerHTML = (messageCameraCalibrated);
-        document.getElementById("NCC").innerHTML = (messageCameraNotCalibrated);
-        if(numberCalibrated>0)
-            document.getElementById("calibrated-camera").style.display = "block";
-        if(numberNotCalibrated>0)
-            document.getElementById("notCalibrated-camera").style.display = "block";
-
+    sendMessage(socket, message);
+    var tab = [coordinates[0],coordinates[1],coordinates[2]];
+    for (var [key, value] of pointAssociatedCamera) {
+        removeArrayElement([coordinates[0],coordinates[1],coordinates[2]], pointAssociatedCamera.get(key));
     }
-
-    function calibrate(){
-        handleKeySpace();
-    }
-
-    function getGatewayLatestVersion(){
-        var xmlHttp = new XMLHttpRequest();
-        xmlHttp.onreadystatechange = function() {
-            if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-                var split = xmlHttp.responseText.split(".");
-                var version = split[1] + "." + split[2];
-                gatewayLatestVersion = version;
-            }
-        }
-        xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway", true); // true for asynchronous
-        xmlHttp.send(null);
+    var point = document.getElementById(id);
+    point.parentNode.removeChild(point);
 }
 
+function removeArrayPoint(array, indice){
+    array[indice] = array.length - 1;
+    array.pop();
+}
+
+function removeArrayElement(element, array){
+    for (var i = 0; i < array.length; i++) {
+        if(array[i] === element){
+            array[i] = array[array.length - 1];
+            array.pop();
+            break;
+        }
+    }
+}
+
+function showCalibratedCamera(){
+    var numberCalibrated = 0;
+    var numberNotCalibrated = 0;
+    var messageCameraCalibrated = "";
+    var messageCameraNotCalibrated = "";
+
+    for (var [key, value] of countTablePointCamera) {
+        if(value >= 4){
+            messageCameraCalibrated += "<li>camera" + " (" + key + ")</li>";
+            numberCalibrated++;
+        }else{
+            messageCameraNotCalibrated += "<li>camera" + " (" + key + ")</li>";
+            numberNotCalibrated++;
+        }
+    }
+    document.getElementById("CC").innerHTML = (messageCameraCalibrated);
+    document.getElementById("NCC").innerHTML = (messageCameraNotCalibrated);
+    if(numberCalibrated>0)
+    document.getElementById("calibrated-camera").style.display = "block";
+    if(numberNotCalibrated>0)
+    document.getElementById("notCalibrated-camera").style.display = "block";
+
+}
+
+function calibrate(){
+    handleKeySpace();
+}
+
+function getGatewayLatestVersion(){
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            var split = xmlHttp.responseText.split(".");
+            var version = split[1] + "." + split[2];
+            gatewayLatestVersion = version;
+        }
+    }
+    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway?callback=afficherRequete", true); // true for asynchronous
+    xmlHttp.send("hello");
+}
+
+function afficherRequete(data){
+    console.log("data", data);
+}
 function getCameraLatestVersion(){
     //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera
     var xmlHttp = new XMLHttpRequest();
@@ -935,12 +937,12 @@ function sendMessageWithTimeOut(){
 }
 
 function moveToNextPoint(){
-        document.getElementById("next-point-btn").style.display = "inline-block";
-        var calibrationPosition = calibrationPoint[calibrationCount];
-        var point = calibrationPosition[0]+'&'+calibrationPosition[1]+'&'+calibrationPosition[2];
-        //updateCalibration();
-        deletePoint(point);
-        showNextCalibrationPoint();
+    document.getElementById("next-point-btn").style.display = "inline-block";
+    var calibrationPosition = calibrationPoint[calibrationCount];
+    var point = calibrationPosition[0]+'&'+calibrationPosition[1]+'&'+calibrationPosition[2];
+    //updateCalibration();
+    deletePoint(point);
+    showNextCalibrationPoint();
 }
 
 function removeBreaks(){
