@@ -127,6 +127,10 @@ VRTrackerWebsocket.prototype.askTagInformation = function(){
     this.socket.send(message);
 }
 
+VRTrackerWebsocket.prototype.restartGateway = function(){
+    var message = "cmd=restart";
+    this.socket.send(message);
+}
 
 function askCamerasInformation(){
     var message = "cmd=camerasinformation";
@@ -150,7 +154,7 @@ window.setInterval(function(){
     }
     (vrtracker.askSystemInfo());
 
-}, 2000);
+}, 5000);
 
 window.onclose=function(){
     vrtracker.socket.close();
@@ -192,10 +196,11 @@ function addUser(mac){
         liste.appendChild(newUser);
     }
     newUser.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-male-user"/></svg>'
-    +'<pre>' + mac + '</pre>'
+    +'</br><p> mac: ' + mac + '</p>'
     +'<p> Tags:</p>';
-    for (var i = 0; i < userMap.get(mac).get("tags").length; i++) {
-        newUser.innerHTML += '<p>' + userMap.get(mac).get("tags")[i] + '</p>';
+    //for (var i = 0; i < userMap.get(mac).get("tags").length; i++) {
+    for (var [key, value] of userMap.get(mac).get("tags")) {
+        newUser.innerHTML += '<p>' + key + '</p>';
     }
 }
 
@@ -242,12 +247,8 @@ function parseMessage(message){
         case "camerasinformation":{
             if(messageContent.length > 0){
                 var currentMac = "";
-                console.log("treating message");
                 for (var i = 1; i < messageContent.length; i++ ) {
-                    console.log("traitement", i);
                     information = messageContent[i].split("=");
-                    console.log("information", information);
-                    console.log("adding mac:", currentMac);
                     switch (information[0]){
                         case "uid":
                             currentMac = information[1];
@@ -292,25 +293,6 @@ function parseMessage(message){
             }
             break;
         }
-        case "calibrationfailed":{
-            break;
-        }
-        case "position":{
-            break;
-        }
-        case "camerasposition":{
-            break;
-        }
-        case "calibrationfailed":{
-            break;
-        }
-        case "calibrationtagconnected":{
-            break;
-        }
-        case "systemversions":{
-
-            break;
-        }
         case "error":{
             if(contentMap.has("msg")){
                 switch (contentMap.get("msg")) {
@@ -331,12 +313,8 @@ function parseMessage(message){
             console.log("message", messageContent);
             if(messageContent.length > 0){
                 var currentMac = "";
-                console.log("treating message");
                 for (var i = 1; i < messageContent.length; i++ ) {
-                    console.log("traitement", i);
                     information = messageContent[i].split("=");
-                    console.log("information", information);
-                    console.log("adding mac:", currentMac);
                     switch (information[0]){
                         case "uid":
                             currentMac = information[1];
@@ -375,21 +353,18 @@ function parseMessage(message){
                 var currentMac = "";
                 console.log("treating message");
                 for (var i = 1; i < messageContent.length; i++ ) {
-                    console.log("traitement", i);
                     information = messageContent[i].split("=");
-                    console.log("information", information);
-                    console.log("adding mac:", currentMac);
                     switch (information[0]){
                         case "uid":
                             currentMac = information[1];
                             if(!userMap.has(information[1])){
                                 userMap.set(currentMac, new Map());
-                                userMap.get(currentMac).set("tags", new Array());
+                                userMap.get(currentMac).set("tags", new Map());
                             }
                             addUser(currentMac);
                             break;
                         default:
-                            userMap.get(currentMac).get("tags").push(information[1]);
+                            userMap.get(currentMac).get("tags").set(information[1], true);
                             break;
                     }
 
@@ -425,4 +400,9 @@ function changeNumberFormat(string){
             console.log("Error format");
         }
     }
+}
+
+function restartGateway(){
+    console.log("send restart system");
+    vrtracker.restartGateway();
 }
