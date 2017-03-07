@@ -165,12 +165,15 @@
 			<div align="center" style="margin-top: 1px">
 				<button style="width:50%; " type="submit" class="btn btn-primary" id="auto-calibration-btn" onclick="autoCalibration()">Auto Calibration </button>
 			</div>
-			<div align="center" style="margin-top: 1px">
+			<div align="center" style="margin-top: 1px; margin-bottom: 3px;">
 				<button style="width:50%; display: none;" type="submit" class="btn btn-primary" id="stop-auto-calibration-btn" onclick="stopAutoCalibration()">Stop Auto Calibration </button>
+			</div>
+			<div align="center" style="margin-top: 1px">
+				<button style="width:50%; display: none;" type="submit" class="btn btn-primary" id="add-reference-btn" onclick="AddReferencePoints()">Add Reference Points</button>
 			</div>
 		</div>
 
-		<div class="panel panel-default" id="add-3D-point-panel" style="opacity:0;">
+		<div class="panel panel-default" id="add-3D-point-panel" style="opacity:0; margin-top: 3px">
 			<div class="panel-heading">Tag 3D world coordinates</div>
 			<div class="panel-body" >
 				<div class="col-md-6">
@@ -310,7 +313,6 @@ $(window).on('resize', function () {
 <script src="js/parser.js"></script>
 <script src="js/keyboard.js"></script>
 <script src="js/save.js"></script>
-
 </body>
 
 </html>
