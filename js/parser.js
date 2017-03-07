@@ -17,6 +17,7 @@ function parseMessage(message){
             information = messageContent[i].split("=");
             contentMap.set(information[0], information[1]);
         }
+        console.log(contentMap);
     }catch (e) {
         console.error("Parsing error:", e);
     }
@@ -76,21 +77,6 @@ function parseMessage(message){
             }
             for(var i = 2; i < longueur; i++){
                     var macAdress = liste.childNodes[2].getElementsByTagName("th");
-            }
-            break;
-        }
-        case "systeminfos":{
-            try {
-                countElementGateway.set("cameras", contentMap.get("cameras"));
-                countElementGateway.set("tags", contentMap.get("tags"));
-                countElementGateway.set("users", contentMap.get("users"));
-                countElementGateway.set("masters", contentMap.get("masters"));
-                document.getElementById("camera-count").innerHTML = countElementGateway.get("cameras");
-                document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
-                document.getElementById("user-count").innerHTML = countElementGateway.get("users");
-                document.getElementById("master-count").innerHTML = countElementGateway.get("masters");
-            } catch (e) {
-                console.error("Parsing error", e);
             }
             break;
         }
