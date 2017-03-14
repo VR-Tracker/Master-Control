@@ -760,11 +760,12 @@ function getGatewayLatestVersion(){
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             var split = xmlHttp.responseText.split(".");
+            console.log("last version gateway : ", xmlHttp.responseText);
             var version = split[1] + "." + split[2];
             gatewayLatestVersion = version;
         }
     }
-    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway?callback=afficherRequete", true); // true for asynchronous
+    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway", true); // true for asynchronous
     xmlHttp.send("hello");
 }
 
