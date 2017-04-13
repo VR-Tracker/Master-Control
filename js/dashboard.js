@@ -56,6 +56,9 @@ function createWebsocket(){
 */
 var wsFailedAlert = document.getElementById('ws_failed_alert');
 var wsSuccessAlert = document.getElementById('ws_success_alert');
+
+addFakeCamera("FakeCameraMac");
+addFakeCamera("FakeCameraMac2");
 function VRTrackerWebsocket (websocketType){
     console.log("Constructing websocket");
     this.websocketType = websocketType;
@@ -161,6 +164,113 @@ window.onclose=function(){
     document.getElementById("calibrationBtn").disabled = true;
 }
 
+$(window).resize(function(){
+   $('#camera-canvas').height($('#camera-canvas').width() / 1.333);
+});
+
+
+// For testing purposes only
+function addFakeCamera(currentMac){
+    cameraMap.set(currentMac, new Map());
+    cameraMap.get(currentMac).set("version", "42");
+    cameraMap.get(currentMac).set("calibrated", "false");
+    cameraMap.get(currentMac).set("sensitivity", 50);
+    cameraMap.get(currentMac).set("minblobsize", 2);
+    cameraMap.get(currentMac).set("maxblobsize", 120);
+    addCamera(currentMac);
+}
+
+function updateSensitivitySlider(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-sensitivity-input")).val(input.value);
+    cameraMap.get(mac).set("sensitivity", input.value);
+    sendCameraSettings(mac);
+}
+
+
+function updateMinBlobSizeSlider(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-minblobsize-input")).val(input.value);
+    cameraMap.get(mac).set("minblobsize", input.value);
+    sendCameraSettings(mac);
+}
+
+function updateMaxBlobSizeSlider(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-maxblobsize-input")).val(input.value);
+    cameraMap.get(mac).set("maxblobsize", input.value);
+    sendCameraSettings(mac);
+}
+
+
+function updateSensitivityInput(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-sensitivity-slider")).val(input.value); 
+    cameraMap.get(mac).set("sensitivity", input.value);
+    sendCameraSettings(mac);
+}
+
+
+function updateMinBlobSizeInput(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-minblobsize-slider")).val(input.value); 
+    cameraMap.get(mac).set("minblobsize", input.value);
+    sendCameraSettings(mac);
+}
+
+function updateMaxBlobSizeInput(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-maxblobsize-slider")).val(input.value); 
+    cameraMap.get(mac).set("maxblobsize", input.value);
+    sendCameraSettings(mac);
+}
+
+// Return the Selected Camera MAC address using tits ID
+function getSelectedCameraMac(){
+    var liste = document.getElementById("cameras-grid");
+    for (var i=1; i < liste.childNodes.length; i++) {
+        if($(liste.childNodes[i]).hasClass('selected')){
+            return liste.childNodes[i].id.split("-")[1];
+        }
+    }
+}
+
+function sendCameraSettings(mac){
+    var message = "cmd=setCameraSettings&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize"); 
+    console.log(message);
+    vrtracker.send(message);
+}
+
+function selectcamera(camera){
+    var liste = document.getElementById("cameras-grid");
+    
+    console.log($(camera).hasClass('selected'));
+    if($(camera).hasClass('selected')){
+        
+        $(camera).removeClass("selected");
+        $(document.getElementById("cameras-settings-ext")).hide(800);
+    }
+    else {
+        $(camera).addClass("selected");
+        $(document.getElementById("cameras-settings-ext")).show(800); 
+        var mac = camera.id.split("-")[1];
+        $(document.getElementById("camera-maxblobsize-slider")).val(cameraMap.get(mac).get("maxblobsize")); 
+        $(document.getElementById("camera-maxblobsize-input")).val(cameraMap.get(mac).get("maxblobsize"));
+        $(document.getElementById("camera-minblobsize-slider")).val(cameraMap.get(mac).get("minblobsize")); 
+        $(document.getElementById("camera-minblobsize-input")).val(cameraMap.get(mac).get("minblobsize"));
+        $(document.getElementById("camera-sensitivity-slider")).val(cameraMap.get(mac).get("sensitivity")); 
+        $(document.getElementById("camera-sensitivity-input")).val(cameraMap.get(mac).get("sensitivity"));
+    
+    }
+    
+    for (var i=1; i < liste.childNodes.length; i++) {
+        if(camera.id != liste.childNodes[i].id){
+            liste.childNodes[i].classList.remove("selected");
+        }
+    }
+    
+}
+
 function addCamera(mac){
     console.log("adding camera");
     if(mac != ""){
@@ -174,7 +284,8 @@ function addCamera(mac){
         }else{
             var liste = document.getElementById("cameras-grid");
             var newCamera = document.createElement('div');
-            newCamera.setAttribute("class", "col-lg-3 col-md-4 col-sm-6");
+            newCamera.setAttribute("class", "col-lg-3 col-md-4 col-sm-6 camera-window");
+            newCamera.setAttribute("onclick", "selectcamera(this)");
             newCamera.setAttribute("id", "camera-" + mac);
             newCamera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
             +'</br><p> mac: ' + mac + '</p>'
@@ -264,6 +375,15 @@ function parseMessage(message){
                             break;
                         case "calibrated":
                             cameraMap.get(currentMac).set("calibrated", information[1]);
+                            break;
+                        case "sensitivity":
+                            cameraMap.get(currentMac).set("sensitivity", information[1]);
+                            break;
+                        case "minblobsize":
+                            cameraMap.get(currentMac).set("minblobsize", information[1]);
+                            break;
+                        case "maxblobsize":
+                            cameraMap.get(currentMac).set("maxblobsize", information[1]);
                             break;
                         default:
                             console.log("error:", information);

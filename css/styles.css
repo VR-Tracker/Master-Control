@@ -1052,3 +1052,11 @@ h1.page-header {
 #ws_success_alert{
     display: none;
 }
+
+#cameras-grid {
+    background-color: white;
+}
+
+#cameras-grid .selected{
+    background-color: #f3de67;
+}
