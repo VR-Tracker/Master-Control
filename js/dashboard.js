@@ -1,5 +1,6 @@
 var websocketIP = "192.168.42.1";
 //var websocketIP = "localhost";
+//var websocketIP = "192.168.0.164";
 
 
 /*

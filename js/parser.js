@@ -6,6 +6,7 @@ countElementGateway.set("users", 0);
 countElementGateway.set("masters", 0);
 var positionCount = 0;
 function parseMessage(message){
+    console.log(message);
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();

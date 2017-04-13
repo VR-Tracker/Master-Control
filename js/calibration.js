@@ -1,4 +1,5 @@
-var websocketIP = "192.168.42.1";
+var websocketIP = "192.168.0.164";
+//var websocketIP = "192.168.42.1";
 var askCamerasInformation = "cmd=camerasinformation"
 
 var wsFailedAlert = document.getElementById('ws_failed_alert');
@@ -854,7 +855,7 @@ function updateCameraVersionDisplay(versions, newversion){
         success.style.display = "none";
         fail.style.display = "block";
         var message = "";
-        
+
         message += "Current version: </br><ul>"
         for (var i = 0; i < camerasToUpdate.length; i++) {
             message += "<li> MAC: " + macList[i] + ", version:";
@@ -863,7 +864,7 @@ function updateCameraVersionDisplay(versions, newversion){
         message += "</ul>"
 
         if((typeof cameraLatestVersion != 'undefined')){
-            
+
             message += "Latest version: " + cameraLatestVersion;
         }else{
             fail.children[0].innerHTML = "";
@@ -908,7 +909,7 @@ function updateTagVersionDisplay(versions, newversion){
         }
         message += "</ul>"
         if(typeof tagLatestVersion != 'undefined'){
-            
+
             message += "Latest version: " + tagLatestVersion;
         }else {
             fail.children[0].innerHTML = "";
