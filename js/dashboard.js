@@ -1,5 +1,6 @@
 var websocketIP = "192.168.42.1";
 //var websocketIP = "localhost";
+//var websocketIP = "192.168.0.164";
 
 
 /*
@@ -12,48 +13,6 @@ var cameraMap = new Map();
 var tagMap = new Map();
 var userMap = new Map();
 
-
-/*
-window.setInterval(function(){
-    if(socket.readyState === socket.CLOSED){
-        createWebsocket();
-    }
-}, 2000);
-
-function sendMessage(websocket, message){
-    websocket.send(message);
-}
-
-
-function createWebsocket(){
-    socket = new WebSocket('ws://' + websocketIP + ':7777/master/');
-    socket.onopen = function(event) {
-        //wsFailedAlert.style.display = "none";
-        //wsSuccessAlert.style.display = "block";
-        //document.getElementById("info-text").innerHTML = ChooseCameraInfos;
-
-        //Envoi du message pour recuperer les informations sur les cameras
-        socket.send(askCamerasInformation);
-        //setInterval(getCamerasInformation, 5000);
-        setTimeout(askSystemInfo,3000);
-        socket.send("cmd=camerasposition");
-        //Envoi du message apres un certain temps
-    };
-    // Handle any errors that occur.
-    socket.onerror = function(error) {
-        //wsFailedAlert.style.display = "block";
-        //wsSuccessAlert.style.display = "none";
-        console.log('WebSocket Error: ' + error);
-        //document.getElementById("calibrationBtn").disabled = true;
-    }
-    // Handle messages sent by the server.
-    socket.onmessage = function(event) {
-        //getting the time of the message
-        var message = event.data;
-        parseMessage(message);
-    }
-}
-*/
 var wsFailedAlert = document.getElementById('ws_failed_alert');
 var wsSuccessAlert = document.getElementById('ws_success_alert');
 
@@ -70,6 +29,7 @@ function VRTrackerWebsocket (websocketType){
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
         console.log("Websocket connected");
+        (vrtracker.askSystemInfo());
     };
     // Handle any errors that occur.
     this.socket.onerror = function(error) {
@@ -157,7 +117,7 @@ window.setInterval(function(){
     }
     (vrtracker.askSystemInfo());
 
-}, 5000);
+}, 2000);
 
 window.onclose=function(){
     vrtracker.socket.close();

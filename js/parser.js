@@ -6,6 +6,7 @@ countElementGateway.set("users", 0);
 countElementGateway.set("masters", 0);
 var positionCount = 0;
 function parseMessage(message){
+    console.log(message);
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
@@ -17,7 +18,6 @@ function parseMessage(message){
             information = messageContent[i].split("=");
             contentMap.set(information[0], information[1]);
         }
-        console.log(contentMap);
     }catch (e) {
         console.error("Parsing error:", e);
     }
@@ -69,7 +69,8 @@ function parseMessage(message){
                     if(macToNumberMap.has(value)){
                     }else{
                         //Ajout des cameras disponibles
-                        addTableAvailableCamera(value);
+                        if(key.includes("camera"))
+                            addTableAvailableCamera(value);
                     }
                 }
             }else{
