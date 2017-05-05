@@ -1,5 +1,4 @@
 var websocketIP = "192.168.42.1";
-//var websocketIP = "localhost";
 //var websocketIP = "192.168.0.164";
 
 
@@ -16,8 +15,8 @@ var userMap = new Map();
 var wsFailedAlert = document.getElementById('ws_failed_alert');
 var wsSuccessAlert = document.getElementById('ws_success_alert');
 
-addFakeCamera("FakeCameraMac");
-addFakeCamera("FakeCameraMac2");
+//addFakeCamera("FakeCameraMac");
+//addFakeCamera("FakeCameraMac2");
 function VRTrackerWebsocket (websocketType){
     console.log("Constructing websocket");
     this.websocketType = websocketType;
@@ -165,7 +164,7 @@ function updateMaxBlobSizeSlider(input){
 
 function updateSensitivityInput(input){
     var mac = getSelectedCameraMac();
-    $(document.getElementById("camera-sensitivity-slider")).val(input.value); 
+    $(document.getElementById("camera-sensitivity-slider")).val(input.value);
     cameraMap.get(mac).set("sensitivity", input.value);
     sendCameraSettings(mac);
 }
@@ -173,14 +172,14 @@ function updateSensitivityInput(input){
 
 function updateMinBlobSizeInput(input){
     var mac = getSelectedCameraMac();
-    $(document.getElementById("camera-minblobsize-slider")).val(input.value); 
+    $(document.getElementById("camera-minblobsize-slider")).val(input.value);
     cameraMap.get(mac).set("minblobsize", input.value);
     sendCameraSettings(mac);
 }
 
 function updateMaxBlobSizeInput(input){
     var mac = getSelectedCameraMac();
-    $(document.getElementById("camera-maxblobsize-slider")).val(input.value); 
+    $(document.getElementById("camera-maxblobsize-slider")).val(input.value);
     cameraMap.get(mac).set("maxblobsize", input.value);
     sendCameraSettings(mac);
 }
@@ -196,39 +195,49 @@ function getSelectedCameraMac(){
 }
 
 function sendCameraSettings(mac){
-    var message = "cmd=setCameraSettings&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize"); 
+    var message = "cmd=setcamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
+    console.log(message);
+    vrtracker.send(message);
+}
+
+function saveCameraSettings(){
+    var mac = getSelectedCameraMac();
+    var message = "cmd=savecamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
     console.log(message);
     vrtracker.send(message);
 }
 
 function selectcamera(camera){
     var liste = document.getElementById("cameras-grid");
-    
+
     console.log($(camera).hasClass('selected'));
     if($(camera).hasClass('selected')){
-        
+        var mac = camera.id.split("-")[1];
+        var message = "cmd=disabletransferpoints";
         $(camera).removeClass("selected");
         $(document.getElementById("cameras-settings-ext")).hide(800);
+        vrtracker.send(message);
     }
     else {
         $(camera).addClass("selected");
-        $(document.getElementById("cameras-settings-ext")).show(800); 
+        $(document.getElementById("cameras-settings-ext")).show(800);
         var mac = camera.id.split("-")[1];
-        $(document.getElementById("camera-maxblobsize-slider")).val(cameraMap.get(mac).get("maxblobsize")); 
+        $(document.getElementById("camera-maxblobsize-slider")).val(cameraMap.get(mac).get("maxblobsize"));
         $(document.getElementById("camera-maxblobsize-input")).val(cameraMap.get(mac).get("maxblobsize"));
-        $(document.getElementById("camera-minblobsize-slider")).val(cameraMap.get(mac).get("minblobsize")); 
+        $(document.getElementById("camera-minblobsize-slider")).val(cameraMap.get(mac).get("minblobsize"));
         $(document.getElementById("camera-minblobsize-input")).val(cameraMap.get(mac).get("minblobsize"));
-        $(document.getElementById("camera-sensitivity-slider")).val(cameraMap.get(mac).get("sensitivity")); 
+        $(document.getElementById("camera-sensitivity-slider")).val(cameraMap.get(mac).get("sensitivity"));
         $(document.getElementById("camera-sensitivity-input")).val(cameraMap.get(mac).get("sensitivity"));
-    
+        var message = "cmd=transferpoints&uid=mac";
+        vrtracker.send(message);
     }
-    
+
     for (var i=1; i < liste.childNodes.length; i++) {
         if(camera.id != liste.childNodes[i].id){
             liste.childNodes[i].classList.remove("selected");
         }
     }
-    
+
 }
 
 function addCamera(mac){

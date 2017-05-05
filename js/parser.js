@@ -79,6 +79,7 @@ function parseMessage(message){
             for(var i = 2; i < longueur; i++){
                     var macAdress = liste.childNodes[2].getElementsByTagName("th");
             }
+
             break;
         }
         case "cameracalibration":{
@@ -119,6 +120,7 @@ function parseMessage(message){
                             datas.splice(datas.length, 0, clone(map));
                         }
                     }
+                    console.log(map.x, map.y, map.z);
                     updateTagPosition(datas);
                 }catch (e) {
                     console.error("Parsing error:", e);
