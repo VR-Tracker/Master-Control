@@ -147,6 +147,7 @@
                         </div>
                         <div class="col-md-6 mx-auto">
                             <h4 class="text-center">Detection Settings</h4>
+														<div style="margin-top:25px;">
                             <div class="row" id="camera-sliders">
                               <div class="col-sm-4">
                                   <span>Sensitivity:</span>
@@ -180,8 +181,9 @@
                                 <input onchange="updateMaxBlobSizeInput(this)" type="number" name="quantity" min="10" max="2000" value="400" id="camera-maxblobsize-input">
                                 </div>
                             </div>
-							<div class="row">
-								<button type="submit" class="btn btn-md" id="save-btn" onclick="saveCameraSettings()">Save Settings</button>
+													</div>
+							<div class="row" align="center" style="margin:15px;">
+								<button type="submit" class="btn btn-info" id="save-btn" onclick="saveCameraSettings()">Save Settings</button>
                             </div>
                         </div>
 					</div>

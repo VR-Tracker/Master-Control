@@ -1,6 +1,4 @@
 var websocketIP = "192.168.42.1";
-//var websocketIP = "192.168.0.164";
-
 
 /*
 * On window load, open a websocket between the window and the server
@@ -197,14 +195,14 @@ function getSelectedCameraMac(){
 function sendCameraSettings(mac){
     var message = "cmd=setcamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
     console.log(message);
-    vrtracker.send(message);
+    sendMessage(message);
 }
 
 function saveCameraSettings(){
     var mac = getSelectedCameraMac();
     var message = "cmd=savecamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
     console.log(message);
-    vrtracker.send(message);
+    sendMessage(message);
 }
 
 function selectcamera(camera){
@@ -216,7 +214,7 @@ function selectcamera(camera){
         var message = "cmd=disabletransferpoints";
         $(camera).removeClass("selected");
         $(document.getElementById("cameras-settings-ext")).hide(800);
-        vrtracker.send(message);
+        sendMessage(message);
     }
     else {
         $(camera).addClass("selected");
@@ -229,7 +227,7 @@ function selectcamera(camera){
         $(document.getElementById("camera-sensitivity-slider")).val(cameraMap.get(mac).get("sensitivity"));
         $(document.getElementById("camera-sensitivity-input")).val(cameraMap.get(mac).get("sensitivity"));
         var message = "cmd=transferpoints&uid=mac";
-        vrtracker.send(message);
+        sendMessage(message);
     }
 
     for (var i=1; i < liste.childNodes.length; i++) {
