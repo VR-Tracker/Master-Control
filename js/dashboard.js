@@ -4,7 +4,7 @@ var websocketIP = "192.168.42.1";
 * On window load, open a websocket between the window and the server
 * Create a master on window opening
 */
-var vrtracker; // = VRTrackerWebsocket(websocketIP);
+var socket; // = VRTrackerWebsocket(websocketIP);
 
 var cameraMap = new Map();
 var tagMap = new Map();
@@ -19,23 +19,23 @@ function VRTrackerWebsocket (websocketType){
     console.log("Constructing websocket");
     this.websocketType = websocketType;
     //console.log(socket);
-    this.socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
+    socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
     console.log("variable socket ",this.socket);
 
-    this.socket.onopen = function(event) {
+    socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
         console.log("Websocket connected");
         (vrtracker.askSystemInfo());
     };
     // Handle any errors that occur.
-    this.socket.onerror = function(error) {
+    socket.onerror = function(error) {
         wsFailedAlert.style.display = "block";
         wsSuccessAlert.style.display = "none";
         console.log('WebSocket Error: ' + error);
     }
     // Handle messages sent by the server.
-    this.socket.onmessage = function(event) {
+    socket.onmessage = function(event) {
         //getting the time of the message
         var message = event.data;
         console.log(message);
@@ -45,22 +45,22 @@ function VRTrackerWebsocket (websocketType){
 
 VRTrackerWebsocket.prototype.createWebsocket = function(websocketType){
 
-    this.socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
+    socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
     console.log("variable socket ",this.socket);
 
-    this.socket.onopen = function(event) {
+    socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
         console.log("Websocket connected");
     };
     // Handle any errors that occur.
-    this.socket.onerror = function(error) {
+    socket.onerror = function(error) {
         wsFailedAlert.style.display = "block";
         wsSuccessAlert.style.display = "none";
         console.log('WebSocket Error: ' + error);
     }
     // Handle messages sent by the server.
-    this.socket.onmessage = function(event) {
+    socket.onmessage = function(event) {
         //getting the time of the message
         var message = event.data;
         console.log(message);
@@ -69,27 +69,28 @@ VRTrackerWebsocket.prototype.createWebsocket = function(websocketType){
 }
 
 VRTrackerWebsocket.prototype.sendMessage = function(message){
-    this.socket.send(message);
+  console.log("YOOOP")
+    socket.send(message);
 }
 
 VRTrackerWebsocket.prototype.getCamerasInformation = function(){
-    this.socket.send(askCamerasInformation);
+    socket.send(askCamerasInformation);
 }
 
 VRTrackerWebsocket.prototype.askSystemInfo = function(){
     console.log("envoie message systems");
 
-    this.socket.send("cmd=systeminfos");
+    socket.send("cmd=systeminfos");
 }
 
 VRTrackerWebsocket.prototype.askTagInformation = function(){
     var message = "cmd=taginformation";
-    this.socket.send(message);
+    socket.send(message);
 }
 
 VRTrackerWebsocket.prototype.restartGateway = function(){
     var message = "cmd=restart";
-    this.socket.send(message);
+    socket.send(message);
 }
 
 function askCamerasInformation(){
@@ -109,8 +110,8 @@ window.onload=function(){
 }
 
 window.setInterval(function(){
-    if(vrtracker.socket.readyState === vrtracker.socket.CLOSED){
-        vrtracker.createWebsocket();
+    if(socket.readyState === socket.CLOSED){
+        vrtracker.createWebsocket(websocketIP);
     }
     (vrtracker.askSystemInfo());
 
@@ -195,14 +196,14 @@ function getSelectedCameraMac(){
 function sendCameraSettings(mac){
     var message = "cmd=setcamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
     console.log(message);
-    sendMessage(message);
+    socket.send(message);
 }
 
 function saveCameraSettings(){
     var mac = getSelectedCameraMac();
     var message = "cmd=savecamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
     console.log(message);
-    sendMessage(message);
+    socket.send(message);
 }
 
 function selectcamera(camera){
@@ -214,7 +215,7 @@ function selectcamera(camera){
         var message = "cmd=disabletransferpoints";
         $(camera).removeClass("selected");
         $(document.getElementById("cameras-settings-ext")).hide(800);
-        sendMessage(message);
+        socket.send(message);
     }
     else {
         $(camera).addClass("selected");
@@ -227,7 +228,7 @@ function selectcamera(camera){
         $(document.getElementById("camera-sensitivity-slider")).val(cameraMap.get(mac).get("sensitivity"));
         $(document.getElementById("camera-sensitivity-input")).val(cameraMap.get(mac).get("sensitivity"));
         var message = "cmd=transferpoints&uid=mac";
-        sendMessage(message);
+        socket.send(message);
     }
 
     for (var i=1; i < liste.childNodes.length; i++) {
@@ -325,6 +326,7 @@ function parseMessage(message){
         case "camerasinformation":{
             if(messageContent.length > 0){
                 var currentMac = "";
+
                 for (var i = 1; i < messageContent.length; i++ ) {
                     information = messageContent[i].split("=");
                     switch (information[0]){
@@ -332,6 +334,9 @@ function parseMessage(message){
                             currentMac = information[1];
                             if(!cameraMap.has(information[1])){
                                 cameraMap.set(currentMac, new Map());
+                                cameraMap.get(currentMac).set("sensitivity", 60);
+                                cameraMap.get(currentMac).set("minblobsize", 0);
+                                cameraMap.get(currentMac).set("maxblobsize", 400);
                                 cameraMap.get(currentMac).set("version", "");
                                 cameraMap.get(currentMac).set("calibrated", "false");
                             }

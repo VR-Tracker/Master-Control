@@ -1,4 +1,3 @@
-//var websocketIP = "192.168.0.164";
 var websocketIP = "192.168.42.1";
 var askCamerasInformation = "cmd=camerasinformation"
 
