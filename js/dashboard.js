@@ -227,13 +227,22 @@ function selectcamera(camera){
         $(document.getElementById("camera-minblobsize-input")).val(cameraMap.get(mac).get("minblobsize"));
         $(document.getElementById("camera-sensitivity-slider")).val(cameraMap.get(mac).get("sensitivity"));
         $(document.getElementById("camera-sensitivity-input")).val(cameraMap.get(mac).get("sensitivity"));
-        var message = "cmd=transferpoints&uid=mac";
+        var message = "cmd=transferpoints&uid=" + mac;
+        socket.send(message);
+
+        message = "cmd=selectcamera&uid=" + mac;
+        console.log(message)
         socket.send(message);
     }
 
     for (var i=1; i < liste.childNodes.length; i++) {
         if(camera.id != liste.childNodes[i].id){
             liste.childNodes[i].classList.remove("selected");
+
+            var mac = liste.childNodes[i].id.split("-")[1];
+            var message = "cmd=unselectcamera&uid=" + mac;
+            console.log(message)
+            socket.send(message);
         }
     }
 
