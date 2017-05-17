@@ -216,6 +216,9 @@ function selectcamera(camera){
         $(camera).removeClass("selected");
         $(document.getElementById("cameras-settings-ext")).hide(800);
         socket.send(message);
+
+        message = "cmd=unselectcamera&uid=" + mac;
+        socket.send(message);
     }
     else {
         $(camera).addClass("selected");
@@ -231,7 +234,6 @@ function selectcamera(camera){
         socket.send(message);
 
         message = "cmd=selectcamera&uid=" + mac;
-        console.log(message)
         socket.send(message);
     }
 
@@ -241,7 +243,6 @@ function selectcamera(camera){
 
             var mac = liste.childNodes[i].id.split("-")[1];
             var message = "cmd=unselectcamera&uid=" + mac;
-            console.log(message)
             socket.send(message);
         }
     }
