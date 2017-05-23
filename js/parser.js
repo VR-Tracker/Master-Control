@@ -6,7 +6,7 @@ countElementGateway.set("users", 0);
 countElementGateway.set("masters", 0);
 var positionCount = 0;
 function parseMessage(message){
-    console.log(message);
+    //console.log(message);
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
@@ -120,7 +120,7 @@ function parseMessage(message){
                             datas.splice(datas.length, 0, clone(map));
                         }
                     }
-                    console.log(map.x, map.y, map.z);
+                    //console.log(map.x, map.y, map.z);
                     updateTagPosition(datas);
                 }catch (e) {
                     console.error("Parsing error:", e);

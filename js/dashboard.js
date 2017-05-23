@@ -16,16 +16,14 @@ var wsSuccessAlert = document.getElementById('ws_success_alert');
 //addFakeCamera("FakeCameraMac");
 //addFakeCamera("FakeCameraMac2");
 function VRTrackerWebsocket (websocketType){
-    console.log("Constructing websocket");
     this.websocketType = websocketType;
     //console.log(socket);
     socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
-    console.log("variable socket ",this.socket);
+    //console.log("variable socket ",this.socket);
 
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
-        console.log("Websocket connected");
         (vrtracker.askSystemInfo());
     };
     // Handle any errors that occur.
@@ -38,7 +36,6 @@ function VRTrackerWebsocket (websocketType){
     socket.onmessage = function(event) {
         //getting the time of the message
         var message = event.data;
-        console.log(message);
         parseMessage(message);
     }
 }
@@ -46,30 +43,26 @@ function VRTrackerWebsocket (websocketType){
 VRTrackerWebsocket.prototype.createWebsocket = function(websocketType){
 
     socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
-    console.log("variable socket ",this.socket);
+    //console.log("variable socket ",this.socket);
 
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
-        console.log("Websocket connected");
     };
     // Handle any errors that occur.
     socket.onerror = function(error) {
         wsFailedAlert.style.display = "block";
         wsSuccessAlert.style.display = "none";
-        console.log('WebSocket Error: ' + error);
     }
     // Handle messages sent by the server.
     socket.onmessage = function(event) {
         //getting the time of the message
         var message = event.data;
-        console.log(message);
         parseMessage(message);
     }
 }
 
 VRTrackerWebsocket.prototype.sendMessage = function(message){
-  console.log("YOOOP")
     socket.send(message);
 }
 
@@ -78,8 +71,6 @@ VRTrackerWebsocket.prototype.getCamerasInformation = function(){
 }
 
 VRTrackerWebsocket.prototype.askSystemInfo = function(){
-    console.log("envoie message systems");
-
     socket.send("cmd=systeminfos");
 }
 
@@ -106,7 +97,6 @@ window.onload=function(){
     vrtracker = new VRTrackerWebsocket(websocketIP)
     //addCamera("test");
     // Show a disconnected message when the WebSocket is closed.
-    //console.log(vrtracker.socket);
 }
 
 window.setInterval(function(){
@@ -195,21 +185,19 @@ function getSelectedCameraMac(){
 
 function sendCameraSettings(mac){
     var message = "cmd=setcamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
-    console.log(message);
     socket.send(message);
 }
 
 function saveCameraSettings(){
     var mac = getSelectedCameraMac();
     var message = "cmd=savecamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
-    console.log(message);
     socket.send(message);
 }
 
 function selectcamera(camera){
     var liste = document.getElementById("cameras-grid");
 
-    console.log($(camera).hasClass('selected'));
+    //console.log($(camera).hasClass('selected'));
     if($(camera).hasClass('selected')){
         var mac = camera.id.split("-")[1];
         var message = "cmd=disabletransferpoints";
@@ -235,6 +223,10 @@ function selectcamera(camera){
 
         message = "cmd=selectcamera&uid=" + mac;
         socket.send(message);
+        var canvas = document.getElementById("camera-canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
     }
 
     for (var i=1; i < liste.childNodes.length; i++) {
@@ -250,7 +242,7 @@ function selectcamera(camera){
 }
 
 function addCamera(mac){
-    console.log("adding camera");
+    //console.log("adding camera");
     if(mac != ""){
         var camera = document.getElementById("camera-" + mac);
         if(camera != undefined){
@@ -331,7 +323,7 @@ function parseMessage(message){
     }catch (e) {
         console.error("Parsing error:", e);
     }
-    console.log("message", messageContent);
+    //console.log("message", messageContent);
     switch (cmd) {
         case "camerasinformation":{
             if(messageContent.length > 0){
@@ -412,7 +404,7 @@ function parseMessage(message){
             break;
         }
         case "tagsinfo":{
-            console.log("message", messageContent);
+            //console.log("message", messageContent);
             if(messageContent.length > 0){
                 var currentMac = "";
                 for (var i = 1; i < messageContent.length; i++ ) {
@@ -450,10 +442,8 @@ function parseMessage(message){
             break;
         }
         case "usersinfo":{
-            console.log("message", messageContent);
             if(messageContent.length > 0){
                 var currentMac = "";
-                console.log("treating message");
                 for (var i = 1; i < messageContent.length; i++ ) {
                     information = messageContent[i].split("=");
                     switch (information[0]){
@@ -473,10 +463,28 @@ function parseMessage(message){
                 }
 
             }else{
-                console.log("message trop court");
+                //console.log("message trop court");
             }
             break;
         }
+        case "points":
+            //console.log(messageContent);
+            var canvas = document.getElementById("camera-canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var x,y;
+            for (var i = 1; i < messageContent.length; i++ ) {
+                information = messageContent[i].split("=");
+                x = parseFloat(information[1]);
+                contentMap.set(information[0], information[1]);
+                information = messageContent[++i].split("=");
+                y = parseFloat(information[1]);
+                contentMap.set(information[0], information[1]);
+                ctx.beginPath();
+                ctx.arc(x,y,2,0,2*Math.PI);
+                ctx.stroke();
+            }
+            break;
         default:
             break;
     }
@@ -505,6 +513,5 @@ function changeNumberFormat(string){
 }
 
 function restartGateway(){
-    console.log("send restart system");
     vrtracker.restartGateway();
 }
