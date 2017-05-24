@@ -39,6 +39,7 @@
 
 	<div class="col-sm-3 col-lg-2 sidebar">
 		<ul class="nav menu">
+			<li><a href="dashboard.html"><svg class="glyph stroked dashboard-dial"><use xlink:href="#stroked-dashboard-dial"></use></svg> Dashboard</a></li>
 			<li class="active"><a href="calibration.html"><svg class="glyph stroked table"><use xlink:href="#stroked-gear"></use></svg> Calibration</a></li>
 			<li><a href="visualizer.html"><svg class="glyph stroked calendar"><use xlink:href="#stroked-eye"></use></svg> Visualizer</a></li>
 		</ul>
@@ -162,9 +163,18 @@
 			<p align="center" style="margin-top: 1px">
 				<button style="width:50%; margin-bottom: 10px" type="submit" class="btn btn-primary" id="calibrationBtn"   onclick="startCalibration()" style="margin-left: 10px;">Validate Camera Selection</button>
 			</p>
+			<div align="center" style="margin-top: 1px">
+				<button style="width:50%; " type="submit" class="btn btn-primary" id="auto-calibration-btn" onclick="autoCalibration()">Auto Calibration </button>
+			</div>
+			<div align="center" style="margin-top: 1px; margin-bottom: 3px;">
+				<button style="width:50%; display: none;" type="submit" class="btn btn-primary" id="stop-auto-calibration-btn" onclick="stopAutoCalibration()">Stop Auto Calibration </button>
+			</div>
+			<div align="center" style="margin-top: 1px">
+				<button style="width:50%; display: none;" type="submit" class="btn btn-primary" id="add-reference-btn" onclick="AddReferencePoints()">Add Reference Points</button>
+			</div>
 		</div>
 
-		<div class="panel panel-default" id="add-3D-point-panel" style="opacity:0;">
+		<div class="panel panel-default" id="add-3D-point-panel" style="opacity:0; margin-top: 3px">
 			<div class="panel-heading">Tag 3D world coordinates</div>
 			<div class="panel-body" >
 				<div class="col-md-6">
@@ -214,11 +224,11 @@
 		</div>
 		<div>
 			<p align="center" style="margin-top: 1px">
-				<button style="width:50%; margin-bottom: 10px; opacity:0;" class="btn btn-primary" id="enterCalibViewBtn" onclick="handleKeySpace()" >Enter Calibration View</button>
+				<button style="width:50%; margin-bottom: 10px; opacity:0; display: none;" class="btn btn-primary" id="enterCalibViewBtn" onclick="handleKeySpace()" >Enter Calibration View</button>
 			</p>
 		</div>
 		<div align="center" style="margin-top: 1px">
-			<button style="width:50%; margin-left: 10px; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Exit Calibration </button>
+			<button style="width:50%; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Exit Calibration </button>
 		</div>
 		<div class="alert bg-success" id="calibration-finished" role="alert" style="opacity:0;">
 			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> YOUR CALIBRATION IS FINISHED !!!
@@ -304,7 +314,6 @@ $(window).on('resize', function () {
 <script src="js/parser.js"></script>
 <script src="js/keyboard.js"></script>
 <script src="js/save.js"></script>
-
 </body>
 
 </html>
