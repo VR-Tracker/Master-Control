@@ -481,7 +481,7 @@ function parseMessage(message){
                 y = parseFloat(information[1]);
                 contentMap.set(information[0], information[1]);
                 ctx.beginPath();
-                ctx.arc(x,y,2,0,2*Math.PI);
+                ctx.arc(x,480-y,2,0,2*Math.PI);
                 ctx.stroke();
             }
             break;
