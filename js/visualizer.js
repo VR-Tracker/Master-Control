@@ -27,7 +27,16 @@ var tagTracked = new Map();
 window.onload=function(){
     drawChart();
     createWebsocket();
+    window.addEventListener('beforeunload', function(event) {
+        console.log('I am the 1st one.');
+    });
+
+    window.addEventListener('unload', function(event) {
+        console.log('I am the 3rd one.');
+    });
 }
+
+
 
 function assingAllTags(){
     var messageMac = "cmd=mac&uid=1";
@@ -140,25 +149,25 @@ function drawChart(){
         },
         plotOptions: {
             scatter: {
-                width: 3,
-                height: 3,
+                width: 5,
+                height: 5,
                 depth: 1
             }
         },
         yAxis: {
-            min: 0,
-            max: 3,
+            min: -5,
+            max: 5,
             title: "y"
         },
         xAxis: {
-            min: -2,
-            max: 3,
+            min: -5,
+            max: 5,
             gridLineWidth: 1,
             title: "x"
         },
         zAxis: {
-            min: 0,
-            max: 3,
+            min: -5,
+            max: 5,
             showFirstLabel: false,
             title: "z"
         },
@@ -242,6 +251,7 @@ function createWebsocket(){
     socket.onmessage = function(event) {
         //getting the time of the message
         var message = event.data;
+        console.log(message);
         parseMessage(message);
     }
 }

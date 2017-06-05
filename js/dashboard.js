@@ -9,7 +9,7 @@ var socket; // = VRTrackerWebsocket(websocketIP);
 var cameraMap = new Map();
 var tagMap = new Map();
 var userMap = new Map();
-
+var camerasPositionMap = new Map();
 var wsFailedAlert = document.getElementById('ws_failed_alert');
 var wsSuccessAlert = document.getElementById('ws_success_alert');
 
@@ -17,9 +17,7 @@ var wsSuccessAlert = document.getElementById('ws_success_alert');
 //addFakeCamera("FakeCameraMac2");
 function VRTrackerWebsocket (websocketType){
     this.websocketType = websocketType;
-    //console.log(socket);
     socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
-    //console.log("variable socket ",this.socket);
 
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
@@ -43,7 +41,6 @@ function VRTrackerWebsocket (websocketType){
 VRTrackerWebsocket.prototype.createWebsocket = function(websocketType){
 
     socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
-    //console.log("variable socket ",this.socket);
 
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
@@ -113,7 +110,7 @@ window.onclose=function(){
 }
 
 $(window).resize(function(){
-   $('#camera-canvas').height($('#camera-canvas').width() / 1.333);
+    $('#camera-canvas').height($('#camera-canvas').width() / 1.333);
 });
 
 
@@ -197,7 +194,6 @@ function saveCameraSettings(){
 function selectcamera(camera){
     var liste = document.getElementById("cameras-grid");
 
-    //console.log($(camera).hasClass('selected'));
     if($(camera).hasClass('selected')){
         var mac = camera.id.split("-")[1];
         var message = "cmd=disabletransferpoints";
@@ -242,15 +238,18 @@ function selectcamera(camera){
 }
 
 function addCamera(mac){
-    //console.log("adding camera");
     if(mac != ""){
         var camera = document.getElementById("camera-" + mac);
         if(camera != undefined){
             camera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
             +'</br><p> mac: ' + mac + '</p>'
+            +'<p> IP: '  + cameraMap.get(mac).get("ip") + '</p>'
             +'<p> version: '  + cameraMap.get(mac).get("version") + '</p>'
             +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated") + '</p>';
-
+            if(cameraMap.get(mac).get("calibrated")){
+                camera.innerHTML +='<p> Position: (X: '  + truncateDigit(cameraMap.get(mac).get("x")) + ', Y: '
+                + truncateDigit(cameraMap.get(mac).get("y")) + ', Z: ' + truncateDigit(cameraMap.get(mac).get("z")) + ')</p>';
+            }
         }else{
             var liste = document.getElementById("cameras-grid");
             var newCamera = document.createElement('div');
@@ -261,6 +260,10 @@ function addCamera(mac){
             +'</br><p> mac: ' + mac + '</p>'
             +'<p> version: '  + cameraMap.get(mac).get("version") + '</p>'
             +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated") + '</p>';
+            if(cameraMap.get(mac).get("calibrated")){
+                newCamera.innerHTML += '<p> Position: (X: '  + truncateDigit(cameraMap.get(mac).get("x"))+ ', Y: '
+                + truncateDigit(cameraMap.get(mac).get("y")) + ', Z: ' + truncateDigit(cameraMap.get(mac).get("z")) + ')</p>';
+            }
             liste.appendChild(newCamera);
         }
     }
@@ -323,57 +326,70 @@ function parseMessage(message){
     }catch (e) {
         console.error("Parsing error:", e);
     }
-    //console.log("message", messageContent);
     switch (cmd) {
         case "camerasinformation":{
             if(messageContent.length > 0){
                 var currentMac = "";
-
                 for (var i = 1; i < messageContent.length; i++ ) {
                     information = messageContent[i].split("=");
                     switch (information[0]){
                         case "uid":
-                            currentMac = information[1];
-                            if(!cameraMap.has(information[1])){
-                                cameraMap.set(currentMac, new Map());
-                                cameraMap.get(currentMac).set("sensitivity", 60);
-                                cameraMap.get(currentMac).set("minblobsize", 0);
-                                cameraMap.get(currentMac).set("maxblobsize", 400);
-                                cameraMap.get(currentMac).set("version", "");
-                                cameraMap.get(currentMac).set("calibrated", "false");
-                            }
-                            addCamera(currentMac);
-                            break;
+                        currentMac = information[1];
+                        if(!cameraMap.has(information[1])){
+                            cameraMap.set(currentMac, new Map());
+                            cameraMap.get(currentMac).set("sensitivity", 60);
+                            cameraMap.get(currentMac).set("minblobsize", 0);
+                            cameraMap.get(currentMac).set("maxblobsize", 400);
+                            cameraMap.get(currentMac).set("version", "");
+                            cameraMap.get(currentMac).set("calibrated", "false");
+                            cameraMap.get(currentMac).set("ip", "");
+                            cameraMap.get(currentMac).set("x", "0");
+                            cameraMap.get(currentMac).set("y", "0");
+                            cameraMap.get(currentMac).set("z", "0");
+                        }
+                        break;
                         case "version":
-                            cameraMap.get(currentMac).set("version", information[1]);
-                            break;
+                        cameraMap.get(currentMac).set("version", information[1]);
+                        break;
                         case "calibrated":
-                            cameraMap.get(currentMac).set("calibrated", information[1]);
-                            break;
+                        if(information[1] == "true"){
+                            cameraMap.get(currentMac).set("calibrated", information[1], true);
+                        }else{
+                            cameraMap.get(currentMac).set("calibrated", information[1], false);
+                        }
+                        break;
                         case "sensitivity":
-                            cameraMap.get(currentMac).set("sensitivity", information[1]);
-                            break;
+                        cameraMap.get(currentMac).set("sensitivity", information[1]);
+                        break;
                         case "minblobsize":
-                            cameraMap.get(currentMac).set("minblobsize", information[1]);
-                            break;
+                        cameraMap.get(currentMac).set("minblobsize", information[1]);
+                        break;
                         case "maxblobsize":
-                            cameraMap.get(currentMac).set("maxblobsize", information[1]);
-                            break;
+                        cameraMap.get(currentMac).set("maxblobsize", information[1]);
+                        break;
+                        case "ip":
+                        cameraMap.get(currentMac).set("ip", information[1]);
+                        break;
+                        case "x":
+                        cameraMap.get(currentMac).set("x", information[1]);
+                        break;
+                        case "y":
+                        cameraMap.get(currentMac).set("y", information[1]);
+                        break;
+                        case "z":
+                        cameraMap.get(currentMac).set("z", information[1]);
+                        break;
                         default:
-                            console.log("error:", information);
-                            break;
+                        console.log("error:", information);
+                        break;
                     }
-
+                    addCamera(currentMac);
                 }
-
-            }else{
-                console.log("message trop court");
             }
             break;
         }
         case "systeminfos":{
             try {
-                //console.log("Mise a jour des valeurs");
                 countElementGateway.set("cameras", contentMap.get("cameras"));
                 countElementGateway.set("tags", contentMap.get("tags"));
                 countElementGateway.set("users", contentMap.get("users"));
@@ -404,34 +420,33 @@ function parseMessage(message){
             break;
         }
         case "tagsinfo":{
-            //console.log("message", messageContent);
             if(messageContent.length > 0){
                 var currentMac = "";
                 for (var i = 1; i < messageContent.length; i++ ) {
                     information = messageContent[i].split("=");
                     switch (information[0]){
                         case "uid":
-                            currentMac = information[1];
-                            if(!tagMap.has(information[1])){
-                                tagMap.set(currentMac, new Map());
-                                tagMap.get(currentMac).set("version", "");
-                                tagMap.get(currentMac).set("battery", "0");
-                                tagMap.get(currentMac).set("status", "lost");
-                            }
-                            addTag(currentMac);
-                            break;
+                        currentMac = information[1];
+                        if(!tagMap.has(information[1])){
+                            tagMap.set(currentMac, new Map());
+                            tagMap.get(currentMac).set("version", "");
+                            tagMap.get(currentMac).set("battery", "0");
+                            tagMap.get(currentMac).set("status", "lost");
+                        }
+                        addTag(currentMac);
+                        break;
                         case "version":
-                            tagMap.get(currentMac).set("version", information[1]);
-                            break;
+                        tagMap.get(currentMac).set("version", information[1]);
+                        break;
                         case "battery":
-                            tagMap.get(currentMac).set("battery", information[1]);
-                            break;
+                        tagMap.get(currentMac).set("battery", information[1]);
+                        break;
                         case "status":
-                            tagMap.get(currentMac).set("status", information[1]);
-                            break;
+                        tagMap.get(currentMac).set("status", information[1]);
+                        break;
                         default:
-                            console.log("error:", information);
-                            break;
+                        console.log("error:", information);
+                        break;
                     }
 
                 }
@@ -448,51 +463,78 @@ function parseMessage(message){
                     information = messageContent[i].split("=");
                     switch (information[0]){
                         case "uid":
-                            currentMac = information[1];
-                            if(!userMap.has(information[1])){
-                                userMap.set(currentMac, new Map());
-                                userMap.get(currentMac).set("tags", new Map());
-                            }
-                            addUser(currentMac);
-                            break;
+                        currentMac = information[1];
+                        if(!userMap.has(information[1])){
+                            userMap.set(currentMac, new Map());
+                            userMap.get(currentMac).set("tags", new Map());
+                        }
+                        addUser(currentMac);
+                        break;
                         default:
-                            userMap.get(currentMac).get("tags").set(information[1], true);
-                            break;
+                        userMap.get(currentMac).get("tags").set(information[1], true);
+                        break;
                     }
 
                 }
 
-            }else{
-                //console.log("message trop court");
             }
             break;
         }
         case "points":
-            //console.log(messageContent);
-            var canvas = document.getElementById("camera-canvas");
-            var ctx = canvas.getContext("2d");
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            var x,y;
-            for (var i = 1; i < messageContent.length; i++ ) {
-                information = messageContent[i].split("=");
-                x = parseFloat(information[1]);
-                contentMap.set(information[0], information[1]);
-                information = messageContent[++i].split("=");
-                y = parseFloat(information[1]);
-                contentMap.set(information[0], information[1]);
-                ctx.beginPath();
-                ctx.arc(x,480-y,2,0,2*Math.PI);
-                ctx.stroke();
+        var canvas = document.getElementById("camera-canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        var x,y;
+        for (var i = 1; i < messageContent.length; i++ ) {
+            information = messageContent[i].split("=");
+            x = parseFloat(information[1]);
+            contentMap.set(information[0], information[1]);
+            information = messageContent[++i].split("=");
+            y = parseFloat(information[1]);
+            contentMap.set(information[0], information[1]);
+            ctx.beginPath();
+            ctx.arc(x,480-y,2,0,2*Math.PI);
+            ctx.stroke();
+        }
+        break;
+        case "camerasposition":{
+            var datas = [];
+            if((positionCount % 3) == 0){
+                try{
+                    var cmdContent = messageContent[0].split("=");
+                    cmd = cmdContent[1];
+                    for (var i = 1; i < messageContent.length; i++ ) {
+                        information = messageContent[i].split("=");
+                        if(information[0] == "uid"){
+                            camerasPositionMap.uid = information[1];
+                        }
+                        else if(information[0] == "x"){
+                            camerasPositionMap.x = information[1];
+                        }
+                        else if(information[0] == "y"){
+                            camerasPositionMap.y = information[1];
+                        }
+                        else if(information[0] == "z"){
+                            camerasPositionMap.z = information[1];
+                            datas.splice(datas.length, 0, clone(camerasPositionMap));
+                        }
+                    }
+                }catch (e) {
+                    console.error("Parsing error:", e);
+                }
+            }else{
+                positionCount++;
             }
             break;
+        }
         default:
-            break;
+        break;
     }
 }
 
 //verify if the string is a number
 function isNumeric(n) {
-  return !isNaN(parseFloat(n)) && isFinite(n);
+    return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 function changeNumberFormat(string){
@@ -514,4 +556,13 @@ function changeNumberFormat(string){
 
 function restartGateway(){
     vrtracker.restartGateway();
+}
+
+function truncateDigit(digit){
+    var index = digit.indexOf(".");
+    if(index > -1){
+        return digit.substr(0, index + 3);
+    }else{
+        return digit;
+    }
 }
