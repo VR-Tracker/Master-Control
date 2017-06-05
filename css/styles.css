@@ -11,7 +11,7 @@ Version 1.0
     --red-color:#06c;
     --lightred-color:rgb(210, 0,0);
 }
-   
+
 body {
 	background: #f1f4f7;
 	padding-top: 50px;
@@ -300,16 +300,16 @@ a.bg-danger:hover {
 .panel {
 	border: 0;
 }
-    
+
 .fadein {
     opacity: 1;
     -webkit-animation: fadein 1s; /* Safari, Chrome and Opera > 12.1 */
    -moz-animation: fadein 1s; /* Firefox < 16 */
     -ms-animation: fadein 1s; /* Internet Explorer */
      -o-animation: fadein 1s; /* Opera < 12.1 */
-        animation: fadein 1s; 
+        animation: fadein 1s;
 }
-    
+
 @keyframes fadein {
 from { opacity: 0; }
 to   { opacity: 1; }
@@ -720,7 +720,8 @@ h1.page-header {
 	width: 120px;
 }
 
-#easypiechart-blue .percent { color: var(--lightred-color);}
+/*#easypiechart-blue .percent { color: var(--lightred-color);}*/
+#easypiechart-blue .percent { color: #30a5ff;}
 #easypiechart-teal .percent { color: #1ebfae;}
 #easypiechart-orange .percent { color: #ffb53e;}
 #easypiechart-red .percent { color: #ef4040;}
@@ -1050,4 +1051,12 @@ h1.page-header {
 
 #ws_success_alert{
     display: none;
+}
+
+#cameras-grid {
+    background-color: white;
+}
+
+#cameras-grid .selected{
+    background-color: #f3de67;
 }
