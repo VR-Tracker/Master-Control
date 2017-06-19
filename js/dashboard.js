@@ -250,12 +250,14 @@ function addCamera(mac){
                 camera.innerHTML +='<p> Position: (X: '  + truncateDigit(cameraMap.get(mac).get("x")) + ', Y: '
                 + truncateDigit(cameraMap.get(mac).get("y")) + ', Z: ' + truncateDigit(cameraMap.get(mac).get("z")) + ')</p>';
             }
+            +'<button type="submit" class="btn btn-info" id="activate-btn" onclick="activateCamera()">Activate</button>'
         }else{
             var liste = document.getElementById("cameras-grid");
             var newCamera = document.createElement('div');
             newCamera.setAttribute("class", "col-lg-3 col-md-4 col-sm-6 camera-window");
             newCamera.setAttribute("onclick", "selectcamera(this)");
             newCamera.setAttribute("id", "camera-" + mac);
+            console.log("camera id : ", "camera-" + mac);
             newCamera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
             +'</br><p> mac: ' + mac + '</p>'
             +'<p> version: '  + cameraMap.get(mac).get("version") + '</p>'
@@ -264,9 +266,19 @@ function addCamera(mac){
                 newCamera.innerHTML += '<p> Position: (X: '  + truncateDigit(cameraMap.get(mac).get("x"))+ ', Y: '
                 + truncateDigit(cameraMap.get(mac).get("y")) + ', Z: ' + truncateDigit(cameraMap.get(mac).get("z")) + ')</p>';
             }
+
             liste.appendChild(newCamera);
         }
     }
+
+}
+
+function removeCamera(mac){
+    var liste = document.getElementById('cameras-grid');
+    //var camera = liste.getElementById("camera-" + max);
+    console.log("suppresion de la camera");
+    console.log(mac);
+    $("#camera-" + mac).remove();
 
 }
 
@@ -286,6 +298,13 @@ function addUser(mac){
     for (var [key, value] of userMap.get(mac).get("tags")) {
         newUser.innerHTML += '<p>' + key + '</p>';
     }
+}
+
+function removeUser(mac){
+    //var camera = liste.getElementById("camera-" + max);
+    console.log("suppresion du user");
+    $("#user-" + mac).remove();
+
 }
 
 function addTag(mac){
@@ -312,6 +331,7 @@ countElementGateway.set("masters", 0);
 var positionCount = 0;
 
 function parseMessage(message){
+    //console.log(message);
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
@@ -464,7 +484,7 @@ function parseMessage(message){
                     switch (information[0]){
                         case "uid":
                         currentMac = information[1];
-                        if(!userMap.has(information[1])){
+                        if(!userMap.has(currentMac)){
                             userMap.set(currentMac, new Map());
                             userMap.get(currentMac).set("tags", new Map());
                         }
@@ -527,6 +547,13 @@ function parseMessage(message){
             }
             break;
         }
+        case "userdeconnection":{
+            console.log("userdeconnection");
+            if(contentMap.has("uid")){
+                removeUser(contentMap.get("uid"));
+            }
+        }
+        break;
         default:
         break;
     }

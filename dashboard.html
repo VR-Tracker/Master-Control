@@ -144,7 +144,13 @@
 						<canvas id="camera-canvas" width="640" height="480" style="border:1px solid rgba(230, 230, 230, 1);     width: 100%;"></canvas>
 					</div>
 					<div class="col-md-6 mx-auto">
-						<h4 class="text-center">Detection Settings</h4>
+						<div class="row" align="center" style="margin:15px;">
+							<p>
+								<i>Camera is currently not activated</i>
+							</p>
+							<button type="submit" class="btn btn-info" id="activate-btn" onclick="activateCamera()">Activate</button>
+						</div>
+						<h4 style="margin-top:50px;" class="text-center">Detection Settings</h4>
 						<div style="margin-top:25px;">
 							<div class="row" id="camera-sliders">
 								<div class="col-sm-4">
