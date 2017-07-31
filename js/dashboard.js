@@ -343,6 +343,7 @@ countElementGateway.set("masters", 0);
 var positionCount = 0;
 
 function parseMessage(message){
+    console.log(message);
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
@@ -377,7 +378,7 @@ function parseMessage(message){
                             cameraMap.get(currentMac).set("x", "0");
                             cameraMap.get(currentMac).set("y", "0");
                             cameraMap.get(currentMac).set("z", "0");
-                            //cameraMap.get(currentMac).set("activated", false);
+                            cameraMap.get(currentMac).set("activated", false);
                         }
                         break;
                         case "version":
@@ -412,7 +413,12 @@ function parseMessage(message){
                         cameraMap.get(currentMac).set("z", information[1]);
                         break;
                         case "activated":
-                        cameraMap.get(currentMac).set("activated", true);
+                            if(information[1] == "y"){
+                                cameraMap.get(currentMac).set("activated", true);
+                            }
+                            else {
+                                cameraMap.get(currentMac).set("activated", false);
+                            }
                         case "desactivated":
                         cameraMap.get(currentMac).set("activated", false);
                         default:
@@ -521,7 +527,7 @@ function parseMessage(message){
         var ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         var x,y;
-        for (var i = 1; i < messageContent.length; i++ ) {
+        for (var i = 1; i < messageContent.length - 1; i++ ) {
             information = messageContent[i].split("=");
             x = parseFloat(information[1]);
             contentMap.set(information[0], information[1]);
@@ -532,6 +538,7 @@ function parseMessage(message){
             ctx.arc(x,480-y,2,0,2*Math.PI);
             ctx.stroke();
         }
+        console.log("Nombre de points : " + messageContent[messageContent.length - 1]);
         break;
         case "camerasposition":{
             var datas = [];

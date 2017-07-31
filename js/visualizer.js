@@ -28,11 +28,11 @@ window.onload=function(){
     drawChart();
     createWebsocket();
     window.addEventListener('beforeunload', function(event) {
-        console.log('I am the 1st one.');
+        //console.log('I am the 1st one.');
     });
 
     window.addEventListener('unload', function(event) {
-        console.log('I am the 3rd one.');
+        //console.log('I am the 3rd one.');
     });
 }
 
@@ -238,7 +238,6 @@ function createWebsocket(){
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
-        console.log("Websocket connected");
         assingAllTags();
     };
     // Handle any errors that occur.
@@ -251,7 +250,7 @@ function createWebsocket(){
     socket.onmessage = function(event) {
         //getting the time of the message
         var message = event.data;
-        console.log(message);
+        //console.log(message);
         parseMessage(message);
     }
 }
