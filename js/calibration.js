@@ -334,7 +334,7 @@ function addNewPointCalibration(){
                 if(calibrationPoint.length >=4){
                     document.getElementById("not-enough-3d").style.display = "none";
                     document.getElementById("enough-3d").style.display = "block";
-                    document.getElementById("enough-3d").innerHTML = "Enough points have been entered but remeber, the more the better ;)";
+                    document.getElementById("enough-3d").innerHTML = "Enough points have been entered but remember, the more the better ;)";
 
                     document.getElementById("enterCalibViewBtn").style.opacity = 1;
                     document.getElementById("enterCalibViewBtn").style.display = "block";
@@ -439,7 +439,7 @@ function addNewPointCalibration(){
                         if(calibrationPoint.length >=4){
                             document.getElementById("not-enough-3d").style.display = "none";
                             document.getElementById("enough-3d").style.display = "block";
-                            document.getElementById("enough-3d").innerHTML = "Enough points have been entered but remeber, the more the better ;)";
+                            document.getElementById("enough-3d").innerHTML = "Enough points have been entered but remember, the more the better ;)";
 
                             document.getElementById("enterCalibViewBtn").style.opacity = 1;
                             document.getElementById("enterCalibViewBtn").style.display = "block";

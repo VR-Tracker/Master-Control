@@ -223,18 +223,19 @@ function selectcamera(camera){
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if(cameraMap.get(mac).has("activated")){
-            document.getElementById("activated-text").innerHTML = "Camera is currently activated"
-            document.getElementById("activate-btn").style.display = "inline-block";
+
             if(cameraMap.get(mac).get("activated") == true){
+                document.getElementById("activated-text").innerHTML = "Camera is currently activated"
+                document.getElementById("activate-btn").style.display = "inline-block";
                 document.getElementById("activate-btn").innerHTML = "Activate";
                 document.getElementById("activate-btn").onclick = function(){
-                    activateCamera();
+                    desactivateCamera();
                 }
             }else{
                 document.getElementById("activated-text").innerHTML = "Camera is currently desactivated"
                 document.getElementById("activate-btn").innerHTML = "Desactivate";
                 document.getElementById("activate-btn").onclick = function(){
-                    desactivateCamera();
+                    activateCamera();
                 }
             }
         }else{
@@ -419,8 +420,10 @@ function parseMessage(message){
                             else {
                                 cameraMap.get(currentMac).set("activated", false);
                             }
+                            break;
                         case "desactivated":
                         cameraMap.get(currentMac).set("activated", false);
+                        break;
                         default:
                         console.log("error:", information);
                         break;
