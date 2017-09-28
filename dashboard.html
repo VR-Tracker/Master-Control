@@ -8,6 +8,7 @@
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/datepicker3.css" rel="stylesheet">
 	<link href="css/styles.css" rel="stylesheet">
+	<link href="css/styles2.css" rel="stylesheet">
 
 	<!--Icons-->
 	<script src="js/lumino.glyphs.js"></script>
@@ -58,7 +59,53 @@
 			<div class="col-lg-12">
 				<h1 class="page-header">Dashboard</h1>
 			</div>
+				<div class="col-md-4">
+					<div class="panel panel-info" >
+						<div class="panel-heading">
+							<strong>Gateway Information</strong>
+						</div>
+						<div class="panel-body update-info" id="gateway-software-state-fail" role="alert" align="center">
+							<p>Your Gateway need to be updated !</p>
+							<p align="center" style="" ></p>
+						</div>
+						<div class="panel-body update-info" id="gateway-software-state" role="alert" align="center">
+							<p>Your Gateway is up to date !</p>
+							<p align="center" style="" ></p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-info" >
+						<div class="panel-heading">
+							<strong>Camera Information</strong>
+						</div>
+						<div class="panel-body update-info" id="camera-software-state-fail" role="alert" align="center">
+							<p>Your Cameras need to be updated !</p>
+							<p align="center" style="" ></p>
+						</div>
+						<div class="panel-body update-info" id="camera-software-state" role="alert" align="center">
+							<p>Your Cameras are up to date !</p>
+							<p align="center" style="" ></p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4">
+					<div class="panel panel-info" >
+						<div class="panel-heading">
+							<strong>Tag Information</strong>
+						</div>
+						<div class="panel-body update-info" id="tag-software-state-fail" role="alert" align="center">
+							<p>Your Tags need to be updated !</p>
+							<p align="center" style="" ></p>
+						</div>
+						<div class="panel-body update-info" id="tag-software-state" role="alert" align="center">
+							<p>Your tags are up to date !</p>
+							<p align="center" style="" ></p>
+						</div>
+					</div>
+				</div>
 		</div><!--/.row-->
+
 		<div class="alert bg-danger" id="ws_failed_alert" role="alert">
 			<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Connection to the Gateway Failed  <a href="#"  style="font-style: italic; color: #fff; ">(help)</a> <a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a>
 		</div>
@@ -144,7 +191,13 @@
 						<canvas id="camera-canvas" width="640" height="480" style="border:1px solid rgba(230, 230, 230, 1);     width: 100%;"></canvas>
 					</div>
 					<div class="col-md-6 mx-auto">
-						<h4 class="text-center">Detection Settings</h4>
+						<div class="row" align="center" style="margin:15px;">
+							<p>
+								<i id="activated-text">Camera is currently activated</i>
+							</p>
+							<button type="submit" class="btn btn-info" id="activate-btn" >Activate</button>
+						</div>
+						<h4 style="margin-top:50px;" class="text-center">Detection Settings</h4>
 						<div style="margin-top:25px;">
 							<div class="row" id="camera-sliders">
 								<div class="col-sm-4">
