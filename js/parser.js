@@ -232,6 +232,7 @@ function parseMessage(message){
         }
         case "gatewayversion":{
             gatewayVersion = contentMap.get("uid");
+            console.log("Gateway version " + gatewayVersion);
             updateGatewayVersionDisplay(contentMap.get("uid"), gatewayLatestVersion);
             break;
         }

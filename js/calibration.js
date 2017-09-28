@@ -49,9 +49,7 @@ var StopCalibration = "<p>Now that the calibration is finished, you should be ab
 window.onload=function(){
     createWebsocket();
     // Send a message when the button start calibration is clicked.
-    getGatewayLatestVersion();
-    getCameraLatestVersion();
-    getTagLatestVersion();
+
     calibrationBtn.onclick = function(e) {
         e.preventDefault();
         var send = false;
@@ -152,7 +150,6 @@ function createWebsocket(){
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
         setInterval(getCamerasInformation, 5000);
-        setTimeout(askSystemInfo,3000);
         socket.send("cmd=camerasposition");
         //Envoi du message apres un certain temps
     };
@@ -754,7 +751,7 @@ function showCalibratedCamera(){
 function calibrate(){
     handleKeySpace();
 }
-
+/*
 function getGatewayLatestVersion(){
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.onreadystatechange = function() {
@@ -772,6 +769,7 @@ function getGatewayLatestVersion(){
 function afficherRequete(data){
     console.log("data", data);
 }
+
 function getCameraLatestVersion(){
     //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera
     var xmlHttp = new XMLHttpRequest();
@@ -936,7 +934,7 @@ function hostReachable() {
     }
 
 }
-
+*/
 function sendMessageWithTimeOut(){
     socket.send(timeOutMessage);
 }

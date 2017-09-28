@@ -12,11 +12,14 @@ var userMap = new Map();
 var camerasPositionMap = new Map();
 var wsFailedAlert = document.getElementById('ws_failed_alert');
 var wsSuccessAlert = document.getElementById('ws_success_alert');
+var gatewayLatestVersion = "searching...";
+var cameraLatestVersion = "searching...";
+var tagLatestVersion = "searching...";
+var gatewayVersion;
 
 function VRTrackerWebsocket (websocketType){
     this.websocketType = websocketType;
     socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
-
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
@@ -62,11 +65,12 @@ VRTrackerWebsocket.prototype.sendMessage = function(message){
 }
 
 VRTrackerWebsocket.prototype.getCamerasInformation = function(){
-    socket.send(askCamerasInformation);
+    //socket.send(askCamerasInformation);
 }
 
 VRTrackerWebsocket.prototype.askSystemInfo = function(){
     socket.send("cmd=systeminfos");
+    socket.send("cmd=systemversions");
 }
 
 VRTrackerWebsocket.prototype.askTagInformation = function(){
@@ -89,6 +93,7 @@ function createElement(type, version, info){
 }
 
 window.onload=function(){
+    getLatestVersion();
     vrtracker = new VRTrackerWebsocket(websocketIP)
     //addCamera("test");
     // Show a disconnected message when the WebSocket is closed.
@@ -223,17 +228,16 @@ function selectcamera(camera){
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if(cameraMap.get(mac).has("activated")){
-
+            document.getElementById("activated-text").innerHTML = "Camera is currently activated"
+            document.getElementById("activate-btn").style.display = "inline-block";
             if(cameraMap.get(mac).get("activated") == true){
-                document.getElementById("activated-text").innerHTML = "Camera is currently activated"
-                document.getElementById("activate-btn").style.display = "inline-block";
-                document.getElementById("activate-btn").innerHTML = "Activate";
+                document.getElementById("activate-btn").innerHTML = "Desactivate";
                 document.getElementById("activate-btn").onclick = function(){
                     desactivateCamera();
                 }
             }else{
                 document.getElementById("activated-text").innerHTML = "Camera is currently desactivated"
-                document.getElementById("activate-btn").innerHTML = "Desactivate";
+                document.getElementById("activate-btn").innerHTML = "Activate";
                 document.getElementById("activate-btn").onclick = function(){
                     activateCamera();
                 }
@@ -257,6 +261,34 @@ function selectcamera(camera){
 
 }
 
+function selectTag(tag){
+    var liste = document.getElementById("tags-grid");
+
+    if($(tag).hasClass('selected')){
+        var mac = tag.id.split("-")[1];
+        $(tag).removeClass("selected");
+        message = "cmd=unselecttag&uid=" + mac;
+        socket.send(message);
+
+    }
+    else {
+        $(tag).addClass("selected");
+        var mac = tag.id.split("-")[1];
+        message = "cmd=selecttag&uid=" + mac;
+        socket.send(message);
+    }
+    for (var i=1; i < liste.childNodes.length; i++) {
+        if(camera.id != liste.childNodes[i].id){
+            liste.childNodes[i].classList.remove("selected");
+
+            var mac = liste.childNodes[i].id.split("-")[1];
+            var message = "cmd=unselect&uid=" + mac;
+            socket.send(message);
+        }
+    }
+
+}
+
 function addCamera(mac){
     if(mac != ""){
         var camera = document.getElementById("camera-" + mac);
@@ -265,7 +297,8 @@ function addCamera(mac){
             +'</br><p> mac: ' + mac + '</p>'
             +'<p> IP: '  + cameraMap.get(mac).get("ip") + '</p>'
             +'<p> version: '  + cameraMap.get(mac).get("version") + '</p>'
-            +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated") + '</p>';
+            +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated")
+            +', activated: ' + cameraMap.get(mac).get("activated") + '</p>';
 
             if(cameraMap.get(mac).get("calibrated") == "true"){
                 camera.innerHTML +='<p> Position: (X: '  + truncateDigit(cameraMap.get(mac).get("x")) + ', Y: '
@@ -281,7 +314,8 @@ function addCamera(mac){
             newCamera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
             +'</br><p> mac: ' + mac + '</p>'
             +'<p> version: '  + cameraMap.get(mac).get("version") + '</p>'
-            +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated") + '</p>';
+            +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated")
+            +', activated: ' + cameraMap.get(mac).get("activated") + '</p>';
             if(cameraMap.get(mac).get("calibrated") == "true"){
                 newCamera.innerHTML += '<p> Position: (X: '  + truncateDigit(cameraMap.get(mac).get("x"))+ ', Y: '
                 + truncateDigit(cameraMap.get(mac).get("y")) + ', Z: ' + truncateDigit(cameraMap.get(mac).get("z")) + ')</p>';
@@ -423,7 +457,7 @@ function parseMessage(message){
                             break;
                         case "desactivated":
                         cameraMap.get(currentMac).set("activated", false);
-                        break;
+
                         default:
                         console.log("error:", information);
                         break;
@@ -579,6 +613,20 @@ function parseMessage(message){
             }
         }
         break;
+        case "gatewayversion":{
+            gatewayVersion = contentMap.get("uid");
+            console.log("Gateway version " + gatewayVersion);
+            updateGatewayVersionDisplay(contentMap.get("uid"), gatewayLatestVersion);
+            break;
+        }
+        case "camerasversion":{
+            updateCameraVersionDisplay(contentMap, cameraLatestVersion);
+            break;
+        }
+        case "tagsversion":{
+            updateTagVersionDisplay(contentMap, tagLatestVersion);
+            break;
+        }
         default:
         break;
     }
@@ -622,9 +670,214 @@ function truncateDigit(digit){
 function activateCamera(){
     var mac = getSelectedCameraMac();
     socket.send("cmd=activatecamera&uid=" + mac);
+    document.getElementById("activate-btn").innerHTML = "Desactivate";
+    document.getElementById("activate-btn").onclick = function(){
+        desactivateCamera();
+    }
 }
 
 function desactivateCamera(){
     var mac = getSelectedCameraMac();
     socket.send("cmd=desactivatecamera&uid=" + mac);
+    document.getElementById("activated-text").innerHTML = "Camera is currently desactivated"
+    document.getElementById("activate-btn").innerHTML = "Activate";
+    document.getElementById("activate-btn").onclick = function(){
+        activateCamera();
+    }
+}
+
+function getGatewayLatestVersion(){
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            var split = xmlHttp.responseText.split(".");
+            console.log("last version gateway : ", xmlHttp.responseText);
+            var version = split[1] + "." + split[2];
+            gatewayLatestVersion = version;
+        }else{
+            gatewayLatestVersion = "error";
+        }
+    }
+    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway", true); // true for asynchronous
+    xmlHttp.send("hello");
+}
+
+function afficherRequete(data){
+    console.log("data", data);
+}
+function getCameraLatestVersion(){
+    //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            var split = xmlHttp.responseText.split(".");
+            var version = split[1] + "." + split[2];
+            cameraLatestVersion = version;
+        }
+    }
+    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
+    xmlHttp.send(null);
+    //xmlHttp.close();
+}
+
+function getTagLatestVersion(){
+    //http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.onreadystatechange = function() {
+        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
+            var split = xmlHttp.responseText.split(".");
+            var version = 0 + "." + split[0].replace("tag","");
+            tagLatestVersion = version;
+        }else{
+            tagLatestVersion = "error";
+        }
+    }
+    xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
+    xmlHttp.send(null);
+}
+
+function updateGatewayVersionDisplay(version, newversion){
+    var success = document.getElementById("gateway-software-state");//.style.display = "block";
+    var fail = document.getElementById("gateway-software-state-fail");//.innerHTML = (messageCameraCalibrated);
+    var retrieveProblem;
+    console.log("New " + newversion + "; version " + version);
+    if(version === newversion){
+        console.log("Au revoir");
+
+        success.style.display = "block";
+        fail.style.display = "none";
+        success.children[1].innerHTML = "Current version: " + gatewayVersion;
+    }else{
+        fail.style.display = "block";
+        success.style.display = "none";
+        var message = "";
+        if (typeof newversion != 'undefined'){
+            message = "Latest version: " + newversion;
+            if (typeof version != 'undefined'){
+                message += "</br>Current version: " + version;
+                fail.children[1].innerHTML = message;
+            }
+            if(newversion == 'error'){
+                message = "Can't retrieve latest gateway version </br> You can try an other browser"
+                fail.children[0].innerHTML = message;
+            }
+        }else{
+            message = "Can't retrieve latest gateway version </br> You can try an other browser"
+            fail.children[1].innerHTML = message;
+        }
+
+    }
+}
+
+function updateCameraVersionDisplay(versions, newversion){
+    var success = document.getElementById("camera-software-state");
+    var fail = document.getElementById("camera-software-state-fail");
+    var camerasToUpdate = [];
+    var camerasVersion = [];
+    var macList = [];
+    if(cameraLatestVersion.search("search") != -1){
+        success.style.display = "none";
+        fail.style.display = "block";
+        fail.children[0].innerHTML = "";
+        message = "Can't retrieve latest camera version</br> You can try an other browser";
+    }else{
+        for (var [cmd, info] of versions) {
+            if(cmd.includes("uid")){
+                macList.push(info);
+            }
+            if(cmd.includes("version")){
+                camerasVersion.push(info);
+            }
+        }
+
+        for (var i = 0; i < camerasVersion.length; i++) {
+            if(!(camerasVersion[i] === newversion)){
+                camerasToUpdate.push(i);
+            }
+        }
+        if(camerasToUpdate.length === 0){
+            success.style.display = "block";
+            fail.style.display = "none";
+            success.children[1].innerHTML = "Current version: " + cameraLatestVersion;
+        }else{
+            success.style.display = "none";
+            fail.style.display = "block";
+            var message = "";
+
+            message += "Current version: </br><ul>"
+            for (var i = 0; i < camerasToUpdate.length; i++) {
+                message += "<li> MAC: " + macList[i] + ", version:";
+                message += camerasVersion[camerasToUpdate[i]] + "</li>";
+            }
+            message += "</ul>"
+            console.log("Camera version " + cameraLatestVersion.search("search") != 1);
+            if((typeof cameraLatestVersion != 'undefined')){
+                message += "Latest version: " + cameraLatestVersion;
+            }else{
+                fail.children[0].innerHTML = "";
+                message += "Can't retrieve latest camera version</br> You can try an other browser";
+            }
+        }
+    }
+    fail.children[1].innerHTML = message;
+
+}
+
+function updateTagVersionDisplay(versions, newversion){
+    var success = document.getElementById("tag-software-state");
+    var fail = document.getElementById("tag-software-state-fail");
+    var tagsToUpdate = [];
+    var tagsVersion = [];
+    var macList = [];
+
+    if(newversion.search("search") != -1){
+        success.style.display = "none";
+        fail.style.display = "block";
+        fail.children[0].innerHTML = "";
+        message = "Can't retrieve latest tag version</br> You can try an other browser";
+    }else{
+        for (var [cmd, info] of versions) {
+            if(cmd.includes("uid")){
+                macList.push(info);
+            }
+            if(cmd.includes("version")){
+                tagsVersion.push(info);
+            }
+        }
+
+        for (var i = 0; i < tagsVersion.length; i++) {
+            if(!(tagsVersion[i] === newversion)){
+                tagsToUpdate.push(i);
+            }
+        }
+        if(tagsToUpdate.length === 0){
+            success.style.display = "block";
+            fail.style.display = "none";
+            success.children[1].innerHTML = "Current version: " + tagLatestVersion;
+        }else{
+            success.style.display = "none";
+            fail.style.display = "block";
+            var message = "";
+            message += "Current version: </br><ul>"
+            for (var i = 0; i < tagsToUpdate.length; i++) {
+                message += "<li> MAC: " + macList[i] + ", version:" +
+                + tagsVersion[tagsToUpdate[i]] + "</li>";
+            }
+            message += "</ul>"
+            if(typeof tagLatestVersion != 'undefined'){
+
+                message += "Latest version: " + tagLatestVersion;
+            }else {
+                fail.children[0].innerHTML = "";
+                message += "Can't retrieve latest tag version</br> You can try an other browser";
+            }
+        }
+    }
+    fail.children[1].innerHTML = message;
+}
+
+function getLatestVersion(){
+    getGatewayLatestVersion();
+    getCameraLatestVersion();
+    getTagLatestVersion();
 }
