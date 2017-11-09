@@ -234,6 +234,13 @@ function saveCameraSettings(){
     socket.send(message);
 }
 
+function snapshotCamera(){
+    var mac = getSelectedCameraMac();
+    var message = "cmd=camerasnapshot&uid=" + mac;
+    console.log(message);
+    socket.send(message);
+}
+
 function selectcamera(camera){
     var liste = document.getElementById("cameras-grid");
 
