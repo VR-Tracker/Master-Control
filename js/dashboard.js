@@ -151,6 +151,20 @@ function updateMaxBlobSizeSlider(input){
     sendCameraSettings(mac);
 }
 
+function updateGainSlider(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-gain-input")).val(input.value);
+    cameraMap.get(mac).set("gain", input.value);
+    sendCameraGain(mac);
+}
+
+function updateExposureSlider(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-exposure-input")).val(input.value);
+    cameraMap.get(mac).set("exposure", input.value);
+    sendCameraExposure(mac);
+}
+
 
 function updateSensitivityInput(input){
     var mac = getSelectedCameraMac();
@@ -174,6 +188,21 @@ function updateMaxBlobSizeInput(input){
     sendCameraSettings(mac);
 }
 
+
+function updateGainInput(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-gain-slider")).val(input.value);
+    cameraMap.get(mac).set("gain", input.value);
+    sendCameraGain(mac);
+}
+
+function updateExposureInput(input){
+    var mac = getSelectedCameraMac();
+    $(document.getElementById("camera-exposure-slider")).val(input.value);
+    cameraMap.get(mac).set("exposure", input.value);
+    sendCameraExposure(mac);
+}
+
 // Return the Selected Camera MAC address using tits ID
 function getSelectedCameraMac(){
     var liste = document.getElementById("cameras-grid");
@@ -189,9 +218,26 @@ function sendCameraSettings(mac){
     socket.send(message);
 }
 
+function sendCameraGain(mac){
+    var message = "cmd=gaincamera&uid=" + mac + "&value=" + cameraMap.get(mac).get("gain");
+    socket.send(message);
+}
+
+function sendCameraExposure(mac){
+    var message = "cmd=exposurecamera&uid=" + mac + "&value=" + cameraMap.get(mac).get("exposure");
+    socket.send(message);
+}
+
 function saveCameraSettings(){
     var mac = getSelectedCameraMac();
     var message = "cmd=savecamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
+    socket.send(message);
+}
+
+function snapshotCamera(){
+    var mac = getSelectedCameraMac();
+    var message = "cmd=camerasnapshot&uid=" + mac;
+    console.log(message);
     socket.send(message);
 }
 
@@ -366,7 +412,9 @@ function addTag(mac){
     newTag.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-tag"/></svg>'
     +'</br><p> mac: ' + mac + '</p>'
     +'<p> battery: '  + tagMap.get(mac).get("battery") + '%</p>'
+    +'<p> orientation: '  + tagMap.get(mac).get("orientation") + '</p>'
     +'<p> status: '  + tagMap.get(mac).get("status") + '</p>'
+    +'<p> #users: '  + tagMap.get(mac).get("users") + '</p>'
     +'<p> version: '  + tagMap.get(mac).get("version") + '</p>';
 }
 
@@ -512,7 +560,6 @@ function parseMessage(message){
                             tagMap.get(currentMac).set("battery", "0");
                             tagMap.get(currentMac).set("status", "lost");
                         }
-                        addTag(currentMac);
                         break;
                         case "version":
                         tagMap.get(currentMac).set("version", information[1]);
@@ -523,13 +570,19 @@ function parseMessage(message){
                         case "status":
                         tagMap.get(currentMac).set("status", information[1]);
                         break;
+                        case "orientation":
+                        tagMap.get(currentMac).set("orientation", information[1]);
+                        break;
+                        case "users":
+                        tagMap.get(currentMac).set("users", information[1]);
+                        break;
                         default:
                         console.log("error:", information);
                         break;
                     }
 
                 }
-
+                addTag(currentMac);
             }else{
                 console.log("Unrecognized message");
             }
