@@ -155,14 +155,14 @@ function updateGainSlider(input){
     var mac = getSelectedCameraMac();
     $(document.getElementById("camera-gain-input")).val(input.value);
     cameraMap.get(mac).set("gain", input.value);
-    sendCameraGain(mac);
+    sendCameraSettings(mac);
 }
 
 function updateExposureSlider(input){
     var mac = getSelectedCameraMac();
     $(document.getElementById("camera-exposure-input")).val(input.value);
     cameraMap.get(mac).set("exposure", input.value);
-    sendCameraExposure(mac);
+    sendCameraSettings(mac);
 }
 
 
@@ -193,14 +193,14 @@ function updateGainInput(input){
     var mac = getSelectedCameraMac();
     $(document.getElementById("camera-gain-slider")).val(input.value);
     cameraMap.get(mac).set("gain", input.value);
-    sendCameraGain(mac);
+    sendCameraSettings(mac);
 }
 
 function updateExposureInput(input){
     var mac = getSelectedCameraMac();
     $(document.getElementById("camera-exposure-slider")).val(input.value);
     cameraMap.get(mac).set("exposure", input.value);
-    sendCameraExposure(mac);
+    sendCameraSettings(mac);
 }
 
 // Return the Selected Camera MAC address using tits ID
@@ -214,7 +214,12 @@ function getSelectedCameraMac(){
 }
 
 function sendCameraSettings(mac){
-    var message = "cmd=setcamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
+    var message = "cmd=setcamerasettings&uid=" + mac
+    + "&sensitivity=" + cameraMap.get(mac).get("sensitivity")
+    + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize")
+    + "&minblobsize=" + cameraMap.get(mac).get("minblobsize")
+    + "&gain=" + cameraMap.get(mac).get("gain")
+    + "&exposure=" + cameraMap.get(mac).get("exposure");
     socket.send(message);
 }
 
@@ -455,6 +460,8 @@ function parseMessage(message){
                             cameraMap.get(currentMac).set("sensitivity", 60);
                             cameraMap.get(currentMac).set("minblobsize", 0);
                             cameraMap.get(currentMac).set("maxblobsize", 400);
+                            cameraMap.get(currentMac).set("gain", 0);
+                            cameraMap.get(currentMac).set("exposure", 400);
                             cameraMap.get(currentMac).set("version", "");
                             cameraMap.get(currentMac).set("calibrated", "false");
                             cameraMap.get(currentMac).set("ip", "");
@@ -482,6 +489,12 @@ function parseMessage(message){
                         break;
                         case "maxblobsize":
                         cameraMap.get(currentMac).set("maxblobsize", information[1]);
+                        break;
+                        case "gain":
+                        cameraMap.get(currentMac).set("gain", information[1]);
+                        break;
+                        case "exposure":
+                        cameraMap.get(currentMac).set("exposure", information[1]);
                         break;
                         case "ip":
                         cameraMap.get(currentMac).set("ip", information[1]);
