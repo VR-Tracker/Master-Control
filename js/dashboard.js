@@ -553,6 +553,44 @@ function parseMessage(message){
             }
             break;
         }
+        case "snapshot":{
+             if(messageContent.length > 0){
+                var currentMac = "";
+                for (var i = 1; i < messageContent.length; i++ ) {
+                    information = messageContent[i].split("=");
+                    switch (information[0]){
+                        case "uid":
+                        currentMac = information[1];
+                            console.log("Snapshot UID: " +information[1]);
+                        break;
+                        case "data":
+                            console.log("Snapshot data: " +information[1].length);
+                            var c=document.getElementById("camera-canvas");
+                            var ctx=c.getContext("2d");
+                            var imgData=ctx.createImageData(640,480);
+                            console.log("Image data length / 4 : " + imgData.data.length/4)
+                            for (var i=0;i<imgData.data.length;i+=4)
+                              {
+                                if(information[1].charCodeAt(i)>130)
+                                    console.log("OVER 120");
+                              imgData.data[i+0]=information[1].charCodeAt(i);
+                              imgData.data[i+1]=information[1].charCodeAt(i);
+                              imgData.data[i+2]=information[1].charCodeAt(i);
+                              imgData.data[i+3]=100;
+                              }
+                            ctx.putImageData(imgData,0,0);
+                        break;
+                        default:
+                        console.log("error:", information);
+                        break;
+                    }
+
+                }
+            }else{
+                console.log("Unrecognized message");
+            }
+            break;
+        }
         case "info":{
             if(contentMap.has("msg")){
 
@@ -628,7 +666,7 @@ function parseMessage(message){
         case "points":
         var canvas = document.getElementById("camera-canvas");
         var ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+       /* ctx.clearRect(0, 0, canvas.width, canvas.height);
         var x,y;
         for (var i = 1; i < messageContent.length - 1; i++ ) {
             information = messageContent[i].split("=");
@@ -640,7 +678,7 @@ function parseMessage(message){
             ctx.beginPath();
             ctx.arc(x,480-y,2,0,2*Math.PI);
             ctx.stroke();
-        }
+        }*/
         console.log("Nombre de points : " + messageContent[messageContent.length - 1]);
         break;
         case "camerasposition":{
