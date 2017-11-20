@@ -589,6 +589,7 @@ function parseMessage(message){
                             console.log("Snapshot data: " +information[1].length);
                             var c=document.getElementById("camera-canvas");
                             var ctx=c.getContext("2d");
+                            
                             var imgData=ctx.createImageData(640,480);
                             console.log("Image data length / 4 : " + imgData.data.length/4)
                             
@@ -601,7 +602,7 @@ function parseMessage(message){
                             }
                             
                             console.log(revLookup[information[1].charCodeAt(2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)]);
-                            for (var i=0;i<imgData.data.length;i+=4)
+                           /* for (var i=0;i<imgData.data.length;i+=4)
                               {
                                 //  console.log(information[1].charCodeAt(i));
                               imgData.data[i+0]=revLookup[information[1].charCodeAt(i/2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)];
@@ -609,7 +610,22 @@ function parseMessage(message){
                               imgData.data[i+2]=revLookup[information[1].charCodeAt(i/2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)];
                               imgData.data[i+3]=255;
                               }
+                            */
+                            var index = 0;
+                            for (var i=0;i<480;i++)
+                              {
+                              for (var j=0;j<640;j++)
+                                  {
+                                    //  console.log(information[1].charCodeAt(i));
+                                  imgData.data[(479-i)*4*640+4*(639-j)+0]=revLookup[information[1].charCodeAt(index)]<<4 +revLookup[information[1].charCodeAt(index+1)];
+                                  imgData.data[(479-i)*4*640+4*(639-j)+1]=revLookup[information[1].charCodeAt(index)]<<4 +revLookup[information[1].charCodeAt(index+1)];
+                                  imgData.data[(479-i)*4*640+4*(639-j)+2]=revLookup[information[1].charCodeAt(index)]<<4 +revLookup[information[1].charCodeAt(index+1)];
+                                  imgData.data[(479-i)*4*640+4*(639-j)+3]=255;
+                                  index+=2;
+                                  }
+                              }
                             ctx.putImageData(imgData,0,0);
+                        
                         break;
                         default:
                         console.log("error:", information);
