@@ -329,12 +329,16 @@ function selectTag(tag){
         var mac = tag.id.split("-")[1];
         $(tag).removeClass("selected");
         var message = "cmd=unselecttag&uid=" + mac;
+        //$("button").remove("#orientation-btn")
         socket.send(message);
     }
     else {
         $(tag).addClass("selected");
         var mac = tag.id.split("-")[1];
         var message = "cmd=selecttag&uid=" + mac;
+        //var button = $('<button type="submit" class="btn btn-info" id="orientation-btn"></button>').text("Reoriente");
+
+        //$(tag).append(button);
         socket.send(message);
     }
     //Update the other tags
@@ -342,8 +346,11 @@ function selectTag(tag){
         if(tag.id != liste.childNodes[i].id && liste.childNodes[i].classList.contains('selected')){
             liste.childNodes[i].classList.remove("selected");
             var mac = liste.childNodes[i].id.split("-")[1];
-            var message = "cmd=unselect&uid=" + mac;
+            var message = "cmd=unselecttag&uid=" + mac;
+            console.log("Unselect " + message);
             socket.send(message);
+        }else{
+            console.log("FAUX");
         }
     }
 
@@ -423,6 +430,8 @@ function addTag(mac){
         newTag.setAttribute("class", "col-lg-3 col-md-4 col-sm-6");
         newTag.setAttribute("id", "tag-" + mac);
         newTag.setAttribute("onclick", "selectTag(this)");
+        liste.appendChild(newTag);
+
     }
     newTag.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-tag"/></svg>'
     +'</br><p> mac: ' + mac + '</p>'
@@ -430,8 +439,8 @@ function addTag(mac){
     +'<p> orientation: '  + tagMap.get(mac).get("orientation") + '</p>'
     +'<p> status: '  + tagMap.get(mac).get("status") + '</p>'
     +'<p> #users: '  + tagMap.get(mac).get("users") + '</p>'
-    +'<p> version: '  + tagMap.get(mac).get("version") + '</p>';
-    liste.appendChild(newTag);
+    +'<p> version: '  + tagMap.get(mac).get("version") + '</p>'
+    +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Reoriente</button>';
 }
 
 var countElementGateway = new Map();
@@ -999,4 +1008,10 @@ function getLatestVersion(){
     getGatewayLatestVersion();
     getCameraLatestVersion();
     getTagLatestVersion();
+}
+
+function reorienteTag(mac){
+    var message = "cmd=reoriente&uid=" + mac;
+    console.log(message);
+    vrtracker.sendMessage(message);
 }
