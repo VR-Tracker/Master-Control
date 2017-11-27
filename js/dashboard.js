@@ -20,6 +20,7 @@ var gatewayVersion;
 function VRTrackerWebsocket (websocketType){
     this.websocketType = websocketType;
     socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
+    socket.binaryType = 'arraybuffer';
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
@@ -33,16 +34,22 @@ function VRTrackerWebsocket (websocketType){
     }
     // Handle messages sent by the server.
     socket.onmessage = function(event) {
-        //getting the time of the message
-        var message = event.data;
-        parseMessage(message);
+        if (typeof event.data !== 'string') {
+            var data3 = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(event.data)));
+            console.log("BIN DATA");
+        } else {
+            console.log("STRING DATA");
+            //getting the time of the message
+            var message = event.data;
+            parseMessage(message);
+        }
     }
 }
 
 VRTrackerWebsocket.prototype.createWebsocket = function(websocketType){
 
     socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
-
+    socket.binaryType = 'arraybuffer';
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
@@ -54,9 +61,15 @@ VRTrackerWebsocket.prototype.createWebsocket = function(websocketType){
     }
     // Handle messages sent by the server.
     socket.onmessage = function(event) {
-        //getting the time of the message
-        var message = event.data;
-        parseMessage(message);
+        if (typeof event.data !== 'string') {
+            var data3 = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(event.data)));
+            console.log("BIN DATA");
+        } else {
+            console.log("STRING DATA");
+            //getting the time of the message
+            var message = event.data;
+            parseMessage(message);
+        }
     }
 }
 
@@ -245,7 +258,12 @@ function sendCameraExposure(mac){
 
 function saveCameraSettings(){
     var mac = getSelectedCameraMac();
-    var message = "cmd=savecamerasettings&uid=" + mac + "&sensitivity=" + cameraMap.get(mac).get("sensitivity") + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize") + "&minblobsize=" + cameraMap.get(mac).get("minblobsize");
+    var message = "cmd=savecamerasettings&uid=" + mac
+    + "&sensitivity=" + cameraMap.get(mac).get("sensitivity")
+    + "&maxblobsize=" + cameraMap.get(mac).get("maxblobsize")
+    + "&minblobsize=" + cameraMap.get(mac).get("minblobsize")
+    + "&gain=" + cameraMap.get(mac).get("gain")
+    + "&exposure=" + cameraMap.get(mac).get("exposure");
     socket.send(message);
 }
 
@@ -279,6 +297,10 @@ function selectcamera(camera){
         $(document.getElementById("camera-minblobsize-input")).val(cameraMap.get(mac).get("minblobsize"));
         $(document.getElementById("camera-sensitivity-slider")).val(cameraMap.get(mac).get("sensitivity"));
         $(document.getElementById("camera-sensitivity-input")).val(cameraMap.get(mac).get("sensitivity"));
+        $(document.getElementById("camera-gain-slider")).val(cameraMap.get(mac).get("gain"));
+        $(document.getElementById("camera-gain-input")).val(cameraMap.get(mac).get("gain"));
+        $(document.getElementById("camera-exposure-slider")).val(cameraMap.get(mac).get("exposure"));
+        $(document.getElementById("camera-exposure-input")).val(cameraMap.get(mac).get("exposure"));
         var message = "cmd=transferpoints&uid=" + mac;
         socket.send(message);
 
@@ -286,7 +308,7 @@ function selectcamera(camera){
         socket.send(message);
         var canvas = document.getElementById("camera-canvas");
         var ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      //  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if(cameraMap.get(mac).has("activated")){
             document.getElementById("activate-btn").style.display = "inline-block";
@@ -459,7 +481,7 @@ countElementGateway.set("masters", 0);
 var positionCount = 0;
 
 function parseMessage(message){
-    console.log(message);
+    //console.log(message);
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
@@ -598,18 +620,43 @@ function parseMessage(message){
                             console.log("Snapshot data: " +information[1].length);
                             var c=document.getElementById("camera-canvas");
                             var ctx=c.getContext("2d");
+                            
                             var imgData=ctx.createImageData(640,480);
                             console.log("Image data length / 4 : " + imgData.data.length/4)
-                            for (var i=0;i<imgData.data.length;i+=4)
+                            
+                            var lookup = []
+                            var revLookup = []
+                            var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+                            for (var i = 0, len = code.length; i < len; ++i) {
+                              lookup[i] = code[i]
+                              revLookup[code.charCodeAt(i)] = i
+                            }
+                            
+                            console.log(revLookup[information[1].charCodeAt(2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)]);
+                           /* for (var i=0;i<imgData.data.length;i+=4)
                               {
-                                if(information[1].charCodeAt(i)>130)
-                                    console.log("OVER 120");
-                              imgData.data[i+0]=information[1].charCodeAt(i);
-                              imgData.data[i+1]=information[1].charCodeAt(i);
-                              imgData.data[i+2]=information[1].charCodeAt(i);
-                              imgData.data[i+3]=100;
+                                //  console.log(information[1].charCodeAt(i));
+                              imgData.data[i+0]=revLookup[information[1].charCodeAt(i/2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)];
+                              imgData.data[i+1]=revLookup[information[1].charCodeAt(i/2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)];
+                              imgData.data[i+2]=revLookup[information[1].charCodeAt(i/2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)];
+                              imgData.data[i+3]=255;
+                              }
+                            */
+                            var index = 0;
+                            for (var i=0;i<480;i++)
+                              {
+                              for (var j=0;j<640;j++)
+                                  {
+                                    //  console.log(information[1].charCodeAt(i));
+                                  imgData.data[(479-i)*4*640+4*(639-j)+0]=revLookup[information[1].charCodeAt(index)]<<4 +revLookup[information[1].charCodeAt(index+1)];
+                                  imgData.data[(479-i)*4*640+4*(639-j)+1]=revLookup[information[1].charCodeAt(index)]<<4 +revLookup[information[1].charCodeAt(index+1)];
+                                  imgData.data[(479-i)*4*640+4*(639-j)+2]=revLookup[information[1].charCodeAt(index)]<<4 +revLookup[information[1].charCodeAt(index+1)];
+                                  imgData.data[(479-i)*4*640+4*(639-j)+3]=255;
+                                  index+=2;
+                                  }
                               }
                             ctx.putImageData(imgData,0,0);
+                        
                         break;
                         default:
                         console.log("error:", information);
