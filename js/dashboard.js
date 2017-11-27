@@ -103,7 +103,7 @@ window.setInterval(function(){
     if(socket.readyState === socket.CLOSED){
         vrtracker.createWebsocket(websocketIP);
     }
-    (vrtracker.askSystemInfo());
+    //(vrtracker.askSystemInfo());
 
 }, 2000);
 
@@ -406,6 +406,7 @@ function removeUser(mac){
 }
 
 function addTag(mac){
+    console.log("Add new tag " + mac);
     var newTag = document.getElementById("tag-" + mac);
     if(newTag == undefined){
         var liste = document.getElementById("tags-grid");
@@ -631,9 +632,8 @@ function parseMessage(message){
                         console.log("error:", information);
                         break;
                     }
-
+                    addTag(currentMac);
                 }
-                addTag(currentMac);
             }else{
                 console.log("Unrecognized message");
             }
