@@ -291,12 +291,15 @@ function selectcamera(camera){
         if(cameraMap.get(mac).has("activated")){
             document.getElementById("activate-btn").style.display = "inline-block";
             if(cameraMap.get(mac).get("activated") == true){
+                console.log("Camera is activated");
                 document.getElementById("activated-text").innerHTML = "Camera is currently activated"
                 document.getElementById("activate-btn").innerHTML = "Desactivate";
                 document.getElementById("activate-btn").onclick = function(){
                     desactivateCamera();
                 }
             }else{
+                console.log("Camera is not activated");
+
                 document.getElementById("activated-text").innerHTML = "Camera is currently desactivated"
                 document.getElementById("activate-btn").innerHTML = "Activate";
                 document.getElementById("activate-btn").onclick = function(){
@@ -337,7 +340,7 @@ function selectTag(tag){
         var mac = tag.id.split("-")[1];
         var message = "cmd=selecttag&uid=" + mac;
         //var button = $('<button type="submit" class="btn btn-info" id="orientation-btn"></button>').text("Reoriente");
-
+        console.log(message);
         //$(tag).append(button);
         socket.send(message);
     }
@@ -360,17 +363,7 @@ function addCamera(mac){
     if(mac != ""){
         var camera = document.getElementById("camera-" + mac);
         if(camera != undefined){
-            camera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
-            +'</br><p> mac: ' + mac + '</p>'
-            +'<p> IP: '  + cameraMap.get(mac).get("ip") + '</p>'
-            +'<p> version: '  + cameraMap.get(mac).get("version") + '</p>'
-            +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated")
-            +', activated: ' + cameraMap.get(mac).get("activated") + '</p>';
-
-            if(cameraMap.get(mac).get("calibrated") == "true"){
-                camera.innerHTML +='<p> Position: (X: '  + truncateDigit(cameraMap.get(mac).get("x")) + ', Y: '
-                + truncateDigit(cameraMap.get(mac).get("y")) + ', Z: ' + truncateDigit(cameraMap.get(mac).get("z")) + ')</p>';
-            }
+            updateCameraDisplay(mac);
             //+'<button type="submit" class="btn btn-info" id="activate-btn" onclick="activateCamera()">Activate</button>'
         }else{
             var liste = document.getElementById("cameras-grid");
@@ -391,7 +384,21 @@ function addCamera(mac){
             liste.appendChild(newCamera);
         }
     }
+}
 
+function updateCameraDisplay(mac){
+    var camera = document.getElementById("camera-" + mac);
+    camera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
+    +'</br><p> mac: ' + mac + '</p>'
+    +'<p> IP: '  + cameraMap.get(mac).get("ip") + '</p>'
+    +'<p> version: '  + cameraMap.get(mac).get("version") + '</p>'
+    +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated")
+    +', activated: ' + cameraMap.get(mac).get("activated") + '</p>';
+
+    if(cameraMap.get(mac).get("calibrated") == "true"){
+        camera.innerHTML +='<p> Position: (X: '  + truncateDigit(cameraMap.get(mac).get("x")) + ', Y: '
+        + truncateDigit(cameraMap.get(mac).get("y")) + ', Z: ' + truncateDigit(cameraMap.get(mac).get("z")) + ')</p>';
+    }
 }
 
 function removeCamera(mac){
@@ -415,6 +422,7 @@ function addUser(mac){
     for (var [key, value] of userMap.get(mac).get("tags")) {
         newUser.innerHTML += '<p>' + key + '</p>';
     }
+    console.log(userMap.get(mac));
 }
 
 function removeUser(mac){
@@ -545,6 +553,9 @@ function parseMessage(message){
                     }
                     addCamera(currentMac);
                 }
+                /*for (var [key, value] of cameraMap) {
+                    addCamera(key);
+                }*/
             }
             break;
         }
@@ -674,15 +685,17 @@ function parseMessage(message){
                             userMap.set(currentMac, new Map());
                             userMap.get(currentMac).set("tags", new Map());
                         }
-                        addUser(currentMac);
                         break;
                         default:
+                        console.log(information[1]);
                         userMap.get(currentMac).get("tags").set(information[1], true);
                         break;
                     }
-
                 }
-
+                //Update User display
+                for (var [key, value] of userMap) {
+                    addUser(key);
+                }
             }
             break;
         }
@@ -795,16 +808,22 @@ function truncateDigit(digit){
 }
 
 function activateCamera(){
+    console.log("Activating camera");
     var mac = getSelectedCameraMac();
     socket.send("cmd=activatecamera&uid=" + mac);
+
     document.getElementById("activated-text").innerHTML = "Camera is currently activated"
     document.getElementById("activate-btn").innerHTML = "Desactivate";
     document.getElementById("activate-btn").onclick = function(){
         desactivateCamera();
     }
+    cameraMap.get(mac).set("activated", true);
+    console.log(cameraMap);
+    updateCameraDisplay(mac);
 }
 
 function desactivateCamera(){
+    console.log("Desactivating camera");
     var mac = getSelectedCameraMac();
     socket.send("cmd=desactivatecamera&uid=" + mac);
     document.getElementById("activated-text").innerHTML = "Camera is currently desactivated"
@@ -812,6 +831,9 @@ function desactivateCamera(){
     document.getElementById("activate-btn").onclick = function(){
         activateCamera();
     }
+    cameraMap.get(mac).set("activated", false);
+    updateCameraDisplay(mac);
+
 }
 
 function getGatewayLatestVersion(){
