@@ -213,6 +213,16 @@ function getSelectedCameraMac(){
     }
 }
 
+// Return the Selected Camera MAC address using tits ID
+function getSelectedTagMac(){
+    var liste = document.getElementById("tags-grid");
+    for (var i=1; i < liste.childNodes.length; i++) {
+        if($(liste.childNodes[i]).hasClass('selected')){
+            return liste.childNodes[i].id.split("-")[1];
+        }
+    }
+}
+
 function sendCameraSettings(mac){
     var message = "cmd=setcamerasettings&uid=" + mac
     + "&sensitivity=" + cameraMap.get(mac).get("sensitivity")
@@ -279,9 +289,9 @@ function selectcamera(camera){
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         if(cameraMap.get(mac).has("activated")){
-            document.getElementById("activated-text").innerHTML = "Camera is currently activated"
             document.getElementById("activate-btn").style.display = "inline-block";
             if(cameraMap.get(mac).get("activated") == true){
+                document.getElementById("activated-text").innerHTML = "Camera is currently activated"
                 document.getElementById("activate-btn").innerHTML = "Desactivate";
                 document.getElementById("activate-btn").onclick = function(){
                     desactivateCamera();
@@ -314,24 +324,23 @@ function selectcamera(camera){
 
 function selectTag(tag){
     var liste = document.getElementById("tags-grid");
-
+    //Send the associated message if the current tag was selected
     if($(tag).hasClass('selected')){
         var mac = tag.id.split("-")[1];
         $(tag).removeClass("selected");
-        message = "cmd=unselecttag&uid=" + mac;
+        var message = "cmd=unselecttag&uid=" + mac;
         socket.send(message);
-
     }
     else {
         $(tag).addClass("selected");
         var mac = tag.id.split("-")[1];
-        message = "cmd=selecttag&uid=" + mac;
+        var message = "cmd=selecttag&uid=" + mac;
         socket.send(message);
     }
+    //Update the other tags
     for (var i=1; i < liste.childNodes.length; i++) {
-        if(camera.id != liste.childNodes[i].id){
+        if(tag.id != liste.childNodes[i].id && liste.childNodes[i].classList.contains('selected')){
             liste.childNodes[i].classList.remove("selected");
-
             var mac = liste.childNodes[i].id.split("-")[1];
             var message = "cmd=unselect&uid=" + mac;
             socket.send(message);
@@ -408,12 +417,12 @@ function removeUser(mac){
 function addTag(mac){
     console.log("Add new tag " + mac);
     var newTag = document.getElementById("tag-" + mac);
+    var liste = document.getElementById("tags-grid");
     if(newTag == undefined){
-        var liste = document.getElementById("tags-grid");
         newTag = document.createElement('div');
         newTag.setAttribute("class", "col-lg-3 col-md-4 col-sm-6");
         newTag.setAttribute("id", "tag-" + mac);
-        liste.appendChild(newTag);
+        newTag.setAttribute("onclick", "selectTag(this)");
     }
     newTag.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-tag"/></svg>'
     +'</br><p> mac: ' + mac + '</p>'
@@ -422,6 +431,7 @@ function addTag(mac){
     +'<p> status: '  + tagMap.get(mac).get("status") + '</p>'
     +'<p> #users: '  + tagMap.get(mac).get("users") + '</p>'
     +'<p> version: '  + tagMap.get(mac).get("version") + '</p>';
+    liste.appendChild(newTag);
 }
 
 var countElementGateway = new Map();
@@ -599,6 +609,7 @@ function parseMessage(message){
             break;
         }
         case "tagsinfo":{
+            console.log("Message content " + messageContent);
             if(messageContent.length > 0){
                 var currentMac = "";
                 for (var i = 1; i < messageContent.length; i++ ) {
@@ -632,7 +643,10 @@ function parseMessage(message){
                         console.log("error:", information);
                         break;
                     }
-                    addTag(currentMac);
+                }
+                //Add tag display
+                for (var [key, value] of tagMap) {
+                    addTag(key);
                 }
             }else{
                 console.log("Unrecognized message");
@@ -774,6 +788,7 @@ function truncateDigit(digit){
 function activateCamera(){
     var mac = getSelectedCameraMac();
     socket.send("cmd=activatecamera&uid=" + mac);
+    document.getElementById("activated-text").innerHTML = "Camera is currently activated"
     document.getElementById("activate-btn").innerHTML = "Desactivate";
     document.getElementById("activate-btn").onclick = function(){
         desactivateCamera();
