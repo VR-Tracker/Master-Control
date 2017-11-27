@@ -36,9 +36,7 @@ function VRTrackerWebsocket (websocketType){
     socket.onmessage = function(event) {
         if (typeof event.data !== 'string') {
             var data3 = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(event.data)));
-            console.log("BIN DATA");
         } else {
-            console.log("STRING DATA");
             //getting the time of the message
             var message = event.data;
             parseMessage(message);
@@ -63,9 +61,7 @@ VRTrackerWebsocket.prototype.createWebsocket = function(websocketType){
     socket.onmessage = function(event) {
         if (typeof event.data !== 'string') {
             var data3 = JSON.parse(String.fromCharCode.apply(null, new Uint8Array(event.data)));
-            console.log("BIN DATA");
         } else {
-            console.log("STRING DATA");
             //getting the time of the message
             var message = event.data;
             parseMessage(message);
@@ -270,7 +266,6 @@ function saveCameraSettings(){
 function snapshotCamera(){
     var mac = getSelectedCameraMac();
     var message = "cmd=camerasnapshot&uid=" + mac;
-    console.log(message);
     socket.send(message);
 }
 
@@ -313,15 +308,12 @@ function selectcamera(camera){
         if(cameraMap.get(mac).has("activated")){
             document.getElementById("activate-btn").style.display = "inline-block";
             if(cameraMap.get(mac).get("activated") == true){
-                console.log("Camera is activated");
                 document.getElementById("activated-text").innerHTML = "Camera is currently activated"
                 document.getElementById("activate-btn").innerHTML = "Desactivate";
                 document.getElementById("activate-btn").onclick = function(){
                     desactivateCamera();
                 }
             }else{
-                console.log("Camera is not activated");
-
                 document.getElementById("activated-text").innerHTML = "Camera is currently desactivated"
                 document.getElementById("activate-btn").innerHTML = "Activate";
                 document.getElementById("activate-btn").onclick = function(){
@@ -362,7 +354,6 @@ function selectTag(tag){
         var mac = tag.id.split("-")[1];
         var message = "cmd=selecttag&uid=" + mac;
         //var button = $('<button type="submit" class="btn btn-info" id="orientation-btn"></button>').text("Reoriente");
-        console.log(message);
         //$(tag).append(button);
         socket.send(message);
     }
@@ -372,10 +363,7 @@ function selectTag(tag){
             liste.childNodes[i].classList.remove("selected");
             var mac = liste.childNodes[i].id.split("-")[1];
             var message = "cmd=unselecttag&uid=" + mac;
-            console.log("Unselect " + message);
             socket.send(message);
-        }else{
-            console.log("FAUX");
         }
     }
 
@@ -444,7 +432,6 @@ function addUser(mac){
     for (var [key, value] of userMap.get(mac).get("tags")) {
         newUser.innerHTML += '<p>' + key + '</p>';
     }
-    console.log(userMap.get(mac));
 }
 
 function removeUser(mac){
@@ -452,7 +439,6 @@ function removeUser(mac){
 }
 
 function addTag(mac){
-    console.log("Add new tag " + mac);
     var newTag = document.getElementById("tag-" + mac);
     var liste = document.getElementById("tags-grid");
     if(newTag == undefined){
@@ -481,7 +467,6 @@ countElementGateway.set("masters", 0);
 var positionCount = 0;
 
 function parseMessage(message){
-    //console.log(message);
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
@@ -519,6 +504,7 @@ function parseMessage(message){
                             cameraMap.get(currentMac).set("y", "0");
                             cameraMap.get(currentMac).set("z", "0");
                             cameraMap.get(currentMac).set("activated", false);
+                            cameraMap.get(currentMac).set("trackedPoints", 0);
                         }
                         break;
                         case "version":
@@ -568,7 +554,9 @@ function parseMessage(message){
                             break;
                         case "desactivated":
                         cameraMap.get(currentMac).set("activated", false);
-
+                        case "trackedpoints":
+                        cameraMap.get(currentMac).set("trackedPoints", information[1]);
+                        break;
                         default:
                         console.log("error:", information);
                         break;
@@ -614,16 +602,13 @@ function parseMessage(message){
                     switch (information[0]){
                         case "uid":
                         currentMac = information[1];
-                            console.log("Snapshot UID: " +information[1]);
                         break;
                         case "data":
-                            console.log("Snapshot data: " +information[1].length);
                             var c=document.getElementById("camera-canvas");
                             var ctx=c.getContext("2d");
-                            
+
                             var imgData=ctx.createImageData(640,480);
-                            console.log("Image data length / 4 : " + imgData.data.length/4)
-                            
+
                             var lookup = []
                             var revLookup = []
                             var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
@@ -631,23 +616,11 @@ function parseMessage(message){
                               lookup[i] = code[i]
                               revLookup[code.charCodeAt(i)] = i
                             }
-                            
-                            console.log(revLookup[information[1].charCodeAt(2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)]);
-                           /* for (var i=0;i<imgData.data.length;i+=4)
-                              {
-                                //  console.log(information[1].charCodeAt(i));
-                              imgData.data[i+0]=revLookup[information[1].charCodeAt(i/2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)];
-                              imgData.data[i+1]=revLookup[information[1].charCodeAt(i/2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)];
-                              imgData.data[i+2]=revLookup[information[1].charCodeAt(i/2)]<<4 +revLookup[information[1].charCodeAt(i/2+1)];
-                              imgData.data[i+3]=255;
-                              }
-                            */
                             var index = 0;
                             for (var i=0;i<480;i++)
                               {
                               for (var j=0;j<640;j++)
                                   {
-                                    //  console.log(information[1].charCodeAt(i));
                                   imgData.data[(479-i)*4*640+4*(639-j)+0]=revLookup[information[1].charCodeAt(index)]<<4 +revLookup[information[1].charCodeAt(index+1)];
                                   imgData.data[(479-i)*4*640+4*(639-j)+1]=revLookup[information[1].charCodeAt(index)]<<4 +revLookup[information[1].charCodeAt(index+1)];
                                   imgData.data[(479-i)*4*640+4*(639-j)+2]=revLookup[information[1].charCodeAt(index)]<<4 +revLookup[information[1].charCodeAt(index+1)];
@@ -656,7 +629,7 @@ function parseMessage(message){
                                   }
                               }
                             ctx.putImageData(imgData,0,0);
-                        
+
                         break;
                         default:
                         console.log("error:", information);
@@ -676,7 +649,6 @@ function parseMessage(message){
             break;
         }
         case "tagsinfo":{
-            console.log("Message content " + messageContent);
             if(messageContent.length > 0){
                 var currentMac = "";
                 for (var i = 1; i < messageContent.length; i++ ) {
@@ -734,7 +706,6 @@ function parseMessage(message){
                         }
                         break;
                         default:
-                        console.log(information[1]);
                         userMap.get(currentMac).get("tags").set(information[1], true);
                         break;
                     }
@@ -762,7 +733,6 @@ function parseMessage(message){
             ctx.arc(x,480-y,2,0,2*Math.PI);
             ctx.stroke();
         }*/
-        console.log("Nombre de points : " + messageContent[messageContent.length - 1]);
         break;
         case "camerasposition":{
             var datas = [];
@@ -802,7 +772,6 @@ function parseMessage(message){
         break;
         case "gatewayversion":{
             gatewayVersion = contentMap.get("uid");
-            console.log("Gateway version " + gatewayVersion);
             updateGatewayVersionDisplay(contentMap.get("uid"), gatewayLatestVersion);
             break;
         }
@@ -855,7 +824,6 @@ function truncateDigit(digit){
 }
 
 function activateCamera(){
-    console.log("Activating camera");
     var mac = getSelectedCameraMac();
     socket.send("cmd=activatecamera&uid=" + mac);
 
@@ -865,12 +833,10 @@ function activateCamera(){
         desactivateCamera();
     }
     cameraMap.get(mac).set("activated", true);
-    console.log(cameraMap);
     updateCameraDisplay(mac);
 }
 
 function desactivateCamera(){
-    console.log("Desactivating camera");
     var mac = getSelectedCameraMac();
     socket.send("cmd=desactivatecamera&uid=" + mac);
     document.getElementById("activated-text").innerHTML = "Camera is currently desactivated"
@@ -880,7 +846,6 @@ function desactivateCamera(){
     }
     cameraMap.get(mac).set("activated", false);
     updateCameraDisplay(mac);
-
 }
 
 function getGatewayLatestVersion(){
@@ -888,7 +853,6 @@ function getGatewayLatestVersion(){
     xmlHttp.onreadystatechange = function() {
         if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
             var split = xmlHttp.responseText.split(".");
-            console.log("last version gateway : ", xmlHttp.responseText);
             var version = split[1] + "." + split[2];
             gatewayLatestVersion = version;
         }else{
@@ -937,10 +901,7 @@ function updateGatewayVersionDisplay(version, newversion){
     var success = document.getElementById("gateway-software-state");//.style.display = "block";
     var fail = document.getElementById("gateway-software-state-fail");//.innerHTML = (messageCameraCalibrated);
     var retrieveProblem;
-    console.log("New " + newversion + "; version " + version);
     if(version === newversion){
-        console.log("Au revoir");
-
         success.style.display = "block";
         fail.style.display = "none";
         success.children[1].innerHTML = "Current version: " + gatewayVersion;
@@ -1007,7 +968,6 @@ function updateCameraVersionDisplay(versions, newversion){
                 message += camerasVersion[camerasToUpdate[i]] + "</li>";
             }
             message += "</ul>"
-            console.log("Camera version " + cameraLatestVersion.search("search") != 1);
             if((typeof cameraLatestVersion != 'undefined')){
                 message += "Latest version: " + cameraLatestVersion;
             }else{
@@ -1081,6 +1041,5 @@ function getLatestVersion(){
 
 function reorienteTag(mac){
     var message = "cmd=reoriente&uid=" + mac;
-    console.log(message);
     vrtracker.sendMessage(message);
 }
