@@ -4,6 +4,7 @@ var websocketIP = "192.168.42.1";
 * On window load, open a websocket between the window and the server
 * Create a master on window opening
 */
+
 var socket; // = VRTrackerWebsocket(websocketIP);
 
 var cameraMap = new Map();
@@ -16,21 +17,26 @@ var gatewayLatestVersion = "searching...";
 var cameraLatestVersion = "searching...";
 var tagLatestVersion = "searching...";
 var gatewayVersion;
+var trackingPointActivated = false;
+var hideUpdateVersionLink = true;
+var retrieveVersionErrorMsg = "Can't retrieve latest gateway version"
 
 function VRTrackerWebsocket (websocketType){
+
     this.websocketType = websocketType;
     socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
     socket.binaryType = 'arraybuffer';
+
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
         (vrtracker.askSystemInfo());
     };
+
     // Handle any errors that occur.
     socket.onerror = function(error) {
         wsFailedAlert.style.display = "block";
         wsSuccessAlert.style.display = "none";
-        console.log('WebSocket Error: ' + error);
     }
     // Handle messages sent by the server.
     socket.onmessage = function(event) {
@@ -46,11 +52,14 @@ function VRTrackerWebsocket (websocketType){
 
 VRTrackerWebsocket.prototype.createWebsocket = function(websocketType){
 
+    this.websocketType = websocketType;
     socket = new WebSocket('ws://' + websocketType + ':7777/master/');//new WebSocket('ws://' + websocketIP + ':7777/user/');
     socket.binaryType = 'arraybuffer';
+
     socket.onopen = function(event) {
         wsFailedAlert.style.display = "none";
         wsSuccessAlert.style.display = "block";
+        (vrtracker.askSystemInfo());
     };
     // Handle any errors that occur.
     socket.onerror = function(error) {
@@ -110,7 +119,7 @@ window.onload=function(){
 
 window.setInterval(function(){
     if(socket.readyState === socket.CLOSED){
-        vrtracker.createWebsocket(websocketIP);
+        vrtracker = new VRTrackerWebsocket(websocketIP)
     }
     //(vrtracker.askSystemInfo());
 
@@ -303,7 +312,9 @@ function selectcamera(camera){
         socket.send(message);
         var canvas = document.getElementById("camera-canvas");
         var ctx = canvas.getContext("2d");
-      //  ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if(trackingPointActivated){
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
 
         if(cameraMap.get(mac).has("activated")){
             document.getElementById("activate-btn").style.display = "inline-block";
@@ -412,9 +423,14 @@ function updateCameraDisplay(mac){
 }
 
 function removeCamera(mac){
-    var liste = document.getElementById('cameras-grid');
-    $("#camera-" + mac).remove();
-
+    var camerasGrid = document.getElementById('cameras-grid');
+    //$("#camera-" + mac).remove();
+    var cameraToRemove = document.getElementById("camera-" + mac);
+    if(camerasGrid != undefined && cameraToRemove != undefined){
+        camerasGrid.remove(cameraToRemove);
+        countElementGateway.set("cameras", countElementGateway.get("cameras") - 1);
+        document.getElementById("camera-count").innerHTML = countElementGateway.get("cameras");
+    }
 }
 
 function addUser(mac){
@@ -435,7 +451,14 @@ function addUser(mac){
 }
 
 function removeUser(mac){
-    $("#user-" + mac).remove();
+    //$("#user-" + mac).remove();
+    var usersGrid = document.getElementById("users-grid");
+    var userToRemove = document.getElementById("user-" + mac);
+    if(usersGrid != undefined && userToRemove != undefined){
+        usersGrid.remove(userToRemove);
+        countElementGateway.set("users", countElementGateway.get("users") - 1);
+        document.getElementById("user-count").innerHTML = countElementGateway.get("users");
+    }
 }
 
 function addTag(mac){
@@ -457,6 +480,17 @@ function addTag(mac){
     +'<p> #users: '  + tagMap.get(mac).get("users") + '</p>'
     +'<p> version: '  + tagMap.get(mac).get("version") + '</p>'
     +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Reoriente</button>';
+}
+
+function removeTag(mac){
+    //$("#tag-" + mac).remove();
+    var tagsGrid = document.getElementById("tags-grid");
+    var tagToRemove = document.getElementById("tag-" + mac);
+    if(tagsGrid != undefined && tagToRemove != undefined){
+        tagsGrid.remove(tagToRemove);
+        countElementGateway.set("tags", countElementGateway.get("tags") - 1);
+        document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
+    }
 }
 
 var countElementGateway = new Map();
@@ -481,6 +515,7 @@ function parseMessage(message){
     }catch (e) {
         console.error("Parsing error:", e);
     }
+    //console.log(message);
     switch (cmd) {
         case "camerasinformation":{
             if(messageContent.length > 0){
@@ -571,14 +606,23 @@ function parseMessage(message){
         }
         case "systeminfos":{
             try {
-                countElementGateway.set("cameras", contentMap.get("cameras"));
-                countElementGateway.set("tags", contentMap.get("tags"));
-                countElementGateway.set("users", contentMap.get("users"));
-                countElementGateway.set("masters", contentMap.get("masters"));
-                document.getElementById("camera-count").innerHTML = countElementGateway.get("cameras");
-                document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
-                document.getElementById("user-count").innerHTML = countElementGateway.get("users");
-                document.getElementById("master-count").innerHTML = countElementGateway.get("masters");
+                //TO Modify
+                if(contentMap.has("cameras")){
+                    countElementGateway.set("cameras", contentMap.get("cameras"));
+                    document.getElementById("camera-count").innerHTML = countElementGateway.get("cameras");
+                }
+                if(contentMap.has("tags")){
+                    countElementGateway.set("tags", contentMap.get("tags"));
+                    document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
+                }
+                if(contentMap.has("users")){
+                    countElementGateway.set("users", contentMap.get("users"));
+                    document.getElementById("user-count").innerHTML = countElementGateway.get("users");
+                }
+                if(contentMap.has("masters")){
+                    countElementGateway.set("masters", contentMap.get("masters"));
+                    document.getElementById("master-count").innerHTML = countElementGateway.get("masters");
+                }
             } catch (e) {
                 console.error("Parsing error", e);
             }
@@ -718,21 +762,24 @@ function parseMessage(message){
             break;
         }
         case "points":
-        var canvas = document.getElementById("camera-canvas");
-        var ctx = canvas.getContext("2d");
-       /* ctx.clearRect(0, 0, canvas.width, canvas.height);
-        var x,y;
-        for (var i = 1; i < messageContent.length - 1; i++ ) {
-            information = messageContent[i].split("=");
-            x = parseFloat(information[1]);
-            contentMap.set(information[0], information[1]);
-            information = messageContent[++i].split("=");
-            y = parseFloat(information[1]);
-            contentMap.set(information[0], information[1]);
-            ctx.beginPath();
-            ctx.arc(x,480-y,2,0,2*Math.PI);
-            ctx.stroke();
-        }*/
+        if(trackingPointActivated){
+            var canvas = document.getElementById("camera-canvas");
+            var ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var x,y;
+            for (var i = 1; i < messageContent.length - 1; i++ ) {
+                information = messageContent[i].split("=");
+                x = parseFloat(information[1]);
+                contentMap.set(information[0], information[1]);
+                information = messageContent[++i].split("=");
+                y = parseFloat(information[1]);
+                contentMap.set(information[0], information[1]);
+                ctx.beginPath();
+                ctx.arc(x,480-y,2,0,2*Math.PI);
+                ctx.stroke();
+            }
+        }
+
         break;
         case "camerasposition":{
             var datas = [];
@@ -768,8 +815,8 @@ function parseMessage(message){
             if(contentMap.has("uid")){
                 removeUser(contentMap.get("uid"));
             }
+            break;
         }
-        break;
         case "gatewayversion":{
             gatewayVersion = contentMap.get("uid");
             updateGatewayVersionDisplay(contentMap.get("uid"), gatewayLatestVersion);
@@ -781,6 +828,16 @@ function parseMessage(message){
         }
         case "tagsversion":{
             updateTagVersionDisplay(contentMap, tagLatestVersion);
+            break;
+        }
+        case "userdeconnection":{
+            var userMac = contentMap.get("uid");
+            removeUser(userMac);
+            break;
+        }
+        case "deletetag":{
+            var tagMac = contentMap.get("uid");
+            removeTag(tagMac);
             break;
         }
         default:
@@ -916,14 +973,19 @@ function updateGatewayVersionDisplay(version, newversion){
                 fail.children[1].innerHTML = message;
             }
             if(newversion == 'error'){
-                message = "Can't retrieve latest gateway version </br> You can try an other browser"
+                hideUpdateVersionLink = false;
+                message = retrieveVersionErrorMsg
                 fail.children[0].innerHTML = message;
             }
         }else{
-            message = "Can't retrieve latest gateway version </br> You can try an other browser"
+            hideUpdateVersionLink = false;
+            message = retrieveVersionErrorMsg
             fail.children[1].innerHTML = message;
+            displayCheckUpdate();
         }
-
+        if(!hideSoftUpdate){
+            displayCheckUpdate();
+        }
     }
 }
 
@@ -937,7 +999,8 @@ function updateCameraVersionDisplay(versions, newversion){
         success.style.display = "none";
         fail.style.display = "block";
         fail.children[0].innerHTML = "";
-        message = "Can't retrieve latest camera version</br> You can try an other browser";
+        hideUpdateVersionLink = false;
+        message = retrieveVersionErrorMsg;
     }else{
         for (var [cmd, info] of versions) {
             if(cmd.includes("uid")){
@@ -961,22 +1024,25 @@ function updateCameraVersionDisplay(versions, newversion){
             success.style.display = "none";
             fail.style.display = "block";
             var message = "";
-
             message += "Current version: </br><ul>"
             for (var i = 0; i < camerasToUpdate.length; i++) {
                 message += "<li> MAC: " + macList[i] + ", version:";
                 message += camerasVersion[camerasToUpdate[i]] + "</li>";
             }
             message += "</ul>"
-            if((typeof cameraLatestVersion != 'undefined')){
+            if((typeof cameraLatestVersion != 'undefined') && cameraLatestVersion != "error"){
                 message += "Latest version: " + cameraLatestVersion;
             }else{
+                hideUpdateVersionLink = false;
                 fail.children[0].innerHTML = "";
-                message += "Can't retrieve latest camera version</br> You can try an other browser";
+                message += retrieveVersionErrorMsg;
             }
         }
     }
     fail.children[1].innerHTML = message;
+    if(!hideSoftUpdate){
+        displayCheckUpdate();
+    }
 
 }
 
@@ -986,12 +1052,12 @@ function updateTagVersionDisplay(versions, newversion){
     var tagsToUpdate = [];
     var tagsVersion = [];
     var macList = [];
-
     if(newversion.search("search") != -1){
         success.style.display = "none";
         fail.style.display = "block";
         fail.children[0].innerHTML = "";
-        message = "Can't retrieve latest tag version</br> You can try an other browser";
+        hideUpdateVersionLink = false;
+        message = retrieveVersionErrorMsg;
     }else{
         for (var [cmd, info] of versions) {
             if(cmd.includes("uid")){
@@ -1011,6 +1077,7 @@ function updateTagVersionDisplay(versions, newversion){
             success.style.display = "block";
             fail.style.display = "none";
             success.children[1].innerHTML = "Current version: " + tagLatestVersion;
+            hideUpdateVersionLink = false;
         }else{
             success.style.display = "none";
             fail.style.display = "block";
@@ -1021,16 +1088,19 @@ function updateTagVersionDisplay(versions, newversion){
                 + tagsVersion[tagsToUpdate[i]] + "</li>";
             }
             message += "</ul>"
-            if(typeof tagLatestVersion != 'undefined'){
-
+            if(typeof tagLatestVersion != 'undefined' && tagLatestVersion != "error"){
                 message += "Latest version: " + tagLatestVersion;
             }else {
+                hideUpdateVersionLink = false;
                 fail.children[0].innerHTML = "";
-                message += "Can't retrieve latest tag version</br> You can try an other browser";
+                message += retrieveVersionErrorMsg;
             }
         }
     }
     fail.children[1].innerHTML = message;
+    if(!hideSoftUpdate){
+        displayCheckUpdate();
+    }
 }
 
 function getLatestVersion(){
@@ -1042,4 +1112,22 @@ function getLatestVersion(){
 function reorienteTag(mac){
     var message = "cmd=reoriente&uid=" + mac;
     vrtracker.sendMessage(message);
+}
+
+function displayCheckUpdate(){
+    var softUpdate = document.getElementById("software-update-button");
+    softUpdate.style.display = "none";
+}
+
+function hideSoftUpdate(){
+    var softUpdate = document.getElementById("software-update-button");
+    softUpdate.style.display = "block";
+}
+
+function updateTagsDisplay(tagMac){
+
+}
+
+function updateUsersDisplay(userMac){
+
 }
