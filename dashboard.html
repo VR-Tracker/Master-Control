@@ -43,6 +43,7 @@
 			<li class="active"><a href="dashboard.html"><svg class="glyph stroked dashboard-dial"><use xlink:href="#stroked-dashboard-dial"></use></svg> Dashboard</a></li>
 			<li><a href="calibration.html"><svg class="glyph stroked table"><use xlink:href="#stroked-gear"></use></svg> Calibration</a></li>
 			<li><a href="visualizer.html"><svg class="glyph stroked calendar"><use xlink:href="#stroked-eye"></use></svg> Visualizer</a></li>
+			<li><a href="https://vrtracker.xyz/bug-report/"><svg class="glyph stroked clipboard with paper"><use xlink:href="#stroked-clipboard-with-paper"/></svg> Report Bug</a></li>
 		</ul>
 
 	</div><!--/.sidebar-->
@@ -58,6 +59,7 @@
 		<div class="row">
 			<div class="col-lg-12">
 				<h1 class="page-header">Dashboard</h1>
+				<button type="submit" class="btn btn-info" style="margin-bottom:5px;" id="software-update-button"><a href="https://vrtracker.xyz/documentation" style="color:white;">Check software updates</a></button>
 			</div>
 				<div class="col-md-4">
 					<div class="panel panel-info" >
@@ -209,8 +211,6 @@
 								<div class="col-sm-1">
 									<input onchange="updateSensitivityInput(this)" type="number" name="quantity" min="0" max="255" value="50" id="camera-sensitivity-input">
 								</div>
-							</div>
-							<div class="row" id="camera-sliders">
 								<div class="col-sm-4">
 									<span>Min Blob Size:</span>
 								</div>
@@ -220,9 +220,7 @@
 								<div class="col-sm-1">
 									<input onchange="updateMinBlobSizeInput(this)" type="number" name="quantity" min="0" max="200" value="5" id="camera-minblobsize-input">
 								</div>
-							</div>
-							<div class="row" id="camera-sliders">
-								<div class="col-sm-4">
+									<div class="col-sm-4">
 									<span>Max Blob Size:</span>
 								</div>
 								<div class="col-sm-5">
@@ -231,11 +229,33 @@
 								<div class="col-sm-1">
 									<input onchange="updateMaxBlobSizeInput(this)" type="number" name="quantity" min="10" max="2000" value="400" id="camera-maxblobsize-input">
 								</div>
+								<div class="col-sm-4">
+									<span>Gain:</span>
+								</div>
+								<div class="col-sm-5">
+									<input oninput="updateGainSlider(this)" onchange="updateGainSlider(this)" type="range" name="points" id="camera-gain-slider" value="0" min="0" max="100">
+								</div>
+								<div class="col-sm-1">
+									<input onchange="updateGainInput(this)" type="number" name="quantity" min="0" max="100" value="0" id="camera-gain-input">
+								</div>
+								<div class="col-sm-4">
+									<span>Exposure:</span>
+								</div>
+								<div class="col-sm-5">
+									<input oninput="updateExposureSlider(this)" onchange="updateExposureSlider(this)" type="range" name="points" id="camera-exposure-slider" value="0" min="0" max="100">
+								</div>
+								<div class="col-sm-1">
+									<input onchange="updateExposureInput(this)" type="number" name="quantity" min="0" max="100" value="0" id="camera-exposure-input">
+								</div>
 							</div>
 						</div>
-						<div class="row" align="center" style="margin:15px;">
+						<div class="row" align="center" style="margin:15px; margin-top:30px;">
+							<button type="submit" class="btn btn-info" id="snapshot-btn" onclick="snapshotCamera()" style="background-color:red;">Take a Snapshot</button>
+						</div>
+						<div class="row" align="center" style="margin:15px; margin-top:45px">
 							<button type="submit" class="btn btn-info" id="save-btn" onclick="saveCameraSettings()">Save Settings</button>
 						</div>
+
 					</div>
 				</div>
 			</div>
