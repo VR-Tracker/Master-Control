@@ -147,12 +147,41 @@ function drawChart(){
         subtitle: {
             text: 'Click and drag the plot area to rotate in space'
         },
+        tooltip: {
+          enabled: false,
+          crosshairs: true
+        },
         plotOptions: {
             scatter: {
                 width: 5,
                 height: 5,
                 depth: 1
-            }
+            },
+            series: {
+              dataLabels: {
+                enabled: true,
+                inside: false,
+                overflow: 'none',
+                crop: true,
+                shape: 'callout',
+                backgroundColor:'rgba(0,0,0,0.8)',
+                borderColor: 'rgba(0,0,0,0.9)',
+                color: 'rgba(255,255,255,0.75)',
+                borderWidth: .5,
+                borderRadius: 5,
+                y: -10,
+                style: {
+                  fontFamily: 'Helvetica, sans-serif',
+                  fontSize: '10px',
+                  fontWeight: 'normal',
+                  textShadow: 'none'
+                },
+                formatter: function() {
+                  return '<strong>'+this.series.name+'</strong>'
+                              +'<br/>X: <strong>'+ this.x+'</strong>'+'<br/>Y: <strong>'+ this.point.options.z+'</strong>'+'<br/>Z: <strong>'+ this.y+'</strong>';
+                }
+              }
+  }
         },
         yAxis: {
             min: -5,
