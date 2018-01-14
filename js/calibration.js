@@ -989,9 +989,18 @@ function autoCalibration(){
     if(send){
         //If there any selected camera we send the message
         sendMessage(socket, message);
-        //document.getElementById("stop-calibration-btn").style.display = "inline";
-        document.getElementById("auto-calibration-btn").style.display = "none";
-        document.getElementById("stop-auto-calibration-btn").style.display = "inline";
+        //document.getElementById("auto-calibration-btn").style.display = "none";
+        //document.getElementById("stop-auto-calibration-btn").style.display = "inline";
+        /*document.getElementById("stop-calibration-btn").style.display = "inline";
+        document.getElementById("auto-calibration-btn").style.display = "inline";
+        document.getElementById("stop-auto-calibration-btn").style.display = "none";
+        document.getElementById("calibrated-camera").style.display = "none";
+        document.getElementById("notCalibrated-camera").style.display = "none";
+
+        document.getElementById("add-reference-btn").style.display = "block";*/
+
+        AddReferencePoints()
+
     }
     else {
         console.log("No camera selected");
@@ -1020,6 +1029,66 @@ function stopAutoCalibration(){
 }
 
 function AddReferencePoints(){
-    startCalibration();
+    var send = false;
+    var message;
+    if(!calibrating){
+        calibrating = true;
+    }
+
+    var numeroCamera = 0; // variable pour distinguer les cameras
+    for (var [mac, isSelected] of addedElementMap) {
+        //Creation du message
+        if(isSelected){
+            message += "&camera" + numeroCamera + "=" +mac;
+            send = true;
+            selectedCameraCoordinateMap.set(mac,false);
+            pointAssociatedCamera.set(mac, []);
+            numeroCamera++;
+        }
+    }
+    numberOfSelectedCamera = numeroCamera;
+    if(send){
+        CALIBRATING = true;
+        //If message is sent, we change the button
+        //   FADE IN the next Panel
+        document.getElementById("add-3D-point-panel").style.opacity = 1;
+        document.getElementById("add-3D-point-panel").style.display = "block";
+        document.getElementById("add-3D-point-panel").className += " fadein";
+        document.getElementById("add-3D-point-list").style.opacity = 1;
+        document.getElementById("add-3D-point-list").style.display = "block";
+        document.getElementById("add-3D-point-list").className += " fadein";
+        document.getElementById("not-enough-3d").style.opacity = 1;
+        document.getElementById("not-enough-3d").style.display = "block";
+        document.getElementById("not-enough-3d").className += " fadein";
+        document.getElementById("not-enough-3d").innerHTML = "At least 4 points must be entered, <u>and seen by each camera</u> !";
+
+        document.getElementById("calibration-finished").style.opacity = 0;
+        document.getElementById("calibration-finished").display += " none";
+
+        document.getElementById('x-coordinate').removeAttribute("disabled");
+        document.getElementById("y-coordinate").removeAttribute("disabled");
+        document.getElementById("z-coordinate").removeAttribute("disabled");
+
+        document.getElementById("info-text").innerHTML = PointInfo;
+
+        document.getElementById("add-coordinate").removeAttribute("disabled");
+
+        calibrationBtn.className = "btn btn-danger btn-md";
+        calibrationBtn.innerHTML = "Calibrating...";
+        calibrationBtn.disabled = true;
+
+        //And we disable the reset button, enable the possibility to add a point
+        document.getElementById("stop-calibration-btn").style.display = "inline";
+        document.getElementById("auto-calibration-btn").style.display = "inline";
+
+        document.getElementById("auto-calibration-btn").disabled = true;
+
+        sendMessage(socket, message);
+        displayCount();
+    }
+    else {
+        calibrating = false;
+        alert("No camera selected");
+    }
     addingReferencePoints = true;
 }

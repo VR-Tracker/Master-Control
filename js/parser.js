@@ -7,6 +7,7 @@ countElementGateway.set("masters", 0);
 var positionCount = 0;
 function parseMessage(message){
     var messageContent = message.split("&");
+    console.log(message);
     var cmd, information;
     var contentMap = new Map();
     try{
@@ -226,6 +227,8 @@ function parseMessage(message){
                     sendMessage(socket, "cmd=orientation&orientation=false&uid=" + contentMap.get("uid0"));
                 }else if (contentMap.get("msg") == "ping") {
                     updateCalibration(true);
+                }else if(contentMap.get("msg") == "calibtagconnected"){
+                  tagConnected = true;
                 }
             }
             break;
