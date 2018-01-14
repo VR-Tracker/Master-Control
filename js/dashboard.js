@@ -455,7 +455,7 @@ function removeUser(mac){
     var usersGrid = document.getElementById("users-grid");
     var userToRemove = document.getElementById("user-" + mac);
     if(usersGrid != undefined && userToRemove != undefined){
-        usersGrid.remove(userToRemove);
+        userToRemove.parentNode.removeChild(userToRemove);
         countElementGateway.set("users", countElementGateway.get("users") - 1);
         document.getElementById("user-count").innerHTML = countElementGateway.get("users");
     }
@@ -487,7 +487,11 @@ function removeTag(mac){
     var tagsGrid = document.getElementById("tags-grid");
     var tagToRemove = document.getElementById("tag-" + mac);
     if(tagsGrid != undefined && tagToRemove != undefined){
-        tagsGrid.remove(tagToRemove);
+      console.log("Removing tag mac " + mac);
+      var tagToRemoved = "#tag-" + mac;
+      $(tagToRemoved).remove();
+      console.log(tagToRemoved);
+      tagToRemove.parentNode.removeChild(tagToRemove);
         countElementGateway.set("tags", countElementGateway.get("tags") - 1);
         document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
     }
@@ -515,7 +519,7 @@ function parseMessage(message){
     }catch (e) {
         console.error("Parsing error:", e);
     }
-    //console.log(message);
+    console.log(message);
     switch (cmd) {
         case "camerasinformation":{
             if(messageContent.length > 0){
