@@ -1135,3 +1135,13 @@ function updateTagsDisplay(tagMac){
 function updateUsersDisplay(userMac){
 
 }
+
+function askAssistance(){
+    var message = "cmd=getcontrol";
+    vrtracker.sendMessage(message);
+}
+
+function saveOffset(){
+    var message = "cmd=saveoffset";
+    vrtracker.sendMessage(message);
+}
