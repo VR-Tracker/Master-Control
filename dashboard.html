@@ -44,6 +44,9 @@
 			<li><a href="calibration.html"><svg class="glyph stroked table"><use xlink:href="#stroked-gear"></use></svg> Calibration</a></li>
 			<li><a href="visualizer.html"><svg class="glyph stroked calendar"><use xlink:href="#stroked-eye"></use></svg> Visualizer</a></li>
 			<li><a href="https://vrtracker.xyz/bug-report/"><svg class="glyph stroked clipboard with paper"><use xlink:href="#stroked-clipboard-with-paper"/></svg> Report Bug</a></li>
+			<li><a><svg class="glyph stroked email"><<use xlink:href="#stroked-email"/></svg>
+				<button id="help-btn" onclick="askAssistance()" style="background-color: Transparent;background-repeat:no-repeat;border: none; cursor:pointer; overflow: hidden; outline:none;width:80%; text-align:left;">Ask Assistance</button>
+				</a></li>
 		</ul>
 
 	</div><!--/.sidebar-->
@@ -271,8 +274,13 @@
 
 					<div class="icon-grid" id="tags-grid">
 					</div>
+
+				</div>
+				<div align="center" style="margin-top: 1px; padding-bottom:5px;">
+					<button style="width:50%; display:none; " type="submit" class="btn btn-info" id="mag-btn" onclick="saveOffset()">Save Tag Offset</button>
 				</div>
 			</div>
+
 		</div>
 	</div><!--/.row-->
 

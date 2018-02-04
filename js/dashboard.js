@@ -470,7 +470,11 @@ function addTag(mac){
         newTag.setAttribute("id", "tag-" + mac);
         newTag.setAttribute("onclick", "selectTag(this)");
         liste.appendChild(newTag);
-
+    }
+    console.log("child node " + liste.childNodes.length);
+    if(liste.childNodes.length == 2){
+        var offsetButton = document.getElementById("mag-btn");
+        offsetButton.style.display = "inline-block";
     }
     newTag.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-tag"/></svg>'
     +'</br><p> mac: ' + mac + '</p>'
@@ -494,6 +498,10 @@ function removeTag(mac){
       tagToRemove.parentNode.removeChild(tagToRemove);
         countElementGateway.set("tags", countElementGateway.get("tags") - 1);
         document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
+    }
+    if(liste.childNodes.length == 1){
+        var offsetButton = document.getElementById("mag-btn");
+        offsetButton.style.display = "none";
     }
 }
 
@@ -1134,4 +1142,14 @@ function updateTagsDisplay(tagMac){
 
 function updateUsersDisplay(userMac){
 
+}
+
+function askAssistance(){
+    var message = "cmd=getcontrol";
+    vrtracker.sendMessage(message);
+}
+
+function saveOffset(){
+    var message = "cmd=saveoffset";
+    vrtracker.sendMessage(message);
 }
