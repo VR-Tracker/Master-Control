@@ -231,7 +231,7 @@ function getSelectedCameraMac(){
     }
 }
 
-// Return the Selected Camera MAC address using tits ID
+// Return the Selected tag MAC address using tits ID
 function getSelectedTagMac(){
     var liste = document.getElementById("tags-grid");
     for (var i=1; i < liste.childNodes.length; i++) {
@@ -473,8 +473,8 @@ function addTag(mac){
     }
     console.log("child node " + liste.childNodes.length);
     if(liste.childNodes.length == 2){
-        var offsetButton = document.getElementById("mag-btn");
-        offsetButton.style.display = "inline-block";
+        var magnetude = document.getElementById("magnetude-offset");
+        magnetude.style.display = "block";
     }
     newTag.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-tag"/></svg>'
     +'</br><p> mac: ' + mac + '</p>'
@@ -500,8 +500,8 @@ function removeTag(mac){
         document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
     }
     if(liste.childNodes.length == 1){
-        var offsetButton = document.getElementById("mag-btn");
-        offsetButton.style.display = "none";
+        var magnetude = document.getElementById("magnetude-offset");
+        magnetude.style.display = "none";
     }
 }
 
@@ -847,11 +847,13 @@ function parseMessage(message){
             removeUser(userMac);
             break;
         }
-        case "deletetag":{
+        case "deletetag":
             var tagMac = contentMap.get("uid");
             removeTag(tagMac);
             break;
-        }
+        case "offset":
+            var offsetValue = contentMap.get("value");
+            document.getElementById("magnetude-value").value = offsetValue;
         default:
         break;
     }
@@ -1124,6 +1126,8 @@ function getLatestVersion(){
 function reorienteTag(mac){
     var message = "cmd=reoriente&uid=" + mac;
     vrtracker.sendMessage(message);
+    var message = "cmd=getoff&uid=" + mac;
+    vrtracker.sendMessage(message);
 }
 
 function displayCheckUpdate(){
@@ -1151,5 +1155,7 @@ function askAssistance(){
 
 function saveOffset(){
     var message = "cmd=saveoffset";
+    var offsetValue = document.getElementById("magnetude-value").value;
+    message += "&oy" + offsetValue;
     vrtracker.sendMessage(message);
 }
