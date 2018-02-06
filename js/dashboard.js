@@ -852,7 +852,8 @@ function parseMessage(message){
             removeTag(tagMac);
             break;
         case "offset":
-            var offsetValue = contentMap.get("value");
+            var offsetValue = contentMap.get("oy");
+            console.log("Offset value " + contentMap);
             document.getElementById("magnetude-value").value = offsetValue;
         default:
         break;
@@ -1156,6 +1157,6 @@ function askAssistance(){
 function saveOffset(){
     var message = "cmd=saveoffset";
     var offsetValue = document.getElementById("magnetude-value").value;
-    message += "&oy" + offsetValue;
+    message += "&oy=" + offsetValue;
     vrtracker.sendMessage(message);
 }
