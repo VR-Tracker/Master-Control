@@ -483,7 +483,7 @@ function addTag(mac){
     +'<p> status: '  + tagMap.get(mac).get("status") + '</p>'
     +'<p> #users: '  + tagMap.get(mac).get("users") + '</p>'
     +'<p> version: '  + tagMap.get(mac).get("version") + '</p>'
-    +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Reset Orientation</button>';
+    +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Get Orientation</button>';
 }
 
 function removeTag(mac){
@@ -855,6 +855,10 @@ function parseMessage(message){
             var offsetValue = contentMap.get("oy");
             console.log("Offset value " + contentMap);
             document.getElementById("magnetude-value").value = offsetValue;
+            break;
+        case "boundaries":
+            updateBoundaries(contentMap.get("xmin"),contentMap.get("xmax"),contentMap.get("ymin"),contentMap.get("ymax"))
+            break;
         default:
         break;
     }
@@ -1159,4 +1163,26 @@ function saveOffset(){
     var offsetValue = document.getElementById("magnetude-value").value;
     message += "&oy=" + offsetValue;
     vrtracker.sendMessage(message);
+}
+
+function saveBoundaries(xmin, xmax, ymin, ymax)
+{
+    var xMin = document.getElementById("xmin").value;
+    var xMax = document.getElementById("xmax").value;
+    var yMin = document.getElementById("ymin").value;
+    var yMax = document.getElementById("ymax").value;
+    var message = "cmd=boundaries";
+    message += "&xmin=" + xmin;
+    message += "&xmax=" + xmax;
+    message += "&ymin=" + ymin;
+    message += "&ymax=" + ymax;
+    vrtracker.sendMessage(message);
+}
+
+function updateBoundaries(xmin, xmax, ymin, ymax)
+{
+    document.getElementById("xmin").value = xmin;
+    document.getElementById("xmax").value = xmax;
+    document.getElementById("ymin").value = ymin;
+    document.getElementById("ymax").value = ymax;
 }
