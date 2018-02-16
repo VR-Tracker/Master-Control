@@ -19,6 +19,9 @@ var selectedCameraCoordinateMap = new Map(); //
 var pointAssociatedCamera = new Map();
 var cameraNumberPoints = new Map();
 var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
+
+var validatedCalibration = new Map();
+
 var calibrationPoint = []; //Store the different calibration point
 var timeOutMessage = "";
 var gatewayLatestVersion;
@@ -69,6 +72,7 @@ window.onload=function(){
                 send = true;
                 selectedCameraCoordinateMap.set(mac,false);
                 pointAssociatedCamera.set(mac, []);
+                validatedCalibration.set(mac,false);
                 numeroCamera++;
             }
         }
@@ -117,6 +121,7 @@ window.onload=function(){
             alert("No camera selected");
         }
     }
+
 }
 
 
@@ -149,7 +154,7 @@ function createWebsocket(){
 
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
-        setInterval(getCamerasInformation, 5000);
+        //setInterval(getCamerasInformation, 5000);
         socket.send("cmd=camerasposition");
         //Envoi du message apres un certain temps
     };
@@ -751,190 +756,7 @@ function showCalibratedCamera(){
 function calibrate(){
     handleKeySpace();
 }
-/*
-function getGatewayLatestVersion(){
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            var split = xmlHttp.responseText.split(".");
-            console.log("last version gateway : ", xmlHttp.responseText);
-            var version = split[1] + "." + split[2];
-            gatewayLatestVersion = version;
-        }
-    }
-    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway", true); // true for asynchronous
-    xmlHttp.send("hello");
-}
 
-function afficherRequete(data){
-    console.log("data", data);
-}
-
-function getCameraLatestVersion(){
-    //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            var split = xmlHttp.responseText.split(".");
-            var version = split[1] + "." + split[2];
-            cameraLatestVersion = version;
-        }
-    }
-    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
-    xmlHttp.send(null);
-    //xmlHttp.close();
-}
-
-function getTagLatestVersion(){
-    //http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            var split = xmlHttp.responseText.split(".");
-            var version = 0 + "." + split[0].replace("tag","");
-            tagLatestVersion = version;
-        }
-    }
-    xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
-    xmlHttp.send(null);
-}
-
-function updateGatewayVersionDisplay(version, newversion){
-    var success = document.getElementById("gateway-software-state");//.style.display = "block";
-    var fail = document.getElementById("gateway-software-state-fail");//.innerHTML = (messageCameraCalibrated);
-
-    if(version === newversion){
-        success.style.display = "block";
-        fail.style.display = "none";
-        success.children[1].innerHTML = "Current version: " + gatewayVersion;
-    }else{
-        success.style.display = "none";
-        fail.style.display = "block";
-        var message = "";
-        if (typeof gatewayVersion != 'undefined'){
-            message = "Current version: " + gatewayVersion;
-            if (typeof gatewayLatestVersion != 'undefined'){
-                message += "</br>Latest version: " + gatewayLatestVersion;
-            }
-        }else{
-            message = "Can't retrieve latest gateway version </br> You can try an other browser"
-        }
-
-        fail.children[1].innerHTML = message;
-    }
-}
-
-function updateCameraVersionDisplay(versions, newversion){
-    var success = document.getElementById("camera-software-state");
-    var fail = document.getElementById("camera-software-state-fail");
-    var camerasToUpdate = [];
-    var camerasVersion = [];
-    var macList = [];
-    for (var [cmd, info] of versions) {
-        if(cmd.includes("uid")){
-            macList.push(info);
-        }
-        if(cmd.includes("version")){
-            camerasVersion.push(info);
-        }
-    }
-
-    for (var i = 0; i < camerasVersion.length; i++) {
-        if(!(camerasVersion[i] === newversion)){
-            camerasToUpdate.push(i);
-        }
-    }
-    if(camerasToUpdate.length === 0){
-        success.style.display = "block";
-        fail.style.display = "none";
-        success.children[1].innerHTML = "Current version: " + cameraLatestVersion;
-    }else{
-        success.style.display = "none";
-        fail.style.display = "block";
-        var message = "";
-
-        message += "Current version: </br><ul>"
-        for (var i = 0; i < camerasToUpdate.length; i++) {
-            message += "<li> MAC: " + macList[i] + ", version:";
-            message += camerasVersion[camerasToUpdate[i]] + "</li>";
-        }
-        message += "</ul>"
-
-        if((typeof cameraLatestVersion != 'undefined')){
-
-            message += "Latest version: " + cameraLatestVersion;
-        }else{
-            fail.children[0].innerHTML = "";
-            message += "Can't retrieve latest camera version</br> You can try an other browser";
-        }
-        fail.children[1].innerHTML = message;
-    }
-}
-
-function updateTagVersionDisplay(versions, newversion){
-    var success = document.getElementById("tag-software-state");
-    var fail = document.getElementById("tag-software-state-fail");
-    var tagsToUpdate = [];
-    var tagsVersion = [];
-    var macList = [];
-    for (var [cmd, info] of versions) {
-        if(cmd.includes("uid")){
-            macList.push(info);
-        }
-        if(cmd.includes("version")){
-            tagsVersion.push(info);
-        }
-    }
-
-    for (var i = 0; i < tagsVersion.length; i++) {
-        if(!(tagsVersion[i] === newversion)){
-            tagsToUpdate.push(i);
-        }
-    }
-    if(tagsToUpdate.length === 0){
-        success.style.display = "block";
-        fail.style.display = "none";
-        success.children[1].innerHTML = "Current version: " + tagLatestVersion;
-    }else{
-        success.style.display = "none";
-        fail.style.display = "block";
-        var message = "";
-        message += "Current version: </br><ul>"
-        for (var i = 0; i < tagsToUpdate.length; i++) {
-            message += "<li> MAC: " + macList[i] + ", version:" +
-            + tagsVersion[tagsToUpdate[i]] + "</li>";
-        }
-        message += "</ul>"
-        if(typeof tagLatestVersion != 'undefined'){
-
-            message += "Latest version: " + tagLatestVersion;
-        }else {
-            fail.children[0].innerHTML = "";
-            message += "Can't retrieve latest tag version</br> You can try an other browser";
-        }
-        fail.children[1].innerHTML = message;
-    }
-}
-
-function hostReachable() {
-
-    // Handle IE and more capable browsers
-    var xhr = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
-    var status;
-
-    // Open new request as a HEAD to the root hostname with a random param to bust the cache
-    xhr.open( "HEAD", "//" + window.location.hostname + "/?rand=" + Math.floor((1 + Math.random()) * 0x10000), false );
-
-    // Issue request and handle response
-    try {
-        xhr.send();
-        return ( xhr.status >= 200 && (xhr.status < 300 || xhr.status === 304) );
-    } catch (error) {
-        return false;
-    }
-
-}
-*/
 function sendMessageWithTimeOut(){
     socket.send(timeOutMessage);
 }
@@ -1091,4 +913,104 @@ function AddReferencePoints(){
         alert("No camera selected");
     }
     addingReferencePoints = true;
+}
+
+function toggle(button)
+{
+  if(document.getElementById("check-").value=="OFF"){
+      console.log("de");
+   document.getElementById("check-").value="ON";}
+
+  else if(document.getElementById("check-").value=="ON"){
+      console.log("asda");
+   document.getElementById("check-").value="OFF";}
+}
+
+
+function addCamera(mac, calibrated){
+    if(mac != ""){
+        var liste = document.getElementById("cameras-grid");
+        var newCamera = document.createElement('div');
+        newCamera.setAttribute("class", "col-lg-3 col-md-4 col-sm-6 camera-window");
+        newCamera.setAttribute("onclick", "select(this)");
+        newCamera.setAttribute("id", "camera-" + mac);
+        newCamera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
+        +'</br><p> mac: ' + mac + '</p>';
+        newCamera.innerHTML += '<p>Old Position: (X: '  + truncateDigit(camerasPositionMap.get(mac).get("x"))+ ', Y: '
+        + truncateDigit(camerasPositionMap.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasPositionMap.get(mac).get("z")) + ')</p>';
+        newCamera.innerHTML += '<label class="switch">'
+
+        newCamera.innerHTML += '<p>Old Position: (X: '  + truncateDigit(camerasNewPosition.get(mac).get("x"))+ ', Y: '
+        + truncateDigit(camerasNewPosition.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasNewPosition.get(mac).get("z")) + ')</p>';
+        newCamera.innerHTML += '<label class="switch">'
+
+        +'<input id= "check-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateValidation(\'' + mac + '\')">'
+        +'<span class="slider round"></span>';
+
+        liste.appendChild(newCamera);
+        validatedCalibration.set(mac, true);
+        if(liste.childNodes.length == 2){
+            var button = document.getElementById("validation-btns");
+            button.style.display = "block";
+        }
+    }
+
+}
+
+
+function select(camera){
+    var liste = document.getElementById("cameras-grid");
+    var message;
+    if($(camera).hasClass('selected')){
+        var mac = camera.id.split("-")[1];
+        $(camera).removeClass("selected");
+        message = "cmd=unselectcamera&uid=" + mac;
+    }
+    else {
+        $(camera).addClass("selected");
+        $(document.getElementById("cameras-settings-ext")).show(800);
+        var mac = camera.id.split("-")[1];
+        message = "cmd=selectcamera&uid=" + mac;
+    }
+    socket.send(message);
+    for (var i=1; i < liste.childNodes.length; i++) {
+        if(camera.id != liste.childNodes[i].id){
+            liste.childNodes[i].classList.remove("selected");
+            var mac = liste.childNodes[i].id.split("-")[1];
+            message = "cmd=unselectcamera&uid=" + mac;
+            socket.send(message);
+        }
+    }
+
+}
+
+function truncateDigit(digit){
+    var index = digit.indexOf(".");
+    if(index > -1){
+        return digit.substr(0, index + 3);
+    }else{
+        return digit;
+    }
+}
+
+function updateValidation(mac)
+{
+    var selection = document.getElementById("check-" + mac);
+    validatedCalibration.set(mac, selection.checked);
+}
+
+function validateCalibration(validated)
+{
+    var message = "cmd=validate"
+    if(validated){
+        var count = 0;
+        for (var [mac, isSelected] of validatedCalibration) {
+            if(isSelected){
+                message += "&camera" + count + "=" + mac;
+                count++;
+            }
+        }
+    }
+    console.log(message);
+    socket.send(message);
 }

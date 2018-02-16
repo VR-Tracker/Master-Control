@@ -394,6 +394,7 @@ function addCamera(mac){
             newCamera.setAttribute("id", "camera-" + mac);
             newCamera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
             +'</br><p> mac: ' + mac + '</p>'
+            +'<p> IP: '  + cameraMap.get(mac).get("ip") + '</p>'
             +'<p> version: '  + cameraMap.get(mac).get("version") + '</p>'
             +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated")
             +', activated: ' + cameraMap.get(mac).get("activated") + '</p>';

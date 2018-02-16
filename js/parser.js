@@ -1,10 +1,14 @@
 var countTablePointCamera = new Map();
 var countElementGateway = new Map();
+var camerasPositionMap = new Map();
+var camerasNewPosition = new Map();
+
 countElementGateway.set("cameras", 0);
 countElementGateway.set("tags", 0);
 countElementGateway.set("users", 0);
 countElementGateway.set("masters", 0);
 var positionCount = 0;
+
 function parseMessage(message){
     var messageContent = message.split("&");
     console.log(message);
@@ -131,34 +135,29 @@ function parseMessage(message){
             break;
         }
         case "camerasposition":{
-            var camerasPositionMap = {};
-            var datas = [];
-            if((positionCount % 3) == 0){
                 try{
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
+                    var mac;
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
-                            camerasPositionMap.uid = information[1];
+                            mac = information[1];
+                            camerasPositionMap.set(mac, new Map());
                         }
                         else if(information[0] == "x"){
-                            camerasPositionMap.x = information[1];
+                            camerasPositionMap.get(mac).set("x", information[1]);
                         }
                         else if(information[0] == "y"){
-                            camerasPositionMap.y = information[1];
+                            camerasPositionMap.get(mac).set("y", information[1]);
                         }
                         else if(information[0] == "z"){
-                            camerasPositionMap.z = information[1];
-                            datas.splice(datas.length, 0, clone(camerasPositionMap));
+                            camerasPositionMap.get(mac).set("z", information[1]);
                         }
                     }
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }
-            }else{
-                positionCount++;
-            }
             break;
         }
         case "calibrationfailed":{
@@ -248,26 +247,32 @@ function parseMessage(message){
             break;
         }
         case "calibratedcamera":{
-            var camerasPositionMap = {};
+            //var camerasPositionMap = {};
             var datas = [];
             if((positionCount % 3) == 0){
                 try{
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
+                    var camMac;
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
-                            camerasPositionMap.uid = information[1];
+                            camMac = information[1];
+                            camerasNewPosition.uid = camMac;
+                            if(validatedCalibration.has(camMac)){
+                                validatedCalibration.set(camMac, true);
+                            }
                         }
                         else if(information[0] == "x"){
-                            camerasPositionMap.x = information[1];
+                            camerasNewPosition.x = information[1];
                         }
                         else if(information[0] == "y"){
-                            camerasPositionMap.y = information[1];
+                            camerasNewPosition.y = information[1];
                         }
                         else if(information[0] == "z"){
-                            camerasPositionMap.z = information[1];
-                            datas.splice(datas.length, 0, clone(camerasPositionMap));
+                            camerasNewPosition.z = information[1];
+                            datas.splice(datas.length, 0, clone(camerasNewPosition));
+                            addCamera(camMac);
                         }
                     }
                 }catch (e) {
