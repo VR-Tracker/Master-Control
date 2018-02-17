@@ -833,6 +833,14 @@ function autoCalibration(){
 
 }
 
+
+
+function nextCalibration(){
+    //Create the corresponding message
+    var message = "cmd=autocalibnext";
+    sendMessage(socket, message);
+}
+
 function stopAutoCalibration(){
     var send = false;
     //Create the corresponding message
@@ -927,7 +935,7 @@ function toggle(button)
 }
 
 
-function addCamera(mac, calibrated){
+function addCamera(mac){
     if(mac != ""){
         var liste = document.getElementById("cameras-grid");
         var newCamera = document.createElement('div');

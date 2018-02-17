@@ -258,20 +258,19 @@ function parseMessage(message){
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
                             camMac = information[1];
-                            camerasNewPosition.uid = camMac;
+                            camerasNewPosition.set(camMac, new Map());
                             if(validatedCalibration.has(camMac)){
                                 validatedCalibration.set(camMac, true);
                             }
                         }
                         else if(information[0] == "x"){
-                            camerasNewPosition.x = information[1];
+                            camerasNewPosition.get(camMac).set("x", information[1]);
                         }
                         else if(information[0] == "y"){
-                            camerasNewPosition.y = information[1];
+                            camerasNewPosition.get(camMac).set("y", information[1]);
                         }
                         else if(information[0] == "z"){
-                            camerasNewPosition.z = information[1];
-                            datas.splice(datas.length, 0, clone(camerasNewPosition));
+                            camerasNewPosition.get(camMac).set("z", information[1]);
                             addCamera(camMac);
                         }
                     }
