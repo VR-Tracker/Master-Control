@@ -948,7 +948,7 @@ function addCamera(mac){
         + truncateDigit(camerasPositionMap.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasPositionMap.get(mac).get("z")) + ')</p>';
         newCamera.innerHTML += '<label class="switch">'
 
-        newCamera.innerHTML += '<p>Old Position: (X: '  + truncateDigit(camerasNewPosition.get(mac).get("x"))+ ', Y: '
+        newCamera.innerHTML += '<p>New Position: (X: '  + truncateDigit(camerasNewPosition.get(mac).get("x"))+ ', Y: '
         + truncateDigit(camerasNewPosition.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasNewPosition.get(mac).get("z")) + ')</p>';
         newCamera.innerHTML += '<label class="switch">'
 

@@ -283,10 +283,10 @@ function selectcamera(camera){
 
     if($(camera).hasClass('selected')){
         var mac = camera.id.split("-")[1];
-        var message = "cmd=disabletransferpoints";
+        //var message = "cmd=disabletransferpoints";
         $(camera).removeClass("selected");
         $(document.getElementById("cameras-settings-ext")).hide(800);
-        socket.send(message);
+        //socket.send(message);
 
         message = "cmd=unselectcamera&uid=" + mac;
         socket.send(message);
@@ -305,8 +305,8 @@ function selectcamera(camera){
         $(document.getElementById("camera-gain-input")).val(cameraMap.get(mac).get("gain"));
         $(document.getElementById("camera-exposure-slider")).val(cameraMap.get(mac).get("exposure"));
         $(document.getElementById("camera-exposure-input")).val(cameraMap.get(mac).get("exposure"));
-        var message = "cmd=transferpoints&uid=" + mac;
-        socket.send(message);
+        //var message = "cmd=transferpoints&uid=" + mac;
+        //socket.send(message);
 
         message = "cmd=selectcamera&uid=" + mac;
         socket.send(message);
