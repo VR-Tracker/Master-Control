@@ -44,6 +44,9 @@
 			<li><a href="calibration.html"><svg class="glyph stroked table"><use xlink:href="#stroked-gear"></use></svg> Calibration</a></li>
 			<li><a href="visualizer.html"><svg class="glyph stroked calendar"><use xlink:href="#stroked-eye"></use></svg> Visualizer</a></li>
 			<li><a href="https://vrtracker.xyz/bug-report/"><svg class="glyph stroked clipboard with paper"><use xlink:href="#stroked-clipboard-with-paper"/></svg> Report Bug</a></li>
+			<li><a><svg class="glyph stroked email"><<use xlink:href="#stroked-email"/></svg>
+				<button id="help-btn" onclick="askAssistance()" style="background-color: Transparent;background-repeat:no-repeat;border: none; cursor:pointer; overflow: hidden; outline:none;width:80%; text-align:left;">Ask Assistance</button>
+			</a></li>
 		</ul>
 
 	</div><!--/.sidebar-->
@@ -61,51 +64,51 @@
 				<h1 class="page-header">Dashboard</h1>
 				<button type="submit" class="btn btn-info" style="margin-bottom:5px;" id="software-update-button"><a href="https://vrtracker.xyz/documentation" style="color:white;">Check software updates</a></button>
 			</div>
-				<div class="col-md-4">
-					<div class="panel panel-info" >
-						<div class="panel-heading">
-							<strong>Gateway Information</strong>
-						</div>
-						<div class="panel-body update-info" id="gateway-software-state-fail" role="alert" align="center">
-							<p>Your Gateway need to be updated !</p>
-							<p align="center" style="" ></p>
-						</div>
-						<div class="panel-body update-info" id="gateway-software-state" role="alert" align="center">
-							<p>Your Gateway is up to date !</p>
-							<p align="center" style="" ></p>
-						</div>
+			<div class="col-md-4">
+				<div class="panel panel-info" >
+					<div class="panel-heading">
+						<strong>Gateway Information</strong>
+					</div>
+					<div class="panel-body update-info" id="gateway-software-state-fail" role="alert" align="center">
+						<p>Your Gateway need to be updated !</p>
+						<p align="center" style="" ></p>
+					</div>
+					<div class="panel-body update-info" id="gateway-software-state" role="alert" align="center">
+						<p>Your Gateway is up to date !</p>
+						<p align="center" style="" ></p>
 					</div>
 				</div>
-				<div class="col-md-4">
-					<div class="panel panel-info" >
-						<div class="panel-heading">
-							<strong>Camera Information</strong>
-						</div>
-						<div class="panel-body update-info" id="camera-software-state-fail" role="alert" align="center">
-							<p>Your Cameras need to be updated !</p>
-							<p align="center" style="" ></p>
-						</div>
-						<div class="panel-body update-info" id="camera-software-state" role="alert" align="center">
-							<p>Your Cameras are up to date !</p>
-							<p align="center" style="" ></p>
-						</div>
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-info" >
+					<div class="panel-heading">
+						<strong>Camera Information</strong>
+					</div>
+					<div class="panel-body update-info" id="camera-software-state-fail" role="alert" align="center">
+						<p>Your Cameras need to be updated !</p>
+						<p align="center" style="" ></p>
+					</div>
+					<div class="panel-body update-info" id="camera-software-state" role="alert" align="center">
+						<p>Your Cameras are up to date !</p>
+						<p align="center" style="" ></p>
 					</div>
 				</div>
-				<div class="col-md-4">
-					<div class="panel panel-info" >
-						<div class="panel-heading">
-							<strong>Tag Information</strong>
-						</div>
-						<div class="panel-body update-info" id="tag-software-state-fail" role="alert" align="center">
-							<p>Your Tags need to be updated !</p>
-							<p align="center" style="" ></p>
-						</div>
-						<div class="panel-body update-info" id="tag-software-state" role="alert" align="center">
-							<p>Your tags are up to date !</p>
-							<p align="center" style="" ></p>
-						</div>
+			</div>
+			<div class="col-md-4">
+				<div class="panel panel-info" >
+					<div class="panel-heading">
+						<strong>Tag Information</strong>
+					</div>
+					<div class="panel-body update-info" id="tag-software-state-fail" role="alert" align="center">
+						<p>Your Tags need to be updated !</p>
+						<p align="center" style="" ></p>
+					</div>
+					<div class="panel-body update-info" id="tag-software-state" role="alert" align="center">
+						<p>Your tags are up to date !</p>
+						<p align="center" style="" ></p>
 					</div>
 				</div>
+			</div>
 		</div><!--/.row-->
 
 		<div class="alert bg-danger" id="ws_failed_alert" role="alert">
@@ -174,133 +177,182 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">Cameras</div>
 					<div class="panel-body">
-
-					<div class="icon-grid" id="cameras-grid">
+						<div class="icon-grid" id="cameras-grid">
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</div><!--/.row-->
+		</div><!--/.row-->
 
-	<div class="row" id="cameras-settings-ext" style="display:none;">
-		<div class="col-lg-12">
-			<div class="panel panel-default">
-				<div class="panel-heading">Cameras Settings</div>
-				<div class="panel-body">
+		<div class="row" id="cameras-settings-ext" style="display:none;">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Cameras Settings</div>
+					<div class="panel-body">
 
-					<div class="col-md-6">
-						<h4 class="text-center">Tracked Points</h4>
-						<canvas id="camera-canvas" width="640" height="480" style="border:1px solid rgba(230, 230, 230, 1);     width: 100%;"></canvas>
-					</div>
-					<div class="col-md-6 mx-auto">
-						<div class="row" align="center" style="margin:15px;">
-							<p>
-								<i id="activated-text">Camera is currently activated</i>
-							</p>
-							<button type="submit" class="btn btn-info" id="activate-btn" >Activate</button>
+						<div class="col-md-6">
+							<h4 class="text-center">Tracked Points</h4>
+							<canvas id="camera-canvas" width="640" height="480" style="border:1px solid rgba(230, 230, 230, 1);     width: 100%;"></canvas>
 						</div>
-						<h4 style="margin-top:50px;" class="text-center">Detection Settings</h4>
-						<div style="margin-top:25px;">
-							<div class="row" id="camera-sliders">
-								<div class="col-sm-4">
-									<span>Sensitivity:</span>
-								</div>
-								<div class="col-sm-5">
-									<input oninput="updateSensitivitySlider(this)" onchange="updateSensitivitySlider(this)" type="range" name="points" id="camera-sensitivity-slider" value="50" min="0" max="255">
-								</div>
-								<div class="col-sm-1">
-									<input onchange="updateSensitivityInput(this)" type="number" name="quantity" min="0" max="255" value="50" id="camera-sensitivity-input">
-								</div>
-								<div class="col-sm-4">
-									<span>Min Blob Size:</span>
-								</div>
-								<div class="col-sm-5">
-									<input oninput="updateMinBlobSizeSlider(this)" onchange="updateMinBlobSizeSlider(this)" type="range" name="points" id="camera-minblobsize-slider" value="5" min="0" max="200">
-								</div>
-								<div class="col-sm-1">
-									<input onchange="updateMinBlobSizeInput(this)" type="number" name="quantity" min="0" max="200" value="5" id="camera-minblobsize-input">
-								</div>
+						<div class="col-md-6 mx-auto">
+							<div class="row" align="center" style="margin:15px;">
+								<p>
+									<i id="activated-text">Camera is currently activated</i>
+								</p>
+								<button type="submit" class="btn btn-info" id="activate-btn" >Activate</button>
+							</div>
+							<h4 style="margin-top:50px;" class="text-center">Detection Settings</h4>
+							<div style="margin-top:25px;">
+								<div class="row" id="camera-sliders">
 									<div class="col-sm-4">
-									<span>Max Blob Size:</span>
-								</div>
-								<div class="col-sm-5">
-									<input oninput="updateMaxBlobSizeSlider(this)" onchange="updateMaxBlobSizeSlider(this)" type="range" name="points" id="camera-maxblobsize-slider" value="400" min="10" max="2000">
-								</div>
-								<div class="col-sm-1">
-									<input onchange="updateMaxBlobSizeInput(this)" type="number" name="quantity" min="10" max="2000" value="400" id="camera-maxblobsize-input">
-								</div>
-								<div class="col-sm-4">
-									<span>Gain:</span>
-								</div>
-								<div class="col-sm-5">
-									<input oninput="updateGainSlider(this)" onchange="updateGainSlider(this)" type="range" name="points" id="camera-gain-slider" value="0" min="0" max="100">
-								</div>
-								<div class="col-sm-1">
-									<input onchange="updateGainInput(this)" type="number" name="quantity" min="0" max="100" value="0" id="camera-gain-input">
-								</div>
-								<div class="col-sm-4">
-									<span>Exposure:</span>
-								</div>
-								<div class="col-sm-5">
-									<input oninput="updateExposureSlider(this)" onchange="updateExposureSlider(this)" type="range" name="points" id="camera-exposure-slider" value="0" min="0" max="100">
-								</div>
-								<div class="col-sm-1">
-									<input onchange="updateExposureInput(this)" type="number" name="quantity" min="0" max="100" value="0" id="camera-exposure-input">
+										<span>Sensitivity:</span>
+									</div>
+									<div class="col-sm-5">
+										<input oninput="updateSensitivitySlider(this)" onchange="updateSensitivitySlider(this)" type="range" name="points" id="camera-sensitivity-slider" value="50" min="0" max="255">
+									</div>
+									<div class="col-sm-1">
+										<input onchange="updateSensitivityInput(this)" type="number" name="quantity" min="0" max="255" value="50" id="camera-sensitivity-input">
+									</div>
+									<div class="col-sm-4">
+										<span>Min Blob Size:</span>
+									</div>
+									<div class="col-sm-5">
+										<input oninput="updateMinBlobSizeSlider(this)" onchange="updateMinBlobSizeSlider(this)" type="range" name="points" id="camera-minblobsize-slider" value="5" min="0" max="200">
+									</div>
+									<div class="col-sm-1">
+										<input onchange="updateMinBlobSizeInput(this)" type="number" name="quantity" min="0" max="200" value="5" id="camera-minblobsize-input">
+									</div>
+									<div class="col-sm-4">
+										<span>Max Blob Size:</span>
+									</div>
+									<div class="col-sm-5">
+										<input oninput="updateMaxBlobSizeSlider(this)" onchange="updateMaxBlobSizeSlider(this)" type="range" name="points" id="camera-maxblobsize-slider" value="400" min="10" max="2000">
+									</div>
+									<div class="col-sm-1">
+										<input onchange="updateMaxBlobSizeInput(this)" type="number" name="quantity" min="10" max="2000" value="400" id="camera-maxblobsize-input">
+									</div>
+									<div class="col-sm-4">
+										<span>Gain:</span>
+									</div>
+									<div class="col-sm-5">
+										<input oninput="updateGainSlider(this)" onchange="updateGainSlider(this)" type="range" name="points" id="camera-gain-slider" value="0" min="0" max="100">
+									</div>
+									<div class="col-sm-1">
+										<input onchange="updateGainInput(this)" type="number" name="quantity" min="0" max="100" value="0" id="camera-gain-input">
+									</div>
+									<div class="col-sm-4">
+										<span>Exposure:</span>
+									</div>
+									<div class="col-sm-5">
+										<input oninput="updateExposureSlider(this)" onchange="updateExposureSlider(this)" type="range" name="points" id="camera-exposure-slider" value="0" min="0" max="100">
+									</div>
+									<div class="col-sm-1">
+										<input onchange="updateExposureInput(this)" type="number" name="quantity" min="0" max="100" value="0" id="camera-exposure-input">
+									</div>
 								</div>
 							</div>
+							<div class="row" align="center" style="margin:15px; margin-top:30px;">
+								<button type="submit" class="btn btn-info" id="snapshot-btn" onclick="snapshotCamera()" style="background-color:red;">Take a Snapshot</button>
+							</div>
+							<div class="row" align="center" style="margin:15px; margin-top:45px">
+								<button type="submit" class="btn btn-info" id="save-btn" onclick="saveCameraSettings()">Save Settings</button>
+							</div>
+
 						</div>
-						<div class="row" align="center" style="margin:15px; margin-top:30px;">
-							<button type="submit" class="btn btn-info" id="snapshot-btn" onclick="snapshotCamera()" style="background-color:red;">Take a Snapshot</button>
-						</div>
-						<div class="row" align="center" style="margin:15px; margin-top:45px">
-							<button type="submit" class="btn btn-info" id="save-btn" onclick="saveCameraSettings()">Save Settings</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default" >
+					<div class="panel-heading">Tags</div>
+					<div class="panel-body">
+
+						<div class="icon-grid" id="tags-grid">
 						</div>
 
 					</div>
+					<div class="row" style="align:right; display:none;" id="magnetude-offset">
+						<div class="col-md-2">
+							<div class="form-group" style="margin-left: 10px;">
+								<input class="form-control" id="magnetude-value" placeholder=" OY offset">
+							</div>
+						</div>
+						<div style="margin-top: 1px; padding-bottom:5px;">
+							<button type="submit" class="btn btn-info" id="mag-btn" onclick="saveOffset()">Save Tag Offset</button>
+						</div>
+					</div>
 				</div>
+
 			</div>
+		</div><!--/.row-->
 
-		</div>
-	</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Users</div>
+					<div class="panel-body">
 
-	<div class="row">
-		<div class="col-lg-12">
-			<div class="panel panel-default" >
-				<div class="panel-heading">Tags</div>
-				<div class="panel-body">
-
-					<div class="icon-grid" id="tags-grid">
+						<div class="icon-grid" id="users-grid">
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	</div><!--/.row-->
+		</div><!--/.row-->
 
-	<div class="row">
-		<div class="col-lg-12">
-			<div class="panel panel-default">
-				<div class="panel-heading">Users</div>
-				<div class="panel-body">
+		<div class="row"><!-- Partie barre avec les rectangles -->
+			<div class="col-lg-12">
+				<div class="panel panel-default" >
+					<div class="panel-heading">Boundaries</div>
 
-				<div class="icon-grid" id="users-grid">
+					<div class="col-xs-12 col-md-6 col-lg-3">
+						<div class="form-group" style="margin-left: 10px;">
+							<label>X Min</label>
+							<input class="form-control" id="xmin" placeholder="X Min">
+						</div>
+
+					</div>
+					<div class="col-xs-12 col-md-6 col-lg-3">
+						<div class="form-group" style="margin-left: 10px;">
+							<label>X Max</label>
+							<input class="form-control" id="xmax" placeholder="X Max">
+						</div>
+					</div>
+					<div class="col-xs-12 col-md-6 col-lg-3">
+						<div class="form-group" style="margin-left: 10px;">
+							<label>Y Min</label>
+							<input class="form-control" id="ymin" placeholder="Y Min">
+						</div>
+
+					</div>
+					<div class="col-xs-12 col-md-6 col-lg-3">
+						<div class="form-group" style="margin-left: 10px;">
+							<label>Y Max</label>
+							<input class="form-control" id="ymax" placeholder="Y Max">
+						</div>
+					</div>
+					<div align="center" style="margin-top: 1px; padding-bottom:5px;">
+						<button type="submit" class="btn btn-info" id="boundaries-btn" onclick="saveBoundaries()">Save Boundaries</button>
+					</div>
 				</div>
 			</div>
+		</div><!--/.row-->
+
+		<div align="center" style="margin-top: 1px">
+			<button style="width:50%; " type="submit" class="btn btn-primary" id="restart-btn" onclick="restartGateway()">Restart Gateway</button>
 		</div>
-	</div>
-</div><!--/.row-->
+	</div>	<!--/.main-->
 
-<div align="center" style="margin-top: 1px">
-	<button style="width:50%; " type="submit" class="btn btn-primary" id="restart-btn" onclick="restartGateway()">Restart Gateway</button>
-</div>
-</div>	<!--/.main-->
+	<script src="js/jquery-3.2.0.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-datepicker.js"></script>
+	<script src="js/parser.js"></script>
 
-<script src="js/jquery-3.2.0.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/bootstrap-datepicker.js"></script>
-<script src="js/parser.js"></script>
-
-<script src="js/dashboard.js"></script>
-<script src="js/bootstrap-table.js"></script>
+	<script src="js/dashboard.js"></script>
+	<script src="js/bootstrap-table.js"></script>
 
 
 </body>

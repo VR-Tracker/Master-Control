@@ -231,7 +231,7 @@ function getSelectedCameraMac(){
     }
 }
 
-// Return the Selected Camera MAC address using tits ID
+// Return the Selected tag MAC address using tits ID
 function getSelectedTagMac(){
     var liste = document.getElementById("tags-grid");
     for (var i=1; i < liste.childNodes.length; i++) {
@@ -283,10 +283,10 @@ function selectcamera(camera){
 
     if($(camera).hasClass('selected')){
         var mac = camera.id.split("-")[1];
-        var message = "cmd=disabletransferpoints";
+        //var message = "cmd=disabletransferpoints";
         $(camera).removeClass("selected");
         $(document.getElementById("cameras-settings-ext")).hide(800);
-        socket.send(message);
+        //socket.send(message);
 
         message = "cmd=unselectcamera&uid=" + mac;
         socket.send(message);
@@ -305,8 +305,8 @@ function selectcamera(camera){
         $(document.getElementById("camera-gain-input")).val(cameraMap.get(mac).get("gain"));
         $(document.getElementById("camera-exposure-slider")).val(cameraMap.get(mac).get("exposure"));
         $(document.getElementById("camera-exposure-input")).val(cameraMap.get(mac).get("exposure"));
-        var message = "cmd=transferpoints&uid=" + mac;
-        socket.send(message);
+        //var message = "cmd=transferpoints&uid=" + mac;
+        //socket.send(message);
 
         message = "cmd=selectcamera&uid=" + mac;
         socket.send(message);
@@ -394,6 +394,7 @@ function addCamera(mac){
             newCamera.setAttribute("id", "camera-" + mac);
             newCamera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
             +'</br><p> mac: ' + mac + '</p>'
+            +'<p> IP: '  + cameraMap.get(mac).get("ip") + '</p>'
             +'<p> version: '  + cameraMap.get(mac).get("version") + '</p>'
             +'<p> calibrated: '  + cameraMap.get(mac).get("calibrated")
             +', activated: ' + cameraMap.get(mac).get("activated") + '</p>';
@@ -455,7 +456,7 @@ function removeUser(mac){
     var usersGrid = document.getElementById("users-grid");
     var userToRemove = document.getElementById("user-" + mac);
     if(usersGrid != undefined && userToRemove != undefined){
-        usersGrid.remove(userToRemove);
+        userToRemove.parentNode.removeChild(userToRemove);
         countElementGateway.set("users", countElementGateway.get("users") - 1);
         document.getElementById("user-count").innerHTML = countElementGateway.get("users");
     }
@@ -470,7 +471,11 @@ function addTag(mac){
         newTag.setAttribute("id", "tag-" + mac);
         newTag.setAttribute("onclick", "selectTag(this)");
         liste.appendChild(newTag);
-
+    }
+    console.log("child node " + liste.childNodes.length);
+    if(liste.childNodes.length == 2){
+        var magnetude = document.getElementById("magnetude-offset");
+        magnetude.style.display = "block";
     }
     newTag.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-tag"/></svg>'
     +'</br><p> mac: ' + mac + '</p>'
@@ -479,7 +484,7 @@ function addTag(mac){
     +'<p> status: '  + tagMap.get(mac).get("status") + '</p>'
     +'<p> #users: '  + tagMap.get(mac).get("users") + '</p>'
     +'<p> version: '  + tagMap.get(mac).get("version") + '</p>'
-    +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Reoriente</button>';
+    +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Get Orientation</button>';
 }
 
 function removeTag(mac){
@@ -487,9 +492,17 @@ function removeTag(mac){
     var tagsGrid = document.getElementById("tags-grid");
     var tagToRemove = document.getElementById("tag-" + mac);
     if(tagsGrid != undefined && tagToRemove != undefined){
-        tagsGrid.remove(tagToRemove);
+      console.log("Removing tag mac " + mac);
+      var tagToRemoved = "#tag-" + mac;
+      $(tagToRemoved).remove();
+      console.log(tagToRemoved);
+      tagToRemove.parentNode.removeChild(tagToRemove);
         countElementGateway.set("tags", countElementGateway.get("tags") - 1);
         document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
+    }
+    if(liste.childNodes.length == 1){
+        var magnetude = document.getElementById("magnetude-offset");
+        magnetude.style.display = "none";
     }
 }
 
@@ -515,7 +528,7 @@ function parseMessage(message){
     }catch (e) {
         console.error("Parsing error:", e);
     }
-    //console.log(message);
+    console.log(message);
     switch (cmd) {
         case "camerasinformation":{
             if(messageContent.length > 0){
@@ -835,11 +848,18 @@ function parseMessage(message){
             removeUser(userMac);
             break;
         }
-        case "deletetag":{
+        case "deletetag":
             var tagMac = contentMap.get("uid");
             removeTag(tagMac);
             break;
-        }
+        case "offset":
+            var offsetValue = contentMap.get("oy");
+            console.log("Offset value " + contentMap);
+            document.getElementById("magnetude-value").value = offsetValue;
+            break;
+        case "boundaries":
+            updateBoundaries(contentMap.get("xmin"),contentMap.get("xmax"),contentMap.get("ymin"),contentMap.get("ymax"))
+            break;
         default:
         break;
     }
@@ -1112,6 +1132,8 @@ function getLatestVersion(){
 function reorienteTag(mac){
     var message = "cmd=reoriente&uid=" + mac;
     vrtracker.sendMessage(message);
+    var message = "cmd=getoff&uid=" + mac;
+    vrtracker.sendMessage(message);
 }
 
 function displayCheckUpdate(){
@@ -1130,4 +1152,38 @@ function updateTagsDisplay(tagMac){
 
 function updateUsersDisplay(userMac){
 
+}
+
+function askAssistance(){
+    var message = "cmd=getcontrol";
+    vrtracker.sendMessage(message);
+}
+
+function saveOffset(){
+    var message = "cmd=saveoffset";
+    var offsetValue = document.getElementById("magnetude-value").value;
+    message += "&oy=" + offsetValue;
+    vrtracker.sendMessage(message);
+}
+
+function saveBoundaries(xmin, xmax, ymin, ymax)
+{
+    var xMin = document.getElementById("xmin").value;
+    var xMax = document.getElementById("xmax").value;
+    var yMin = document.getElementById("ymin").value;
+    var yMax = document.getElementById("ymax").value;
+    var message = "cmd=boundaries";
+    message += "&xmin=" + xmin;
+    message += "&xmax=" + xmax;
+    message += "&ymin=" + ymin;
+    message += "&ymax=" + ymax;
+    vrtracker.sendMessage(message);
+}
+
+function updateBoundaries(xmin, xmax, ymin, ymax)
+{
+    document.getElementById("xmin").value = xmin;
+    document.getElementById("xmax").value = xmax;
+    document.getElementById("ymin").value = ymin;
+    document.getElementById("ymax").value = ymax;
 }

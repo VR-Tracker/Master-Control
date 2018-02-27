@@ -119,6 +119,9 @@
 			<div align="center" style="margin-top: 1px">
 				<button style="width:50%; " type="submit" class="btn btn-primary" id="auto-calibration-btn" onclick="autoCalibration()">Auto Calibration </button>
 			</div>
+			<div align="center" style="margin-top: 1px">
+				<button style="width:50%; " type="submit" class="btn btn-primary" id="next-calibration-btn" onclick="nextCalibration()">Next Calibration </button>
+			</div>
 			<div align="center" style="margin-top: 1px; margin-bottom: 3px;">
 				<button style="width:50%; display: none;" type="submit" class="btn btn-primary" id="stop-auto-calibration-btn" onclick="stopAutoCalibration()">Stop Auto Calibration </button>
 			</div>
@@ -201,6 +204,7 @@
 			</p>
 		</div>
 	</div>
+
 	<div class="col-md-3"  >
 		<div class="panel panel-info" style="position:fixed; margin-right: 4`0px;">
 			<div class="panel-heading">
@@ -213,6 +217,28 @@
 	</div>
 
 </div><!--/.row-->
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">Cameras</div>
+			<div class="panel-body">
+				<div class="icon-grid" id="cameras-grid">
+
+				</div>
+
+			</div>
+			<div class="row" style="align:right;">
+
+			<div align="center" style="margin-top: 1px; padding-bottom:5px; display:none" id="validation-btns">
+				<button type="submit" class="btn btn-primary" onclick="validateCalibration(false)" style="margin-right: 10px;">Discard Calibration</button>
+				<button type="submit" class="btn btn-info" onclick="validateCalibration(true)" style="margin-left: 5px;">Save Calibration</button>
+			</div>
+			</div>
+		</div>
+	</div>
+</div><!--/.row-->
+
 </div>
 <div id="messageScreen" class="panel panel-default">
 	<div class="alert bg-danger" id="calibration-failed" role="alert">
