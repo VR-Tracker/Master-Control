@@ -73,8 +73,9 @@ function parseMessage(message){
                     if(macToNumberMap.has(value)){
                     }else{
                         //Ajout des cameras disponibles
-                        if(key.includes("camera"))
+                        /*if(key.includes("camera"))
                             addTableAvailableCamera(value);
+                            */
                     }
                 }
             }else{
@@ -136,6 +137,8 @@ function parseMessage(message){
         }
         case "camerasposition":{
                 try{
+                    console.log("Parsing message " + message);
+
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
                     var mac;
@@ -153,6 +156,7 @@ function parseMessage(message){
                         }
                         else if(information[0] == "z"){
                             camerasPositionMap.get(mac).set("z", information[1]);
+                            updateCameraDisplay(mac);
                         }
                     }
                 }catch (e) {
