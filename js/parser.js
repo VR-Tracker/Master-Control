@@ -258,7 +258,7 @@ function parseMessage(message){
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
                     var camMac;
-                    if(messageContent > 1)
+                    if(messageContent.length > 1)
                         displayCalibratedCameras()
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
