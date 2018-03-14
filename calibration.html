@@ -129,36 +129,90 @@
 			</div>
 		</div>
 
-		<div class="panel panel-default" id="add-3D-point-panel" style="opacity:0; margin-top: 3px">
+		<div class="panel panel-default" id="add-3D-point-panel" style="display:none; margin-top: 3px">
 			<div class="panel-heading">Tag 3D world coordinates</div>
 			<div class="panel-body" >
-				<div class="col-md-6">
+				<div class="row">
+					<div class="col-md-6">
 
-					<div class="form-group">
-						<label>X</label>
-						<input disabled class="form-control" id="x-coordinate" placeholder="x coordinate in meters">
+						<div class="form-group">
+							<label>X</label>
+							<input class="form-control" id="x-coordinate" placeholder="x coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>Y</label>
+							<input class="form-control" id="y-coordinate" placeholder="y coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>Z</label>
+							<input class="form-control" id="z-coordinate" placeholder="z coordinate in meters">
+						</div>
 					</div>
-					<div class="form-group">
-						<label>Y</label>
-						<input disabled class="form-control" id="y-coordinate" placeholder="y coordinate in meters">
+
+					<div class="col-md-6">
+						<label>multiple coordinates</label>
+						<textarea class="form-control" rows="8" id="multiple-coordinates" placeholder="enter the points separated by ; And the coordinates separated by , Ex:1,1,1;2,2,2;"></textarea>
 					</div>
-					<div class="form-group">
-						<label>Z</label>
-						<input disabled class="form-control" id="z-coordinate" placeholder="z coordinate in meters">
+				</div>
+				<div class="row" id="generator" style="display:none">
+
+				<div class="panel-heading">Point Generator</div>
+
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>Xmin</label>
+							<input class="form-control" id="x-min" placeholder="x coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>Xmax</label>
+							<input class="form-control" id="x-max" placeholder="x coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>X step</label>
+							<input class="form-control" id="x-step" placeholder="x coordinate in meters">
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>Ymin</label>
+							<input class="form-control" id="y-min" placeholder="y coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>Ymax</label>
+							<input class="form-control" id="y-max" placeholder="y coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>Y step</label>
+							<input class="form-control" id="z-step" placeholder="x coordinate in meters">
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="form-group">
+							<label>Zmin</label>
+							<input class="form-control" id="z-min" placeholder="z coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>Zmax</label>
+							<input class="form-control" id="z-max" placeholder="z coordinate in meters">
+						</div>
+						<div class="form-group">
+							<label>Z step</label>
+							<input class="form-control" id="z-step" placeholder="x coordinate in meters">
+						</div>
+					</div>
+
+					<div align="center" style="padding-bottom: 10px">
+						<button class="btn btn-warning" id="generate-coordinate" onclick="generateCoordinate()" disabled>Add new point calibration</button>
 					</div>
 				</div>
 
-				<div class="col-md-6">
-					<label>multiple coordinates</label>
-					<textarea class="form-control" rows="8" id="multiple-coordinates" placeholder="enter the points separated by ; And the coordinates separated by , Ex:1,1,1;2,2,2;"></textarea>
-				</div>
 			</div>
 			<div align="center" style="padding-bottom: 10px">
 				<button class="btn btn-warning" id="add-coordinate" onclick="addNewPointCalibration()" disabled>Add new point calibration</button>
 			</div>
 		</div>
 
-		<div class="panel panel-default" id="add-3D-point-list" style="opacity:0;">
+		<div class="panel panel-default" id="add-3D-point-list" style="display:none;">
 			<div class="panel-heading">Cameras</div>
 			<div class="panel-body" >
 				<table class="tableau" id="points-camera">
@@ -171,7 +225,7 @@
 			</div>
 		</div>
 
-		<div class="alert bg-warning" id="not-enough-3d" role="alert" style="opacity: 0;">
+		<div class="alert bg-warning" id="not-enough-3d" role="alert" style="display: none;">
 			<svg class="glyph stroked empty-message"><use xlink:href="#stroked-empty-message"></use></svg> At least 4 points must be entered, <u>and seen by each camera</u> !
 		</div>
 		<div class="alert bg-success" id="enough-3d" role="alert" style="display: none;">
@@ -185,21 +239,13 @@
 		<div align="center" style="margin-top: 1px">
 			<button style="width:50%; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Exit Calibration </button>
 		</div>
-		<div class="alert bg-success" id="calibration-finished" role="alert" style="opacity:0;">
+		<div class="alert bg-success" id="calibration-finished" role="alert" style="display:none;">
 			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> YOUR CALIBRATION IS FINISHED !!!
 		</div>
-		<div class="alert bg-success" id="calibrated-camera" role="alert" style="display:none;">
-			<svg class="glyph stroked camera "><use xlink:href="#stroked-camera"/></svg>Calibrated Camera(s) :
-			<ul id="CC"></ul>
-		</div>
-		<div class="alert bg-danger" id="notCalibrated-camera" role="alert" style="display:none;">
-			<svg class="glyph stroked camera "><use xlink:href="#stroked-camera"/></svg>Camera(s) not calibrated :
-			<ul id="NCC"></ul>
-		</div>
 
-		<div id="stop-calibration-btn" style="opacity:0;">
+		<div id="stop-calibration-btn" style="display:none;">
 			<p align="center" style="margin-top: 1px">
-				<button style="width:50%; margin-left: 10px; display: none;" type="submit" class="btn btn-danger" onclick="stopCalibration()">Stop Calibration </button>
+				<button style="width:50%; margin-left: 10px;" type="submit" class="btn btn-danger" onclick="stopCalibration()">Stop Calibration </button>
 			</p>
 		</div>
 	</div>
@@ -218,7 +264,7 @@
 </div><!--/.row-->
 
 <div class="row">
-	<div class="col-lg-12">
+	<div class="col-lg-12" id="after-calibration-display" style="display:none;">
 		<div class="panel panel-default">
 			<div class="panel-heading">Cameras</div>
 			<div class="panel-body">

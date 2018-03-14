@@ -89,7 +89,7 @@ window.onload=function(){
             document.getElementById("not-enough-3d").innerHTML = "At least 4 points must be entered, <u>and seen by each camera</u> !";
 
             document.getElementById("calibration-finished").style.opacity = 0;
-            document.getElementById("calibration-finished").display += " none";
+            document.getElementById("calibration-finished").display = "none";
 
             document.getElementById('x-coordinate').removeAttribute("disabled");
             document.getElementById("y-coordinate").removeAttribute("disabled");
@@ -191,10 +191,15 @@ function addTableAvailableCamera(mac){
     //Create the corresponding html element
     newElement.setAttribute("id", "camera-" + nombreCamera);
     newElement.innerHTML = '<th style="width:20%; data-field="camera"> camera-' + nombreCamera + '</th>'
-    + '<th style="width:25%; data-field="mac">' + mac + '</th>'
-    + '<th style="width:40%; data-field="position">' + 'Pos: (X: '  + truncateDigit(camerasPositionMap.get(mac).get("x"))+ ', Y: '
-    + truncateDigit(camerasPositionMap.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasPositionMap.get(mac).get("z")) + ')'
-    + '<th style="width:15%; data-field="count" class="count" style="text-align:center">0</th>';
+    + '<th style="width:25%; data-field="mac">' + mac + '</th>';
+    if(camerasPositionMap.has(mac))
+    {
+        newElement.innerHTML += '<th style="width:40%; data-field="position">' + 'X: '  + truncateDigit(camerasPositionMap.get(mac).get("x"))+ ', Y: '
+        + truncateDigit(camerasPositionMap.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasPositionMap.get(mac).get("z")) + '</th>';
+    }else{
+        newElement.innerHTML += '<th style="width:40%; data-field="position"> Not Calibrated </th>';
+    }
+    newElement.innerHTML += '<th style="width:15%; data-field="count" class="count" style="text-align:center">0</th>';
     liste.appendChild(newElement);
     //Create the different input in the tables and maps
     countTable.push(0);
@@ -488,6 +493,7 @@ function addNewPointCalibration(){
                 }
             }else{
                 console.log("Input error !");
+                alert("Coordinates not recognized ! Follow the template X,Y,Z;");
             }
         }
     }
@@ -595,7 +601,7 @@ function stopCalibration(){
     document.getElementById("add-coordinate").disabled = true;
 
     sendMessage(socket, message);
-    showCalibratedCamera();
+    //showCalibratedCamera();
     resetTablePoint3D();
     var liste = document.getElementById('available-cameras');
     var ligne = liste.getElementsByTagName("tr");
@@ -1057,5 +1063,14 @@ function updateAutocalibrationDisplay()
         boutonAuto.style.display = "none";
         boutonNext.style.display = "none";
     }
+}
+
+function displayCalibratedCameras()
+{
+    document.getElementById("after-calibration-display").style.display = "block";
+}
+
+function generateCoordinate()
+{
 
 }

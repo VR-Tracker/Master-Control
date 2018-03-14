@@ -258,6 +258,8 @@ function parseMessage(message){
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
                     var camMac;
+                    if(messageContent > 1)
+                        displayCalibratedCameras()
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
@@ -284,19 +286,6 @@ function parseMessage(message){
             }else{
                 positionCount++;
             }
-            var numberCalibrated = 0;
-            var numberNotCalibrated = 0;
-            var messageCameraCalibrated = "";
-            for (var i = 0; i < datas.length; i++) {
-                messageCameraCalibrated += "<li>camera" + " (" + datas[i].uid + "), position : ";
-                numberCalibrated++;
-                messageCameraCalibrated += "("+ datas[i].x + ",  ";
-                messageCameraCalibrated +=  datas[i].y + ", ";
-                messageCameraCalibrated +=  datas[i].z + ") </li> ";
-            }
-            document.getElementById("CC").innerHTML = (messageCameraCalibrated);
-            if(numberCalibrated>0)
-                document.getElementById("calibrated-camera").style.display = "block";
             break;
         }
          default:
