@@ -258,8 +258,9 @@ function parseMessage(message){
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
                     var camMac;
-                    if(messageContent.length > 1)
-                        displayCalibratedCameras()
+                    if(messageContent.length > 1){
+                        displayCalibratedCameras();
+                    }
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
@@ -280,6 +281,7 @@ function parseMessage(message){
                             addCamera(camMac);
                         }
                     }
+
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }

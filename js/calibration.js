@@ -987,7 +987,6 @@ function addCamera(mac){
             button.style.display = "block";
         }
     }
-
 }
 
 
@@ -1034,7 +1033,7 @@ function updateValidation(mac)
 
 function validateCalibration(validated)
 {
-    var message = "cmd=validate"
+    var message = "cmd=validate";
     if(validated){
         var count = 0;
         for (var [mac, isSelected] of validatedCalibration) {
