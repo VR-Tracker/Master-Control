@@ -32,7 +32,7 @@ Feel free to contribute or ask new features, we will prioritize the new features
 
 ## Authors
 
-* **VR Tracker** - *Initial work* - [VR Tracker Dashboard](https://github.com/VR-Tracker/Master-Contro)
+* **VR Tracker** - *Initial work* - [VR Tracker Dashboard](https://github.com/VR-Tracker/Master-Control)
 
 ## License
 
