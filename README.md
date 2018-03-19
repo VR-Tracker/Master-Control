@@ -20,6 +20,9 @@ The Visualizer page shows you the position of the Tags. It is to be improved for
 
 ![Visualizer](/img/visualizer.png)
 
+### Release
+Find the different information on the [releases](https://github.com/VR-Tracker/Master-Control/releases), we will describe here what is new and what changed. (*We will update it very soon...)
+
 ### FAQ
 Check our [FAQ](https://vrtracker.xyz/faq/) for the common questions, if you have any issue, post it on the git or send us an email at : support@vrtracker.xyz
 
