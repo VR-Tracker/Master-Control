@@ -19,7 +19,7 @@ var tagLatestVersion = "searching...";
 var gatewayVersion;
 var trackingPointActivated = false;
 var hideUpdateVersionLink = true;
-var retrieveVersionErrorMsg = "Can't retrieve latest gateway version"
+var retrieveVersionErrorMsg = "<u><a href='https://vrtracker.xyz/documentation' style='color:grey;'>Check latest version</a></u>";
 
 function VRTrackerWebsocket (websocketType){
 
@@ -111,7 +111,6 @@ function createElement(type, version, info){
 }
 
 window.onload=function(){
-    getLatestVersion();
     vrtracker = new VRTrackerWebsocket(websocketIP)
     //addCamera("test");
     // Show a disconnected message when the WebSocket is closed.
@@ -472,7 +471,6 @@ function addTag(mac){
         newTag.setAttribute("onclick", "selectTag(this)");
         liste.appendChild(newTag);
     }
-    console.log("child node " + liste.childNodes.length);
     if(liste.childNodes.length == 2){
         var magnetude = document.getElementById("magnetude-offset");
         magnetude.style.display = "block";
@@ -492,10 +490,8 @@ function removeTag(mac){
     var tagsGrid = document.getElementById("tags-grid");
     var tagToRemove = document.getElementById("tag-" + mac);
     if(tagsGrid != undefined && tagToRemove != undefined){
-      console.log("Removing tag mac " + mac);
       var tagToRemoved = "#tag-" + mac;
       $(tagToRemoved).remove();
-      console.log(tagToRemoved);
       tagToRemove.parentNode.removeChild(tagToRemove);
         countElementGateway.set("tags", countElementGateway.get("tags") - 1);
         document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
@@ -528,7 +524,6 @@ function parseMessage(message){
     }catch (e) {
         console.error("Parsing error:", e);
     }
-    console.log(message);
     switch (cmd) {
         case "camerasinformation":{
             if(messageContent.length > 0){
@@ -840,7 +835,7 @@ function parseMessage(message){
             break;
         }
         case "tagsversion":{
-            updateTagVersionDisplay(contentMap, tagLatestVersion);
+            //updateTagVersionDisplay(contentMap, tagLatestVersion);
             break;
         }
         case "userdeconnection":{
@@ -854,7 +849,6 @@ function parseMessage(message){
             break;
         case "offset":
             var offsetValue = contentMap.get("oy");
-            console.log("Offset value " + contentMap);
             document.getElementById("magnetude-value").value = offsetValue;
             break;
         case "boundaries":
@@ -925,208 +919,21 @@ function desactivateCamera(){
     updateCameraDisplay(mac);
 }
 
-function getGatewayLatestVersion(){
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            var split = xmlHttp.responseText.split(".");
-            var version = split[1] + "." + split[2];
-            gatewayLatestVersion = version;
-        }else{
-            gatewayLatestVersion = "error";
-        }
-    }
-    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway", true); // true for asynchronous
-    xmlHttp.send("hello");
-}
-
-function afficherRequete(data){
-    console.log("data", data);
-}
-function getCameraLatestVersion(){
-    //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            var split = xmlHttp.responseText.split(".");
-            var version = split[1] + "." + split[2];
-            cameraLatestVersion = version;
-        }
-    }
-    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
-    xmlHttp.send(null);
-    //xmlHttp.close();
-}
-
-function getTagLatestVersion(){
-    //http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            var split = xmlHttp.responseText.split(".");
-            var version = 0 + "." + split[0].replace("tag","");
-            tagLatestVersion = version;
-        }else{
-            tagLatestVersion = "error";
-        }
-    }
-    xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
-    xmlHttp.send(null);
-}
 
 function updateGatewayVersionDisplay(version, newversion){
-    var success = document.getElementById("gateway-software-state");//.style.display = "block";
-    var fail = document.getElementById("gateway-software-state-fail");//.innerHTML = (messageCameraCalibrated);
-    var retrieveProblem;
-    if(version === newversion){
-        success.style.display = "block";
-        fail.style.display = "none";
-        success.children[1].innerHTML = "Current version: " + gatewayVersion;
-    }else{
-        fail.style.display = "block";
-        success.style.display = "none";
-        var message = "";
-        if (typeof newversion != 'undefined'){
-            message = "Latest version: " + newversion;
-            if (typeof version != 'undefined'){
-                message += "</br>Current version: " + version;
-                fail.children[1].innerHTML = message;
-            }
-            if(newversion == 'error'){
-                hideUpdateVersionLink = false;
-                message = retrieveVersionErrorMsg
-                fail.children[0].innerHTML = message;
-            }
-        }else{
-            hideUpdateVersionLink = false;
-            message = retrieveVersionErrorMsg
-            fail.children[1].innerHTML = message;
-            displayCheckUpdate();
-        }
-        if(!hideSoftUpdate){
-            displayCheckUpdate();
-        }
-    }
+    var version = document.getElementById("gateway-software-version");
+    version.style.display = "block";
+    version.children[1].innerHTML = "Current version: " + gatewayVersion;
 }
 
 function updateCameraVersionDisplay(versions, newversion){
-    var success = document.getElementById("camera-software-state");
-    var fail = document.getElementById("camera-software-state-fail");
-    var camerasToUpdate = [];
-    var camerasVersion = [];
-    var macList = [];
-    if(cameraLatestVersion.search("search") != -1){
-        success.style.display = "none";
-        fail.style.display = "block";
-        fail.children[0].innerHTML = "";
-        hideUpdateVersionLink = false;
-        message = retrieveVersionErrorMsg;
-    }else{
-        for (var [cmd, info] of versions) {
-            if(cmd.includes("uid")){
-                macList.push(info);
-            }
-            if(cmd.includes("version")){
-                camerasVersion.push(info);
-            }
-        }
-
-        for (var i = 0; i < camerasVersion.length; i++) {
-            if(!(camerasVersion[i] === newversion)){
-                camerasToUpdate.push(i);
-            }
-        }
-        if(camerasToUpdate.length === 0){
-            success.style.display = "block";
-            fail.style.display = "none";
-            success.children[1].innerHTML = "Current version: " + cameraLatestVersion;
-        }else{
-            success.style.display = "none";
-            fail.style.display = "block";
-            var message = "";
-            message += "Current version: </br><ul>"
-            for (var i = 0; i < camerasToUpdate.length; i++) {
-                message += "<li> MAC: " + macList[i] + ", version:";
-                message += camerasVersion[camerasToUpdate[i]] + "</li>";
-            }
-            message += "</ul>"
-            if((typeof cameraLatestVersion != 'undefined') && cameraLatestVersion != "error"){
-                message += "Latest version: " + cameraLatestVersion;
-            }else{
-                hideUpdateVersionLink = false;
-                fail.children[0].innerHTML = "";
-                message += retrieveVersionErrorMsg;
-            }
-        }
-    }
-    fail.children[1].innerHTML = message;
-    if(!hideSoftUpdate){
-        displayCheckUpdate();
-    }
+    var version = document.getElementById("camera-version");
+    version.style.display = "block";
 
 }
 
 function updateTagVersionDisplay(versions, newversion){
-    var success = document.getElementById("tag-software-state");
-    var fail = document.getElementById("tag-software-state-fail");
-    var tagsToUpdate = [];
-    var tagsVersion = [];
-    var macList = [];
-    if(newversion.search("search") != -1){
-        success.style.display = "none";
-        fail.style.display = "block";
-        fail.children[0].innerHTML = "";
-        hideUpdateVersionLink = false;
-        message = retrieveVersionErrorMsg;
-    }else{
-        for (var [cmd, info] of versions) {
-            if(cmd.includes("uid")){
-                macList.push(info);
-            }
-            if(cmd.includes("version")){
-                tagsVersion.push(info);
-            }
-        }
 
-        for (var i = 0; i < tagsVersion.length; i++) {
-            if(!(tagsVersion[i] === newversion)){
-                tagsToUpdate.push(i);
-            }
-        }
-        if(tagsToUpdate.length === 0){
-            success.style.display = "block";
-            fail.style.display = "none";
-            success.children[1].innerHTML = "Current version: " + tagLatestVersion;
-            hideUpdateVersionLink = false;
-        }else{
-            success.style.display = "none";
-            fail.style.display = "block";
-            var message = "";
-            message += "Current version: </br><ul>"
-            for (var i = 0; i < tagsToUpdate.length; i++) {
-                message += "<li> MAC: " + macList[i] + ", version:" +
-                + tagsVersion[tagsToUpdate[i]] + "</li>";
-            }
-            message += "</ul>"
-            if(typeof tagLatestVersion != 'undefined' && tagLatestVersion != "error"){
-                message += "Latest version: " + tagLatestVersion;
-            }else {
-                hideUpdateVersionLink = false;
-                fail.children[0].innerHTML = "";
-                message += retrieveVersionErrorMsg;
-            }
-        }
-    }
-    fail.children[1].innerHTML = message;
-    if(!hideSoftUpdate){
-        displayCheckUpdate();
-    }
-}
-
-function getLatestVersion(){
-    getGatewayLatestVersion();
-    getCameraLatestVersion();
-    getTagLatestVersion();
 }
 
 function reorienteTag(mac){
