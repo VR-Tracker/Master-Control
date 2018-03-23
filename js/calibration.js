@@ -1045,6 +1045,8 @@ function validateCalibration(validated)
     }
     console.log(message);
     socket.send(message);
+    document.getElementById("after-calibration-display").style.display = "none";
+
 }
 
 function updateAutocalibrationDisplay()
