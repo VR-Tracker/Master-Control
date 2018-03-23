@@ -19,18 +19,14 @@ var selectedCameraCoordinateMap = new Map(); //
 var pointAssociatedCamera = new Map();
 var cameraNumberPoints = new Map();
 var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
-
 var validatedCalibration = new Map();
-
 var calibrationPoint = []; //Store the different calibration point
 var timeOutMessage = "";
-var gatewayLatestVersion;
-var cameraLatestVersion;
-var tagLatestVersion;
-var gatewayVersion;
 var addingReferencePoints = false;
-//var camerasVersion = {};
-//var tagsVersion = {};
+var autoCalibrationActivated = false; //Currently disactivated as it is not fully functional
+/*
+    Info panel information
+*/
 var ChooseCameraInfos = "<p>Either choose every cameras for a full calibration or only a few of them if you need to re-calibrate.</br>To help you identify the cameras, you can see them slightly flash green when you select it in the list.</p>";
 var PointInfo = "<p>You are now in the calibration mode, you should be able to see the selected cameras with a blue light, and the calibration tag should have turned its light in purple."
 +"</br></br>Add the different positions that you want to use for the calibration."
@@ -52,6 +48,7 @@ var StopCalibration = "<p>Now that the calibration is finished, you should be ab
 window.onload=function(){
     createWebsocket();
     // Send a message when the button start calibration is clicked.
+    updateAutocalibrationDisplay();
 
     calibrationBtn.onclick = function(e) {
         e.preventDefault();
@@ -61,8 +58,6 @@ window.onload=function(){
             message = "cmd=startcalibration";
             calibrating = true;
         }
-
-
 
         var numeroCamera = 0; // variable pour distinguer les cameras
         for (var [mac, isSelected] of addedElementMap) {
@@ -78,6 +73,7 @@ window.onload=function(){
         }
         numberOfSelectedCamera = numeroCamera;
         if(send){
+            console.log("Sent");
             CALIBRATING = true;
             //If message is sent, we change the button
             //   FADE IN the next Panel
@@ -93,7 +89,7 @@ window.onload=function(){
             document.getElementById("not-enough-3d").innerHTML = "At least 4 points must be entered, <u>and seen by each camera</u> !";
 
             document.getElementById("calibration-finished").style.opacity = 0;
-            document.getElementById("calibration-finished").display += " none";
+            document.getElementById("calibration-finished").display = "none";
 
             document.getElementById('x-coordinate').removeAttribute("disabled");
             document.getElementById("y-coordinate").removeAttribute("disabled");
@@ -109,10 +105,11 @@ window.onload=function(){
 
             //And we disable the reset button, enable the possibility to add a point
             document.getElementById("stop-calibration-btn").style.display = "inline";
-            document.getElementById("auto-calibration-btn").style.display = "inline";
-
-            document.getElementById("auto-calibration-btn").disabled = true;
-
+            if(autoCalibrationActivated)
+            {
+                document.getElementById("auto-calibration-btn").style.display = "inline";
+                document.getElementById("auto-calibration-btn").disabled = true;
+            }
             sendMessage(socket, message);
             displayCount();
         }
@@ -193,9 +190,16 @@ function addTableAvailableCamera(mac){
     var newElement = document.createElement('tr');
     //Create the corresponding html element
     newElement.setAttribute("id", "camera-" + nombreCamera);
-    newElement.innerHTML = '<th data-field="camera"> camera-' + nombreCamera + '</th>'
-    + '<th data-field="mac">' + mac + '</th>'
-    + '<th data-field="count" class="count" style="text-align:center">0</th>';
+    newElement.innerHTML = '<th style="width:20%; data-field="camera"> camera-' + nombreCamera + '</th>'
+    + '<th style="width:25%; data-field="mac">' + mac + '</th>';
+    if(camerasPositionMap.has(mac))
+    {
+        newElement.innerHTML += '<th style="width:40%; data-field="position">' + 'X: '  + truncateDigit(camerasPositionMap.get(mac).get("x"))+ ', Y: '
+        + truncateDigit(camerasPositionMap.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasPositionMap.get(mac).get("z")) + '</th>';
+    }else{
+        newElement.innerHTML += '<th style="width:40%; data-field="position"> Not Calibrated </th>';
+    }
+    newElement.innerHTML += '<th style="width:15%; data-field="count" class="count" style="text-align:center">0</th>';
     liste.appendChild(newElement);
     //Create the different input in the tables and maps
     countTable.push(0);
@@ -206,6 +210,28 @@ function addTableAvailableCamera(mac){
     var temp = nombreCamera;
     //Connect the color change on click
     newElement.onclick = function() {changeColor(newElement.id, temp)};
+
+}
+
+function updateCameraDisplay(mac)
+{
+    var liste = document.getElementById('available-cameras');
+    //On supprime le message
+    var ligne = liste.getElementsByTagName("tr");
+    var longueur = ligne.length;
+    var noCameraMessage = document.getElementById("noCameraConnectedMessage");
+    noCameraMessage.style.display = "none";
+
+    if(macToNumberMap.has(mac)){
+    }else{
+        //Ajout des cameras disponibles
+        addTableAvailableCamera(mac);
+
+    }
+
+    for(var i = 2; i < longueur; i++){
+            var macAdress = liste.childNodes[2].getElementsByTagName("th");
+    }
 
 }
 
@@ -467,6 +493,7 @@ function addNewPointCalibration(){
                 }
             }else{
                 console.log("Input error !");
+                alert("Coordinates not recognized ! Follow the template X,Y,Z;");
             }
         }
     }
@@ -527,10 +554,11 @@ function startCalibration(){
 
         //And we disable the reset button, enable the possibility to add a point
         document.getElementById("stop-calibration-btn").style.display = "inline";
-        document.getElementById("auto-calibration-btn").style.display = "inline";
-
-        document.getElementById("auto-calibration-btn").disabled = true;
-
+        if(autoCalibrationActivated)
+        {
+            document.getElementById("auto-calibration-btn").style.display = "inline";
+            document.getElementById("auto-calibration-btn").disabled = true;
+        }
         sendMessage(socket, message);
         displayCount();
     }
@@ -566,11 +594,14 @@ function stopCalibration(){
     calibrationBtn.innerHTML = "Start Calibration";
     calibrationBtn.disabled = true;
     document.getElementById("stop-calibration-btn").style.display = "none";
-    document.getElementById("auto-calibration-btn").style.display = "block";
+    if(autoCalibrationActivated)
+    {
+        document.getElementById("auto-calibration-btn").style.display = "block";
+    }
     document.getElementById("add-coordinate").disabled = true;
 
     sendMessage(socket, message);
-    showCalibratedCamera();
+    //showCalibratedCamera();
     resetTablePoint3D();
     var liste = document.getElementById('available-cameras');
     var ligne = liste.getElementsByTagName("tr");
@@ -598,9 +629,10 @@ function stopCalibration(){
     document.getElementById("enough-3d").style.display = "none";
     document.getElementById("enterCalibViewBtn").style.opacity = 0;
     document.getElementById("enterCalibViewBtn").style.display = "none";
-
-    document.getElementById("auto-calibration-btn").disabled = false;
-
+    if(autoCalibrationActivated)
+    {
+        document.getElementById("auto-calibration-btn").disabled = false;
+    }
     document.getElementById("add-reference-btn").style.display = "none";
 
 
@@ -811,16 +843,6 @@ function autoCalibration(){
     if(send){
         //If there any selected camera we send the message
         sendMessage(socket, message);
-        //document.getElementById("auto-calibration-btn").style.display = "none";
-        //document.getElementById("stop-auto-calibration-btn").style.display = "inline";
-        /*document.getElementById("stop-calibration-btn").style.display = "inline";
-        document.getElementById("auto-calibration-btn").style.display = "inline";
-        document.getElementById("stop-auto-calibration-btn").style.display = "none";
-        document.getElementById("calibrated-camera").style.display = "none";
-        document.getElementById("notCalibrated-camera").style.display = "none";
-
-        document.getElementById("add-reference-btn").style.display = "block";*/
-
         AddReferencePoints()
 
     }
@@ -848,11 +870,13 @@ function stopAutoCalibration(){
     //If there any selected camera we send the message
     sendMessage(socket, message);
     document.getElementById("stop-calibration-btn").style.display = "inline";
-    document.getElementById("auto-calibration-btn").style.display = "inline";
-    document.getElementById("stop-auto-calibration-btn").style.display = "none";
+    if(autoCalibrationActivated)
+    {
+        document.getElementById("auto-calibration-btn").style.display = "inline";
+        document.getElementById("stop-auto-calibration-btn").style.display = "none";
+    }
     document.getElementById("calibrated-camera").style.display = "none";
     document.getElementById("notCalibrated-camera").style.display = "none";
-
     document.getElementById("add-reference-btn").style.display = "block";
 
 
@@ -909,10 +933,11 @@ function AddReferencePoints(){
 
         //And we disable the reset button, enable the possibility to add a point
         document.getElementById("stop-calibration-btn").style.display = "inline";
-        document.getElementById("auto-calibration-btn").style.display = "inline";
-
-        document.getElementById("auto-calibration-btn").disabled = true;
-
+        if(autoCalibrationActivated)
+        {
+            document.getElementById("auto-calibration-btn").style.display = "inline";
+            document.getElementById("auto-calibration-btn").disabled = true;
+        }
         sendMessage(socket, message);
         displayCount();
     }
@@ -962,7 +987,6 @@ function addCamera(mac){
             button.style.display = "block";
         }
     }
-
 }
 
 
@@ -1009,7 +1033,7 @@ function updateValidation(mac)
 
 function validateCalibration(validated)
 {
-    var message = "cmd=validate"
+    var message = "cmd=validate";
     if(validated){
         var count = 0;
         for (var [mac, isSelected] of validatedCalibration) {
@@ -1021,4 +1045,33 @@ function validateCalibration(validated)
     }
     console.log(message);
     socket.send(message);
+    document.getElementById("after-calibration-display").style.display = "none";
+
+}
+
+function updateAutocalibrationDisplay()
+{
+    console.log("Updating auto cali view");
+
+    var boutonAuto = document.getElementById("auto-calibration-btn");
+    var boutonNext = document.getElementById("next-calibration-btn");
+
+    if(autoCalibrationActivated){
+        boutonAuto.style.display = "block";
+        boutonNext.style.display = "block";
+    }else{
+        console.log("disable autocalibration button");
+        boutonAuto.style.display = "none";
+        boutonNext.style.display = "none";
+    }
+}
+
+function displayCalibratedCameras()
+{
+    document.getElementById("after-calibration-display").style.display = "block";
+}
+
+function generateCoordinate()
+{
+
 }

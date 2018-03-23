@@ -73,8 +73,9 @@ function parseMessage(message){
                     if(macToNumberMap.has(value)){
                     }else{
                         //Ajout des cameras disponibles
-                        if(key.includes("camera"))
+                        /*if(key.includes("camera"))
                             addTableAvailableCamera(value);
+                            */
                     }
                 }
             }else{
@@ -136,6 +137,8 @@ function parseMessage(message){
         }
         case "camerasposition":{
                 try{
+                    console.log("Parsing message " + message);
+
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
                     var mac;
@@ -153,6 +156,7 @@ function parseMessage(message){
                         }
                         else if(information[0] == "z"){
                             camerasPositionMap.get(mac).set("z", information[1]);
+                            updateCameraDisplay(mac);
                         }
                     }
                 }catch (e) {
@@ -254,6 +258,9 @@ function parseMessage(message){
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
                     var camMac;
+                    if(messageContent.length > 1){
+                        displayCalibratedCameras();
+                    }
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
@@ -274,25 +281,13 @@ function parseMessage(message){
                             addCamera(camMac);
                         }
                     }
+
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }
             }else{
                 positionCount++;
             }
-            var numberCalibrated = 0;
-            var numberNotCalibrated = 0;
-            var messageCameraCalibrated = "";
-            for (var i = 0; i < datas.length; i++) {
-                messageCameraCalibrated += "<li>camera" + " (" + datas[i].uid + "), position : ";
-                numberCalibrated++;
-                messageCameraCalibrated += "</br>X: "+ datas[i].x + "</br>Y: ";
-                messageCameraCalibrated +=  datas[i].y + "</br>Z: ";
-                messageCameraCalibrated +=  datas[i].z + "</li> ";
-            }
-            document.getElementById("CC").innerHTML = (messageCameraCalibrated);
-            if(numberCalibrated>0)
-                document.getElementById("calibrated-camera").style.display = "block";
             break;
         }
          default:
