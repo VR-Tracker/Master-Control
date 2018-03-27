@@ -1,10 +1,14 @@
 var countTablePointCamera = new Map();
 var countElementGateway = new Map();
+var camerasPositionMap = new Map();
+var camerasNewPosition = new Map();
+
 countElementGateway.set("cameras", 0);
 countElementGateway.set("tags", 0);
 countElementGateway.set("users", 0);
 countElementGateway.set("masters", 0);
 var positionCount = 0;
+
 function parseMessage(message){
     var messageContent = message.split("&");
     console.log(message);
@@ -69,8 +73,9 @@ function parseMessage(message){
                     if(macToNumberMap.has(value)){
                     }else{
                         //Ajout des cameras disponibles
-                        if(key.includes("camera"))
+                        /*if(key.includes("camera"))
                             addTableAvailableCamera(value);
+                            */
                     }
                 }
             }else{
@@ -131,34 +136,32 @@ function parseMessage(message){
             break;
         }
         case "camerasposition":{
-            var camerasPositionMap = {};
-            var datas = [];
-            if((positionCount % 3) == 0){
                 try{
+                    console.log("Parsing message " + message);
+
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
+                    var mac;
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
-                            camerasPositionMap.uid = information[1];
+                            mac = information[1];
+                            camerasPositionMap.set(mac, new Map());
                         }
                         else if(information[0] == "x"){
-                            camerasPositionMap.x = information[1];
+                            camerasPositionMap.get(mac).set("x", information[1]);
                         }
                         else if(information[0] == "y"){
-                            camerasPositionMap.y = information[1];
+                            camerasPositionMap.get(mac).set("y", information[1]);
                         }
                         else if(information[0] == "z"){
-                            camerasPositionMap.z = information[1];
-                            datas.splice(datas.length, 0, clone(camerasPositionMap));
+                            camerasPositionMap.get(mac).set("z", information[1]);
+                            updateCameraDisplay(mac);
                         }
                     }
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }
-            }else{
-                positionCount++;
-            }
             break;
         }
         case "calibrationfailed":{
@@ -248,47 +251,43 @@ function parseMessage(message){
             break;
         }
         case "calibratedcamera":{
-            var camerasPositionMap = {};
+            //var camerasPositionMap = {};
             var datas = [];
             if((positionCount % 3) == 0){
                 try{
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
+                    var camMac;
+                    if(messageContent.length > 1){
+                        displayCalibratedCameras();
+                    }
                     for (var i = 1; i < messageContent.length; i++ ) {
                         information = messageContent[i].split("=");
                         if(information[0] == "uid"){
-                            camerasPositionMap.uid = information[1];
+                            camMac = information[1];
+                            camerasNewPosition.set(camMac, new Map());
+                            if(validatedCalibration.has(camMac)){
+                                validatedCalibration.set(camMac, true);
+                            }
                         }
                         else if(information[0] == "x"){
-                            camerasPositionMap.x = information[1];
+                            camerasNewPosition.get(camMac).set("x", information[1]);
                         }
                         else if(information[0] == "y"){
-                            camerasPositionMap.y = information[1];
+                            camerasNewPosition.get(camMac).set("y", information[1]);
                         }
                         else if(information[0] == "z"){
-                            camerasPositionMap.z = information[1];
-                            datas.splice(datas.length, 0, clone(camerasPositionMap));
+                            camerasNewPosition.get(camMac).set("z", information[1]);
+                            addCamera(camMac);
                         }
                     }
+
                 }catch (e) {
                     console.error("Parsing error:", e);
                 }
             }else{
                 positionCount++;
             }
-            var numberCalibrated = 0;
-            var numberNotCalibrated = 0;
-            var messageCameraCalibrated = "";
-            for (var i = 0; i < datas.length; i++) {
-                messageCameraCalibrated += "<li>camera" + " (" + datas[i].uid + "), position : ";
-                numberCalibrated++;
-                messageCameraCalibrated += "("+ datas[i].x + ",  ";
-                messageCameraCalibrated +=  datas[i].y + ", ";
-                messageCameraCalibrated +=  datas[i].z + ") </li> ";
-            }
-            document.getElementById("CC").innerHTML = (messageCameraCalibrated);
-            if(numberCalibrated>0)
-                document.getElementById("calibrated-camera").style.display = "block";
             break;
         }
          default:

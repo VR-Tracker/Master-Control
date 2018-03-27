@@ -69,13 +69,11 @@
 					<div class="panel-heading">
 						<strong>Gateway Information</strong>
 					</div>
-					<div class="panel-body update-info" id="gateway-software-state-fail" role="alert" align="center">
-						<p>Your Gateway need to be updated !</p>
-						<p align="center" style="" ></p>
-					</div>
-					<div class="panel-body update-info" id="gateway-software-state" role="alert" align="center">
-						<p>Your Gateway is up to date !</p>
-						<p align="center" style="" ></p>
+					<div class="panel-body update-info" id="gateway-software-version" role="alert" align="center">
+						<p>
+							<u><a href='https://vrtracker.xyz/documentation' style='color:grey;'>Check latest version</a></u>
+						</p>
+						<p></p>
 					</div>
 				</div>
 			</div>
@@ -84,13 +82,10 @@
 					<div class="panel-heading">
 						<strong>Camera Information</strong>
 					</div>
-					<div class="panel-body update-info" id="camera-software-state-fail" role="alert" align="center">
-						<p>Your Cameras need to be updated !</p>
-						<p align="center" style="" ></p>
-					</div>
-					<div class="panel-body update-info" id="camera-software-state" role="alert" align="center">
-						<p>Your Cameras are up to date !</p>
-						<p align="center" style="" ></p>
+					<div class="panel-body update-info" id="camera-version" role="alert" align="center">
+						<p>
+							<u><a href='https://vrtracker.xyz/documentation' style='color:grey;'>Check latest version</a></u>
+						</p>
 					</div>
 				</div>
 			</div>
@@ -99,23 +94,20 @@
 					<div class="panel-heading">
 						<strong>Tag Information</strong>
 					</div>
-					<div class="panel-body update-info" id="tag-software-state-fail" role="alert" align="center">
-						<p>Your Tags need to be updated !</p>
-						<p align="center" style="" ></p>
-					</div>
-					<div class="panel-body update-info" id="tag-software-state" role="alert" align="center">
-						<p>Your tags are up to date !</p>
-						<p align="center" style="" ></p>
+					<div class="panel-body update-info" id="tag" role="alert" align="center">
+						<p>
+							<u><a href='https://vrtracker.xyz/documentation' style='color:grey;'>Check latest version</a></u>
+						</p>
 					</div>
 				</div>
 			</div>
 		</div><!--/.row-->
 
 		<div class="alert bg-danger" id="ws_failed_alert" role="alert">
-			<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Connection to the Gateway Failed  <a href="#"  style="font-style: italic; color: #fff; ">(help)</a> <a href="#" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a>
+			<svg class="glyph stroked cancel"><use xlink:href="#stroked-cancel"></use></svg> Connection to the Gateway Failed  <a href="#"  style="font-style: italic; color: #fff; ">(help)</a> <a href="https://vrtracker.xyz/faq/" class="pull-right"><span class="glyphicon glyphicon-remove"></span></a>
 		</div>
 		<div class="alert bg-success" id="ws_success_alert" role="alert">
-			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Successfully connected to the Gateway !
+			<svg class="glyph stroked checkmark"><use xlink:href="#stroked-checkmark"></use></svg> Connected to the Gateway !
 		</div>
 		<div class="row"><!-- Partie barre avec les rectangles -->
 			<div class="col-xs-12 col-md-6 col-lg-3">
@@ -177,7 +169,6 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">Cameras</div>
 					<div class="panel-body">
-
 						<div class="icon-grid" id="cameras-grid">
 						</div>
 					</div>

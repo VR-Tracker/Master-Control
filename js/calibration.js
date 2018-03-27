@@ -19,15 +19,14 @@ var selectedCameraCoordinateMap = new Map(); //
 var pointAssociatedCamera = new Map();
 var cameraNumberPoints = new Map();
 var pointToCameraMap = new Map(); // map ayant pour cle les coordonnees du points et comme valeurs, un tableau
+var validatedCalibration = new Map();
 var calibrationPoint = []; //Store the different calibration point
 var timeOutMessage = "";
-var gatewayLatestVersion;
-var cameraLatestVersion;
-var tagLatestVersion;
-var gatewayVersion;
 var addingReferencePoints = false;
-//var camerasVersion = {};
-//var tagsVersion = {};
+var autoCalibrationActivated = false; //Currently disactivated as it is not fully functional
+/*
+    Info panel information
+*/
 var ChooseCameraInfos = "<p>Either choose every cameras for a full calibration or only a few of them if you need to re-calibrate.</br>To help you identify the cameras, you can see them slightly flash green when you select it in the list.</p>";
 var PointInfo = "<p>You are now in the calibration mode, you should be able to see the selected cameras with a blue light, and the calibration tag should have turned its light in purple."
 +"</br></br>Add the different positions that you want to use for the calibration."
@@ -49,6 +48,7 @@ var StopCalibration = "<p>Now that the calibration is finished, you should be ab
 window.onload=function(){
     createWebsocket();
     // Send a message when the button start calibration is clicked.
+    updateAutocalibrationDisplay();
 
     calibrationBtn.onclick = function(e) {
         e.preventDefault();
@@ -59,8 +59,6 @@ window.onload=function(){
             calibrating = true;
         }
 
-
-
         var numeroCamera = 0; // variable pour distinguer les cameras
         for (var [mac, isSelected] of addedElementMap) {
             //Creation du message
@@ -69,11 +67,13 @@ window.onload=function(){
                 send = true;
                 selectedCameraCoordinateMap.set(mac,false);
                 pointAssociatedCamera.set(mac, []);
+                validatedCalibration.set(mac,false);
                 numeroCamera++;
             }
         }
         numberOfSelectedCamera = numeroCamera;
         if(send){
+            console.log("Sent");
             CALIBRATING = true;
             //If message is sent, we change the button
             //   FADE IN the next Panel
@@ -89,7 +89,7 @@ window.onload=function(){
             document.getElementById("not-enough-3d").innerHTML = "At least 4 points must be entered, <u>and seen by each camera</u> !";
 
             document.getElementById("calibration-finished").style.opacity = 0;
-            document.getElementById("calibration-finished").display += " none";
+            document.getElementById("calibration-finished").display = "none";
 
             document.getElementById('x-coordinate').removeAttribute("disabled");
             document.getElementById("y-coordinate").removeAttribute("disabled");
@@ -105,10 +105,11 @@ window.onload=function(){
 
             //And we disable the reset button, enable the possibility to add a point
             document.getElementById("stop-calibration-btn").style.display = "inline";
-            document.getElementById("auto-calibration-btn").style.display = "inline";
-
-            document.getElementById("auto-calibration-btn").disabled = true;
-
+            if(autoCalibrationActivated)
+            {
+                document.getElementById("auto-calibration-btn").style.display = "inline";
+                document.getElementById("auto-calibration-btn").disabled = true;
+            }
             sendMessage(socket, message);
             displayCount();
         }
@@ -117,6 +118,7 @@ window.onload=function(){
             alert("No camera selected");
         }
     }
+
 }
 
 
@@ -149,7 +151,7 @@ function createWebsocket(){
 
         //Envoi du message pour recuperer les informations sur les cameras
         socket.send(askCamerasInformation);
-        setInterval(getCamerasInformation, 5000);
+        //setInterval(getCamerasInformation, 5000);
         socket.send("cmd=camerasposition");
         //Envoi du message apres un certain temps
     };
@@ -188,9 +190,16 @@ function addTableAvailableCamera(mac){
     var newElement = document.createElement('tr');
     //Create the corresponding html element
     newElement.setAttribute("id", "camera-" + nombreCamera);
-    newElement.innerHTML = '<th data-field="camera"> camera-' + nombreCamera + '</th>'
-    + '<th data-field="mac">' + mac + '</th>'
-    + '<th data-field="count" class="count" style="text-align:center">0</th>';
+    newElement.innerHTML = '<th style="width:20%; data-field="camera"> camera-' + nombreCamera + '</th>'
+    + '<th style="width:25%; data-field="mac">' + mac + '</th>';
+    if(camerasPositionMap.has(mac))
+    {
+        newElement.innerHTML += '<th style="width:40%; data-field="position">' + 'X: '  + truncateDigit(camerasPositionMap.get(mac).get("x"))+ ', Y: '
+        + truncateDigit(camerasPositionMap.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasPositionMap.get(mac).get("z")) + '</th>';
+    }else{
+        newElement.innerHTML += '<th style="width:40%; data-field="position"> Not Calibrated </th>';
+    }
+    newElement.innerHTML += '<th style="width:15%; data-field="count" class="count" style="text-align:center">0</th>';
     liste.appendChild(newElement);
     //Create the different input in the tables and maps
     countTable.push(0);
@@ -201,6 +210,28 @@ function addTableAvailableCamera(mac){
     var temp = nombreCamera;
     //Connect the color change on click
     newElement.onclick = function() {changeColor(newElement.id, temp)};
+
+}
+
+function updateCameraDisplay(mac)
+{
+    var liste = document.getElementById('available-cameras');
+    //On supprime le message
+    var ligne = liste.getElementsByTagName("tr");
+    var longueur = ligne.length;
+    var noCameraMessage = document.getElementById("noCameraConnectedMessage");
+    noCameraMessage.style.display = "none";
+
+    if(macToNumberMap.has(mac)){
+    }else{
+        //Ajout des cameras disponibles
+        addTableAvailableCamera(mac);
+
+    }
+
+    for(var i = 2; i < longueur; i++){
+            var macAdress = liste.childNodes[2].getElementsByTagName("th");
+    }
 
 }
 
@@ -462,6 +493,7 @@ function addNewPointCalibration(){
                 }
             }else{
                 console.log("Input error !");
+                alert("Coordinates not recognized ! Follow the template X,Y,Z;");
             }
         }
     }
@@ -522,10 +554,11 @@ function startCalibration(){
 
         //And we disable the reset button, enable the possibility to add a point
         document.getElementById("stop-calibration-btn").style.display = "inline";
-        document.getElementById("auto-calibration-btn").style.display = "inline";
-
-        document.getElementById("auto-calibration-btn").disabled = true;
-
+        if(autoCalibrationActivated)
+        {
+            document.getElementById("auto-calibration-btn").style.display = "inline";
+            document.getElementById("auto-calibration-btn").disabled = true;
+        }
         sendMessage(socket, message);
         displayCount();
     }
@@ -561,11 +594,14 @@ function stopCalibration(){
     calibrationBtn.innerHTML = "Start Calibration";
     calibrationBtn.disabled = true;
     document.getElementById("stop-calibration-btn").style.display = "none";
-    document.getElementById("auto-calibration-btn").style.display = "block";
+    if(autoCalibrationActivated)
+    {
+        document.getElementById("auto-calibration-btn").style.display = "block";
+    }
     document.getElementById("add-coordinate").disabled = true;
 
     sendMessage(socket, message);
-    showCalibratedCamera();
+    //showCalibratedCamera();
     resetTablePoint3D();
     var liste = document.getElementById('available-cameras');
     var ligne = liste.getElementsByTagName("tr");
@@ -593,9 +629,10 @@ function stopCalibration(){
     document.getElementById("enough-3d").style.display = "none";
     document.getElementById("enterCalibViewBtn").style.opacity = 0;
     document.getElementById("enterCalibViewBtn").style.display = "none";
-
-    document.getElementById("auto-calibration-btn").disabled = false;
-
+    if(autoCalibrationActivated)
+    {
+        document.getElementById("auto-calibration-btn").disabled = false;
+    }
     document.getElementById("add-reference-btn").style.display = "none";
 
 
@@ -751,190 +788,7 @@ function showCalibratedCamera(){
 function calibrate(){
     handleKeySpace();
 }
-/*
-function getGatewayLatestVersion(){
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            var split = xmlHttp.responseText.split(".");
-            console.log("last version gateway : ", xmlHttp.responseText);
-            var version = split[1] + "." + split[2];
-            gatewayLatestVersion = version;
-        }
-    }
-    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=gateway", true); // true for asynchronous
-    xmlHttp.send("hello");
-}
 
-function afficherRequete(data){
-    console.log("data", data);
-}
-
-function getCameraLatestVersion(){
-    //https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            var split = xmlHttp.responseText.split(".");
-            var version = split[1] + "." + split[2];
-            cameraLatestVersion = version;
-        }
-    }
-    xmlHttp.open("GET", "https://vrtracker.xyz/devicesupdate/checkupdate.php?device=camera", true); // true for asynchronous
-    xmlHttp.send(null);
-    //xmlHttp.close();
-}
-
-function getTagLatestVersion(){
-    //http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() {
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200){
-            var split = xmlHttp.responseText.split(".");
-            var version = 0 + "." + split[0].replace("tag","");
-            tagLatestVersion = version;
-        }
-    }
-    xmlHttp.open("GET", "http://julesthuillier.com/vrtracker/arduino/checkupdate.php?device=tag", true); // true for asynchronous
-    xmlHttp.send(null);
-}
-
-function updateGatewayVersionDisplay(version, newversion){
-    var success = document.getElementById("gateway-software-state");//.style.display = "block";
-    var fail = document.getElementById("gateway-software-state-fail");//.innerHTML = (messageCameraCalibrated);
-
-    if(version === newversion){
-        success.style.display = "block";
-        fail.style.display = "none";
-        success.children[1].innerHTML = "Current version: " + gatewayVersion;
-    }else{
-        success.style.display = "none";
-        fail.style.display = "block";
-        var message = "";
-        if (typeof gatewayVersion != 'undefined'){
-            message = "Current version: " + gatewayVersion;
-            if (typeof gatewayLatestVersion != 'undefined'){
-                message += "</br>Latest version: " + gatewayLatestVersion;
-            }
-        }else{
-            message = "Can't retrieve latest gateway version </br> You can try an other browser"
-        }
-
-        fail.children[1].innerHTML = message;
-    }
-}
-
-function updateCameraVersionDisplay(versions, newversion){
-    var success = document.getElementById("camera-software-state");
-    var fail = document.getElementById("camera-software-state-fail");
-    var camerasToUpdate = [];
-    var camerasVersion = [];
-    var macList = [];
-    for (var [cmd, info] of versions) {
-        if(cmd.includes("uid")){
-            macList.push(info);
-        }
-        if(cmd.includes("version")){
-            camerasVersion.push(info);
-        }
-    }
-
-    for (var i = 0; i < camerasVersion.length; i++) {
-        if(!(camerasVersion[i] === newversion)){
-            camerasToUpdate.push(i);
-        }
-    }
-    if(camerasToUpdate.length === 0){
-        success.style.display = "block";
-        fail.style.display = "none";
-        success.children[1].innerHTML = "Current version: " + cameraLatestVersion;
-    }else{
-        success.style.display = "none";
-        fail.style.display = "block";
-        var message = "";
-
-        message += "Current version: </br><ul>"
-        for (var i = 0; i < camerasToUpdate.length; i++) {
-            message += "<li> MAC: " + macList[i] + ", version:";
-            message += camerasVersion[camerasToUpdate[i]] + "</li>";
-        }
-        message += "</ul>"
-
-        if((typeof cameraLatestVersion != 'undefined')){
-
-            message += "Latest version: " + cameraLatestVersion;
-        }else{
-            fail.children[0].innerHTML = "";
-            message += "Can't retrieve latest camera version</br> You can try an other browser";
-        }
-        fail.children[1].innerHTML = message;
-    }
-}
-
-function updateTagVersionDisplay(versions, newversion){
-    var success = document.getElementById("tag-software-state");
-    var fail = document.getElementById("tag-software-state-fail");
-    var tagsToUpdate = [];
-    var tagsVersion = [];
-    var macList = [];
-    for (var [cmd, info] of versions) {
-        if(cmd.includes("uid")){
-            macList.push(info);
-        }
-        if(cmd.includes("version")){
-            tagsVersion.push(info);
-        }
-    }
-
-    for (var i = 0; i < tagsVersion.length; i++) {
-        if(!(tagsVersion[i] === newversion)){
-            tagsToUpdate.push(i);
-        }
-    }
-    if(tagsToUpdate.length === 0){
-        success.style.display = "block";
-        fail.style.display = "none";
-        success.children[1].innerHTML = "Current version: " + tagLatestVersion;
-    }else{
-        success.style.display = "none";
-        fail.style.display = "block";
-        var message = "";
-        message += "Current version: </br><ul>"
-        for (var i = 0; i < tagsToUpdate.length; i++) {
-            message += "<li> MAC: " + macList[i] + ", version:" +
-            + tagsVersion[tagsToUpdate[i]] + "</li>";
-        }
-        message += "</ul>"
-        if(typeof tagLatestVersion != 'undefined'){
-
-            message += "Latest version: " + tagLatestVersion;
-        }else {
-            fail.children[0].innerHTML = "";
-            message += "Can't retrieve latest tag version</br> You can try an other browser";
-        }
-        fail.children[1].innerHTML = message;
-    }
-}
-
-function hostReachable() {
-
-    // Handle IE and more capable browsers
-    var xhr = new ( window.ActiveXObject || XMLHttpRequest )( "Microsoft.XMLHTTP" );
-    var status;
-
-    // Open new request as a HEAD to the root hostname with a random param to bust the cache
-    xhr.open( "HEAD", "//" + window.location.hostname + "/?rand=" + Math.floor((1 + Math.random()) * 0x10000), false );
-
-    // Issue request and handle response
-    try {
-        xhr.send();
-        return ( xhr.status >= 200 && (xhr.status < 300 || xhr.status === 304) );
-    } catch (error) {
-        return false;
-    }
-
-}
-*/
 function sendMessageWithTimeOut(){
     socket.send(timeOutMessage);
 }
@@ -989,16 +843,6 @@ function autoCalibration(){
     if(send){
         //If there any selected camera we send the message
         sendMessage(socket, message);
-        //document.getElementById("auto-calibration-btn").style.display = "none";
-        //document.getElementById("stop-auto-calibration-btn").style.display = "inline";
-        /*document.getElementById("stop-calibration-btn").style.display = "inline";
-        document.getElementById("auto-calibration-btn").style.display = "inline";
-        document.getElementById("stop-auto-calibration-btn").style.display = "none";
-        document.getElementById("calibrated-camera").style.display = "none";
-        document.getElementById("notCalibrated-camera").style.display = "none";
-
-        document.getElementById("add-reference-btn").style.display = "block";*/
-
         AddReferencePoints()
 
     }
@@ -1011,6 +855,14 @@ function autoCalibration(){
 
 }
 
+
+
+function nextCalibration(){
+    //Create the corresponding message
+    var message = "cmd=autocalibnext";
+    sendMessage(socket, message);
+}
+
 function stopAutoCalibration(){
     var send = false;
     //Create the corresponding message
@@ -1018,11 +870,13 @@ function stopAutoCalibration(){
     //If there any selected camera we send the message
     sendMessage(socket, message);
     document.getElementById("stop-calibration-btn").style.display = "inline";
-    document.getElementById("auto-calibration-btn").style.display = "inline";
-    document.getElementById("stop-auto-calibration-btn").style.display = "none";
+    if(autoCalibrationActivated)
+    {
+        document.getElementById("auto-calibration-btn").style.display = "inline";
+        document.getElementById("stop-auto-calibration-btn").style.display = "none";
+    }
     document.getElementById("calibrated-camera").style.display = "none";
     document.getElementById("notCalibrated-camera").style.display = "none";
-
     document.getElementById("add-reference-btn").style.display = "block";
 
 
@@ -1079,10 +933,11 @@ function AddReferencePoints(){
 
         //And we disable the reset button, enable the possibility to add a point
         document.getElementById("stop-calibration-btn").style.display = "inline";
-        document.getElementById("auto-calibration-btn").style.display = "inline";
-
-        document.getElementById("auto-calibration-btn").disabled = true;
-
+        if(autoCalibrationActivated)
+        {
+            document.getElementById("auto-calibration-btn").style.display = "inline";
+            document.getElementById("auto-calibration-btn").disabled = true;
+        }
         sendMessage(socket, message);
         displayCount();
     }
@@ -1091,4 +946,132 @@ function AddReferencePoints(){
         alert("No camera selected");
     }
     addingReferencePoints = true;
+}
+
+function toggle(button)
+{
+  if(document.getElementById("check-").value=="OFF"){
+      console.log("de");
+   document.getElementById("check-").value="ON";}
+
+  else if(document.getElementById("check-").value=="ON"){
+      console.log("asda");
+   document.getElementById("check-").value="OFF";}
+}
+
+
+function addCamera(mac){
+    if(mac != ""){
+        var liste = document.getElementById("cameras-grid");
+        var newCamera = document.createElement('div');
+        newCamera.setAttribute("class", "col-lg-3 col-md-4 col-sm-6 camera-window");
+        newCamera.setAttribute("onclick", "select(this)");
+        newCamera.setAttribute("id", "camera-" + mac);
+        newCamera.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-camera"/></svg>'
+        +'</br><p> mac: ' + mac + '</p>';
+        newCamera.innerHTML += '<p>Old Position: (X: '  + truncateDigit(camerasPositionMap.get(mac).get("x"))+ ', Y: '
+        + truncateDigit(camerasPositionMap.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasPositionMap.get(mac).get("z")) + ')</p>';
+        newCamera.innerHTML += '<label class="switch">'
+
+        newCamera.innerHTML += '<p>New Position: (X: '  + truncateDigit(camerasNewPosition.get(mac).get("x"))+ ', Y: '
+        + truncateDigit(camerasNewPosition.get(mac).get("y")) + ', Z: ' + truncateDigit(camerasNewPosition.get(mac).get("z")) + ')</p>';
+        newCamera.innerHTML += '<label class="switch">'
+
+        +'<input id= "check-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateValidation(\'' + mac + '\')">'
+        +'<span class="slider round"></span>';
+
+        liste.appendChild(newCamera);
+        validatedCalibration.set(mac, true);
+        if(liste.childNodes.length == 2){
+            var button = document.getElementById("validation-btns");
+            button.style.display = "block";
+        }
+    }
+}
+
+
+function select(camera){
+    var liste = document.getElementById("cameras-grid");
+    var message;
+    if($(camera).hasClass('selected')){
+        var mac = camera.id.split("-")[1];
+        $(camera).removeClass("selected");
+        message = "cmd=unselectcamera&uid=" + mac;
+    }
+    else {
+        $(camera).addClass("selected");
+        $(document.getElementById("cameras-settings-ext")).show(800);
+        var mac = camera.id.split("-")[1];
+        message = "cmd=selectcamera&uid=" + mac;
+    }
+    socket.send(message);
+    for (var i=1; i < liste.childNodes.length; i++) {
+        if(camera.id != liste.childNodes[i].id){
+            liste.childNodes[i].classList.remove("selected");
+            var mac = liste.childNodes[i].id.split("-")[1];
+            message = "cmd=unselectcamera&uid=" + mac;
+            socket.send(message);
+        }
+    }
+
+}
+
+function truncateDigit(digit){
+    var index = digit.indexOf(".");
+    if(index > -1){
+        return digit.substr(0, index + 3);
+    }else{
+        return digit;
+    }
+}
+
+function updateValidation(mac)
+{
+    var selection = document.getElementById("check-" + mac);
+    validatedCalibration.set(mac, selection.checked);
+}
+
+function validateCalibration(validated)
+{
+    var message = "cmd=validate";
+    if(validated){
+        var count = 0;
+        for (var [mac, isSelected] of validatedCalibration) {
+            if(isSelected){
+                message += "&camera" + count + "=" + mac;
+                count++;
+            }
+        }
+    }
+    console.log(message);
+    socket.send(message);
+    document.getElementById("after-calibration-display").style.display = "none";
+
+}
+
+function updateAutocalibrationDisplay()
+{
+    console.log("Updating auto cali view");
+
+    var boutonAuto = document.getElementById("auto-calibration-btn");
+    var boutonNext = document.getElementById("next-calibration-btn");
+
+    if(autoCalibrationActivated){
+        boutonAuto.style.display = "block";
+        boutonNext.style.display = "block";
+    }else{
+        console.log("disable autocalibration button");
+        boutonAuto.style.display = "none";
+        boutonNext.style.display = "none";
+    }
+}
+
+function displayCalibratedCameras()
+{
+    document.getElementById("after-calibration-display").style.display = "block";
+}
+
+function generateCoordinate()
+{
+
 }
