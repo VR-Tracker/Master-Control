@@ -21,7 +21,6 @@ The Visualizer page shows you the position of the Tags. It is to be improved for
 
 ![Visualizer](/img/visualizer.png)
 
-<<<<<<< HEAD
 ### Release
 Find the different information on the [releases](https://github.com/VR-Tracker/Master-Control/releases), we will describe here what is new and what changed. (*We will update it very soon...)
 
@@ -41,7 +40,7 @@ Feel free to contribute or ask new features, we will prioritize the new features
 This project is licensed under the GPL-3.0 - see the [LICENSE](https://github.com/VR-Tracker/Master-Control/blob/master/LICENSE) file for details
 
 ## Acknowledgments
-=======
+
 ## FAQ
 Check our [FAQ](https://vrtracker.xyz/faq/) for the common questions, if you have any issue, post it on the git or send us an email at : support@vrtracker.xyz
 
@@ -50,4 +49,3 @@ This project is licensed under the GPL-3.0 - see the [LICENSE](https://github.co
 
 ## Contributing
 Feel free to contribute or ask new features, we will prioritize the new features based on your needs :)
->>>>>>> dev
