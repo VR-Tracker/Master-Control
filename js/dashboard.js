@@ -510,6 +510,7 @@ countElementGateway.set("masters", 0);
 var positionCount = 0;
 
 function parseMessage(message){
+    console.log(message);
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
@@ -614,7 +615,7 @@ function parseMessage(message){
         }
         case "systeminfos":{
             try {
-                //TO Modify
+                console.log(contentMap);
                 if(contentMap.has("cameras")){
                     countElementGateway.set("cameras", contentMap.get("cameras"));
                     document.getElementById("camera-count").innerHTML = countElementGateway.get("cameras");
@@ -630,6 +631,9 @@ function parseMessage(message){
                 if(contentMap.has("masters")){
                     countElementGateway.set("masters", contentMap.get("masters"));
                     document.getElementById("master-count").innerHTML = countElementGateway.get("masters");
+                }
+                if(contentMap.has("mac")){
+                    document.getElementById("gateway-mac").innerHTML = "Mac: " + contentMap.get("mac");
                 }
             } catch (e) {
                 console.error("Parsing error", e);
