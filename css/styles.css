@@ -1123,3 +1123,7 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+#gateway-mac{
+    color:rgb(210,0,0);
+}
