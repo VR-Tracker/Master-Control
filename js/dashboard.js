@@ -965,6 +965,13 @@ function updateUsersDisplay(userMac){
 
 }
 
+function displayAssistance(){
+    alert("Please send an email at support@vrtracker.xyz, we will get back to you soon");
+    var assis = document.getElementById("assistance-btn");
+    assis.style.display = "block";
+
+}
+
 function askAssistance(){
     var message = "cmd=getcontrol";
     vrtracker.sendMessage(message);
