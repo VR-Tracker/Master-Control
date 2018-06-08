@@ -633,7 +633,7 @@ function parseMessage(message){
                     document.getElementById("master-count").innerHTML = countElementGateway.get("masters");
                 }
                 if(contentMap.has("mac")){
-                    document.getElementById("gateway-mac").innerHTML = "Mac: " + contentMap.get("mac");
+                    document.getElementById("gateway-mac").innerHTML = " GW Mac: " + contentMap.get("mac");
                 }
             } catch (e) {
                 console.error("Parsing error", e);
