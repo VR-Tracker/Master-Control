@@ -45,10 +45,14 @@
 			<li><a href="visualizer.html"><svg class="glyph stroked calendar"><use xlink:href="#stroked-eye"></use></svg> Visualizer</a></li>
 			<li><a href="https://vrtracker.xyz/bug-report/"><svg class="glyph stroked clipboard with paper"><use xlink:href="#stroked-clipboard-with-paper"/></svg> Report Bug</a></li>
 			<li><a><svg class="glyph stroked email"><<use xlink:href="#stroked-email"/></svg>
-				<button id="help-btn" onclick="askAssistance()" style="background-color: Transparent;background-repeat:no-repeat;border: none; cursor:pointer; overflow: hidden; outline:none;width:80%; text-align:left;">Ask Assistance</button>
+				<button id="help-btn" onclick="displayAssistance()" style="background-color: Transparent;background-repeat:no-repeat;border: none; cursor:pointer; overflow: hidden; outline:none;width:80%; text-align:left;">Ask Assistance</button>
 			</a></li>
+			<li id="assistance-btn" style="display:none"><a><svg class="glyph stroked flag"><<use xlink:href="#stroked-flag"/></svg>
+				<button onclick="askAssistance()" style="background-color: Transparent;background-repeat:no-repeat;border: none; cursor:pointer; overflow: hidden; outline:none;width:80%; text-align:left;">Enable Assistance</button>
+			</a>
 		</ul>
-
+		<p id="gateway-mac">GW Mac:
+		</p>
 	</div><!--/.sidebar-->
 
 	<div class="col-sm-9 col-sm-offset-3 col-lg-10 col-lg-offset-2 main">
