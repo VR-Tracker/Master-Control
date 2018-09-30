@@ -101,6 +101,11 @@ VRTrackerWebsocket.prototype.restartGateway = function(){
     socket.send(message);
 }
 
+VRTrackerWebsocket.prototype.getMaskSnapshot = function(){
+    var message = "cmd=subtract";
+    socket.send(message);
+}
+
 function askCamerasInformation(){
     var message = "cmd=camerasinformation";
     sendMessage(socket, message);
@@ -319,12 +324,12 @@ function selectcamera(camera){
             document.getElementById("activate-btn").style.display = "inline-block";
             if(cameraMap.get(mac).get("activated") == true){
                 document.getElementById("activated-text").innerHTML = "Camera is currently activated"
-                document.getElementById("activate-btn").innerHTML = "Desactivate";
+                document.getElementById("activate-btn").innerHTML = "Deactivate";
                 document.getElementById("activate-btn").onclick = function(){
                     desactivateCamera();
                 }
             }else{
-                document.getElementById("activated-text").innerHTML = "Camera is currently desactivated"
+                document.getElementById("activated-text").innerHTML = "Camera is currently deactivated"
                 document.getElementById("activate-btn").innerHTML = "Activate";
                 document.getElementById("activate-btn").onclick = function(){
                     activateCamera();
@@ -633,7 +638,7 @@ function parseMessage(message){
                     document.getElementById("master-count").innerHTML = countElementGateway.get("masters");
                 }
                 if(contentMap.has("mac")){
-                    document.getElementById("gateway-mac").innerHTML = " GW Mac: " + contentMap.get("mac");
+                    document.getElementById("gateway-mac").innerHTML = "Ethernet MAC address : " + contentMap.get("mac");
                 }
             } catch (e) {
                 console.error("Parsing error", e);
@@ -885,6 +890,10 @@ function changeNumberFormat(string){
     }
 }
 
+function getMaskSnapshot(){
+  vrtracker.getMaskSnapshot();
+}
+
 function restartGateway(){
     vrtracker.restartGateway();
 }
@@ -903,7 +912,7 @@ function activateCamera(){
     socket.send("cmd=activatecamera&uid=" + mac);
 
     document.getElementById("activated-text").innerHTML = "Camera is currently activated"
-    document.getElementById("activate-btn").innerHTML = "Desactivate";
+    document.getElementById("activate-btn").innerHTML = "Deactivate";
     document.getElementById("activate-btn").onclick = function(){
         desactivateCamera();
     }
@@ -914,7 +923,7 @@ function activateCamera(){
 function desactivateCamera(){
     var mac = getSelectedCameraMac();
     socket.send("cmd=desactivatecamera&uid=" + mac);
-    document.getElementById("activated-text").innerHTML = "Camera is currently desactivated"
+    document.getElementById("activated-text").innerHTML = "Camera is currently deactivated"
     document.getElementById("activate-btn").innerHTML = "Activate";
     document.getElementById("activate-btn").onclick = function(){
         activateCamera();
