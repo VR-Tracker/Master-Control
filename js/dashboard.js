@@ -891,6 +891,7 @@ function changeNumberFormat(string){
 }
 
 function getMaskSnapshot(){
+  document.getElementById("capture_light_mask_info").innerHTML = "Capture successfull"
   vrtracker.getMaskSnapshot();
 }
 
