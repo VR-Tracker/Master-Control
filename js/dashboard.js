@@ -515,7 +515,7 @@ countElementGateway.set("masters", 0);
 var positionCount = 0;
 
 function parseMessage(message){
-    console.log(message);
+    //console.log(message);
     var messageContent = message.split("&");
     var cmd, information;
     var contentMap = new Map();
@@ -620,7 +620,7 @@ function parseMessage(message){
         }
         case "systeminfos":{
             try {
-                console.log(contentMap);
+                //console.log(contentMap);
                 if(contentMap.has("cameras")){
                     countElementGateway.set("cameras", contentMap.get("cameras"));
                     document.getElementById("camera-count").innerHTML = countElementGateway.get("cameras");
@@ -993,17 +993,17 @@ function saveOffset(){
     vrtracker.sendMessage(message);
 }
 
-function saveBoundaries(xmin, xmax, ymin, ymax)
+function saveBoundaries()
 {
     var xMin = document.getElementById("xmin").value;
     var xMax = document.getElementById("xmax").value;
     var yMin = document.getElementById("ymin").value;
     var yMax = document.getElementById("ymax").value;
     var message = "cmd=boundaries";
-    message += "&xmin=" + xmin;
-    message += "&xmax=" + xmax;
-    message += "&ymin=" + ymin;
-    message += "&ymax=" + ymax;
+    message += "&xmin=" + xMin;
+    message += "&xmax=" + xMax;
+    message += "&ymin=" + yMin;
+    message += "&ymax=" + yMax;
     vrtracker.sendMessage(message);
 }
 
