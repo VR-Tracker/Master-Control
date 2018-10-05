@@ -137,7 +137,6 @@ function parseMessage(message){
         }
         case "camerasposition":{
                 try{
-                    console.log("Parsing message " + message);
 
                     var cmdContent = messageContent[0].split("=");
                     cmd = cmdContent[1];
@@ -238,7 +237,6 @@ function parseMessage(message){
         }
         case "gatewayversion":{
             gatewayVersion = contentMap.get("uid");
-            console.log("Gateway version " + gatewayVersion);
             updateGatewayVersionDisplay(contentMap.get("uid"), gatewayLatestVersion);
             break;
         }
