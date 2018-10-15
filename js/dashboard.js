@@ -487,7 +487,31 @@ function addTag(mac){
     +'<p> status: '  + tagMap.get(mac).get("status") + '</p>'
     +'<p> #users: '  + tagMap.get(mac).get("users") + '</p>'
     +'<p> version: '  + tagMap.get(mac).get("version") + '</p>'
-    +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Get Orientation</button>';
+    +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Get Orientation</button>'
+    +'</br></br>'
+    +'<p>Activate Second LED </p><label class="switch"><input id="tag-secondled-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
+    +'<span class="slider round"></span>';
+
+    if(tagMap.get(mac).get("secondled") === 'true'){
+      setTagSecondLed(mac, true);
+    }
+    else {
+      setTagSecondLed(mac, false);
+    }
+}
+
+function updateTagSecondLed(mac)
+{
+    var selection = document.getElementById("tag-secondled-" + mac);
+    var message = "cmd=settagsecondled&uid=" + mac
+    + "&state=" + selection.checked;
+    socket.send(message);
+}
+
+function setTagSecondLed(mac, value)
+{
+    var selection = document.getElementById("tag-secondled-" + mac);
+    selection.checked = value;
 }
 
 function removeTag(mac){
@@ -738,6 +762,13 @@ function parseMessage(message){
                         break;
                         case "users":
                         tagMap.get(currentMac).set("users", information[1]);
+                        break;
+                        case "secondled":
+                        tagMap.get(currentMac).set("secondled", information[1]);
+                        if(information[1] == 'true')
+                          setTagSecondLed(currentMac, true);
+                        else
+                          setTagSecondLed(currentMac, false);
                         break;
                         default:
                         console.log("error:", information);
