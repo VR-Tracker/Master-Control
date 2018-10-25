@@ -486,7 +486,9 @@ function addTag(mac){
     +'<p> orientation: '  + tagMap.get(mac).get("orientation") + '</p>'
     +'<p> status: '  + tagMap.get(mac).get("status") + '</p>'
     +'<p> #users: '  + tagMap.get(mac).get("users") + '</p>'
-    +'<p> version: '  + tagMap.get(mac).get("version") + '</p>'
+    +'<p> version: '  + tagMap.get(mac).get("version")
+    +'<button type="submit" class="btn btn-info update-btn" style="margin-left:5px;text-align:center;font-size:12px;" onclick="update(\'' + mac + '\')">Update</button>'
+    + '</p>'
     +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Get Orientation</button>'
     +'</br></br>'
     +'<p>Activate Second LED </p><label class="switch"><input id="tag-secondled-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
@@ -985,6 +987,11 @@ function reorienteTag(mac){
     var message = "cmd=reoriente&uid=" + mac;
     vrtracker.sendMessage(message);
     var message = "cmd=getoff&uid=" + mac;
+    vrtracker.sendMessage(message);
+}
+
+function update(mac){
+    var message = "cmd=update&uid=" + mac;
     vrtracker.sendMessage(message);
 }
 
