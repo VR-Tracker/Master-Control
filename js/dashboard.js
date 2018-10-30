@@ -493,8 +493,7 @@ function addTag(mac){
     +'</br></br>'
     +'<p>Activate Second LED </p><label class="switch"><input id="tag-secondled-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
     +'<span class="slider round"></span>';
-
-    if(tagMap.get(mac).get("secondled") === 'true'){
+    if(tagMap.get(mac).get("secondled") === 1){
       setTagSecondLed(mac, true);
     }
     else {
@@ -767,10 +766,6 @@ function parseMessage(message){
                         break;
                         case "secondled":
                         tagMap.get(currentMac).set("secondled", information[1]);
-                        if(information[1] == 'true')
-                          setTagSecondLed(currentMac, true);
-                        else
-                          setTagSecondLed(currentMac, false);
                         break;
                         default:
                         console.log("error:", information);
