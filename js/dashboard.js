@@ -494,7 +494,7 @@ function addTag(mac){
     +'<p>Activate Second LED </p><label class="switch"><input id="tag-secondled-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
     +'<span class="slider round"></span>';
 
-    if(tagMap.get(mac).get("secondled") === 'true'){
+    if(tagMap.get(mac).get("secondled") === '1'){
       setTagSecondLed(mac, true);
     }
     else {
@@ -512,8 +512,11 @@ function updateTagSecondLed(mac)
 
 function setTagSecondLed(mac, value)
 {
+
     var selection = document.getElementById("tag-secondled-" + mac);
-    selection.checked = value;
+    if(selection != null){
+      selection.checked = value;
+    }
 }
 
 function removeTag(mac){
@@ -738,6 +741,7 @@ function parseMessage(message){
         case "tagsinfo":{
             if(messageContent.length > 0){
                 var currentMac = "";
+              //  console.log(messageContent);
                 for (var i = 1; i < messageContent.length; i++ ) {
                     information = messageContent[i].split("=");
                     switch (information[0]){
@@ -767,7 +771,7 @@ function parseMessage(message){
                         break;
                         case "secondled":
                         tagMap.get(currentMac).set("secondled", information[1]);
-                        if(information[1] == 'true')
+                        if(information[1] == '1')
                           setTagSecondLed(currentMac, true);
                         else
                           setTagSecondLed(currentMac, false);
