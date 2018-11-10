@@ -491,31 +491,65 @@ function addTag(mac){
     + '</p>'
     +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Get Orientation</button>'
     +'</br></br>'
-    +'<p>Activate Second LED </p><label class="switch"><input id="tag-secondled-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
-    +'<span class="slider round"></span>';
+    +'<p style="margin-bottom:0px;">Activate Second LED </p><div style="border: none;">'
+    +'    <input size="4" class="form-control" id="tag-secondled-x-' + mac + '" placeholder="X dist" style="display:unset; width:30%;">'
+    +'    <input size="4" class="form-control" id="tag-secondled-y-' + mac + '" placeholder="Y dist" style="display:unset; width:30%;">'
+    +'    <input size="4" class="form-control" id="tag-secondled-z-' + mac + '" placeholder="Z dist" style="display:unset; width:30%;">'
+    +'<label class="switch" style="margin-top: 10px;">'
+    +'<input id="tag-secondled-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
+    +'<span class="slider round"></span>'
+    +'</div>';
 
     if(tagMap.get(mac).get("secondled") === '1'){
-      setTagSecondLed(mac, true);
+      setTagSecondLed(mac, true, tagMap.get(mac).get("secondledx"), tagMap.get(mac).get("secondledy"), tagMap.get(mac).get("secondledz"));
     }
     else {
-      setTagSecondLed(mac, false);
+      setTagSecondLed(mac, false, 0, 0, 0);
     }
 }
 
 function updateTagSecondLed(mac)
 {
     var selection = document.getElementById("tag-secondled-" + mac);
+    var xvalue = document.getElementById("tag-secondled-x-" + mac).value === "undefined" || document.getElementById("tag-secondled-x-" + mac).value === "" ? "0" : document.getElementById("tag-secondled-x-" + mac).value;
+    var yvalue = document.getElementById("tag-secondled-y-" + mac).value === "undefined" || document.getElementById("tag-secondled-y-" + mac).value === ""  ? "0" : document.getElementById("tag-secondled-y-" + mac).value;
+    var zvalue = document.getElementById("tag-secondled-z-" + mac).value === "undefined" || document.getElementById("tag-secondled-z-" + mac).value === ""  ? "0" : document.getElementById("tag-secondled-z-" + mac).value;
+    if(selection.checked){
+    var message = "cmd=settagsecondled&uid=" + mac
+    + "&state=" + selection.checked + "&x=" + xvalue + "&y=" + yvalue + "&z=" + zvalue;
+    }
+    else {
     var message = "cmd=settagsecondled&uid=" + mac
     + "&state=" + selection.checked;
+    }
+    console.log(message);
     socket.send(message);
 }
 
-function setTagSecondLed(mac, value)
+function setTagSecondLed(mac, value, x, y, z)
 {
-
     var selection = document.getElementById("tag-secondled-" + mac);
     if(selection != null){
       selection.checked = value;
+    }
+    if(value === true){
+      var xvalue = document.getElementById("tag-secondled-x-" + mac);
+      if(xvalue != null && x != null){
+        xvalue.value = String(x);
+      }
+
+      var yvalue = document.getElementById("tag-secondled-y-" + mac);
+      if(yvalue != null && y != null){
+        yvalue.value = String(y);
+      }
+
+      var zvalue = document.getElementById("tag-secondled-z-" + mac);
+      if(zvalue != null && z != null){
+        zvalue.value = String(z);
+      }
+    }
+    else {
+
     }
 }
 
