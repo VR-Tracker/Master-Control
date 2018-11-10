@@ -805,16 +805,29 @@ function parseMessage(message){
                         break;
                         case "secondled":
                         tagMap.get(currentMac).set("secondled", information[1]);
-                        if(information[1] == '1')
-                          setTagSecondLed(currentMac, true);
-                        else
-                          setTagSecondLed(currentMac, false);
+                        break;
+                        case "ledx":
+                          tagMap.get(currentMac).set("ledx", information[1]);
+                        break;
+                        case "ledy":
+                          tagMap.get(currentMac).set("ledy", information[1]);
+                        break;
+                        case "ledz":
+                          tagMap.get(currentMac).set("ledz", information[1]);
+                          if(tagMap.get(currentMac).get("secondled") === '1')
+                            setTagSecondLed(currentMac, true, tagMap.get(currentMac).get("ledx"), tagMap.get(currentMac).get("ledy"), tagMap.get(currentMac).get("ledz"));
+                          else
+                            setTagSecondLed(currentMac, false);
                         break;
                         default:
                         console.log("error:", information);
                         break;
                     }
                 }
+
+
+
+
                 //Add tag display
                 for (var [key, value] of tagMap) {
                     addTag(key);
