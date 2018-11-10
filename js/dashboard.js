@@ -817,7 +817,7 @@ function parseMessage(message){
                           if(tagMap.get(currentMac).get("secondled") === '1')
                             setTagSecondLed(currentMac, true, tagMap.get(currentMac).get("ledx"), tagMap.get(currentMac).get("ledy"), tagMap.get(currentMac).get("ledz"));
                           else
-                            setTagSecondLed(currentMac, false);
+                            setTagSecondLed(currentMac, false, 0, 0, 0);
                         break;
                         default:
                         console.log("error:", information);
