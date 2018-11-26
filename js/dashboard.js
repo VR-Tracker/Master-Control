@@ -495,13 +495,13 @@ function addTag(mac){
     + '</p>'
     +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Get Orientation</button>'
     +'</br></br>'
-    +'<p style="margin-bottom:0px;">Activate Second LED </p><div style="border: none;">'
+    +'<p style="margin-bottom:0px;">Activate Second LED </p><div style="border: none; padding-bottom: 0px;">'
     +'    <input size="4" class="form-control" id="tag-secondled-x-' + mac + '" placeholder="X dist" style="display:unset; width:30%;">'
     +'    <input size="4" class="form-control" id="tag-secondled-y-' + mac + '" placeholder="Y dist" style="display:unset; width:30%;">'
     +'    <input size="4" class="form-control" id="tag-secondled-z-' + mac + '" placeholder="Z dist" style="display:unset; width:30%;">'
-    +'<p><label class="switch" style="margin-top: 10px;"></p>'
+    +'<div style="border: none; margin-top: 10px;"><label class="switch">'
     +'<input id="tag-secondled-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
-    +'<span class="slider round"></span>'
+    +'<span class="slider round"></span></div>'
     +'</div>';
 
     if(tagMap.get(mac).get("secondled") === '1'){
