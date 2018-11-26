@@ -467,6 +467,10 @@ function removeUser(mac){
 }
 
 function addTag(mac){
+
+
+
+  console.log("Add Tag " + mac);
     var newTag = document.getElementById("tag-" + mac);
     var liste = document.getElementById("tags-grid");
     if(newTag == undefined){
@@ -517,13 +521,15 @@ function updateTagSecondLed(mac)
     if(selection.checked){
     var message = "cmd=settagsecondled&uid=" + mac
     + "&state=" + selection.checked + "&x=" + xvalue + "&y=" + yvalue + "&z=" + zvalue;
+    socket.send("cmd=settagsecondled&uid=" + mac + "&state=" + selection.checked);
+    socket.send("cmd=secondledposition&uid=" + mac + "&state=" + selection.checked + "&x=" + xvalue + "&y=" + yvalue + "&z=" + zvalue);
     }
     else {
     var message = "cmd=settagsecondled&uid=" + mac
     + "&state=" + selection.checked;
-    }
-    console.log(message);
     socket.send(message);
+    }
+
 }
 
 function setTagSecondLed(mac, value, x, y, z)
@@ -555,16 +561,17 @@ function setTagSecondLed(mac, value, x, y, z)
 
 function removeTag(mac){
     //$("#tag-" + mac).remove();
+    console.log("remove tag " + mac)
     var tagsGrid = document.getElementById("tags-grid");
     var tagToRemove = document.getElementById("tag-" + mac);
     if(tagsGrid != undefined && tagToRemove != undefined){
       var tagToRemoved = "#tag-" + mac;
       $(tagToRemoved).remove();
       tagToRemove.parentNode.removeChild(tagToRemove);
-        countElementGateway.set("tags", countElementGateway.get("tags") - 1);
-        document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
+      countElementGateway.set("tags", countElementGateway.get("tags") - 1);
+      document.getElementById("tag-count").innerHTML = countElementGateway.get("tags");
     }
-    if(liste.childNodes.length == 1){
+    if(typeof liste !== 'undefined' && liste.childNodes.length == 1){
         var magnetude = document.getElementById("magnetude-offset");
         magnetude.style.display = "none";
     }
@@ -775,8 +782,9 @@ function parseMessage(message){
         case "tagsinfo":{
             if(messageContent.length > 0){
                 var currentMac = "";
-              //  console.log(messageContent);
+                console.log(messageContent);
                 for (var i = 1; i < messageContent.length; i++ ) {
+
                     information = messageContent[i].split("=");
                     switch (information[0]){
                         case "uid":
@@ -787,38 +795,74 @@ function parseMessage(message){
                             tagMap.get(currentMac).set("battery", "0");
                             tagMap.get(currentMac).set("status", "lost");
                         }
-                        break;
-                        case "version":
-                        tagMap.get(currentMac).set("version", information[1]);
-                        break;
-                        case "battery":
-                        tagMap.get(currentMac).set("battery", information[1]);
-                        break;
-                        case "status":
-                        tagMap.get(currentMac).set("status", information[1]);
-                        break;
-                        case "orientation":
-                        tagMap.get(currentMac).set("orientation", information[1]);
-                        break;
-                        case "users":
-                        tagMap.get(currentMac).set("users", information[1]);
-                        break;
-                        case "secondled":
-                        tagMap.get(currentMac).set("secondled", information[1]);
-                        break;
-                        case "ledx":
-                          tagMap.get(currentMac).set("ledx", information[1]);
-                        break;
-                        case "ledy":
-                          tagMap.get(currentMac).set("ledy", information[1]);
-                        break;
-                        case "ledz":
-                          tagMap.get(currentMac).set("ledz", information[1]);
-                          if(tagMap.get(currentMac).get("secondled") === '1')
-                            setTagSecondLed(currentMac, true, tagMap.get(currentMac).get("ledx"), tagMap.get(currentMac).get("ledy"), tagMap.get(currentMac).get("ledz"));
+
+                        var j = i+1
+                        information = messageContent[j].split("=");
+                        var informationUpdated = false
+                        while(information[0] != "uid"){
+                          switch (information[0]){
+                            case "version":
+                            if(tagMap.get(currentMac).has("version") && tagMap.get(currentMac).get("version") != information[1])
+                              informationUpdated = true
+                            tagMap.get(currentMac).set("version", information[1]);
+                            break;
+                            case "battery":
+                            if(tagMap.get(currentMac).has("battery") && tagMap.get(currentMac).get("battery") != information[1])
+                              informationUpdated = true
+                            tagMap.get(currentMac).set("battery", information[1]);
+                            break;
+                            case "status":
+                            if(tagMap.get(currentMac).has("status") && tagMap.get(currentMac).get("status") != information[1])
+                              informationUpdated = true
+                            tagMap.get(currentMac).set("status", information[1]);
+                            break;
+                            case "orientation":
+                            if(tagMap.get(currentMac).has("orientation") && tagMap.get(currentMac).get("orientation") != information[1])
+                              informationUpdated = true
+                            tagMap.get(currentMac).set("orientation", information[1]);
+                            break;
+                            case "users":
+                            if(tagMap.get(currentMac).has("users") && tagMap.get(currentMac).get("users") != information[1])
+                              informationUpdated = true
+                            tagMap.get(currentMac).set("users", information[1]);
+                            break;
+                            case "secondled":
+                            if(tagMap.get(currentMac).has("secondled") && tagMap.get(currentMac).get("secondled") != information[1])
+                              informationUpdated = true
+                            tagMap.get(currentMac).set("secondled", information[1]);
+                            break;
+                            case "ledx":
+                            if(tagMap.get(currentMac).has("ledx") && tagMap.get(currentMac).get("ledx") != information[1])
+                              informationUpdated = true
+                              tagMap.get(currentMac).set("ledx", information[1]);
+                            break;
+                            case "ledy":
+                            if(tagMap.get(currentMac).has("ledy") && tagMap.get(currentMac).get("ledy") != information[1])
+                              informationUpdated = true
+                              tagMap.get(currentMac).set("ledy", information[1]);
+                            break;
+                            case "ledz":
+                            if(tagMap.get(currentMac).has("ledz") && tagMap.get(currentMac).get("ledz") != information[1])
+                              informationUpdated = true
+                              tagMap.get(currentMac).set("ledz", information[1]);
+                            break;
+                          }
+                          j++
+                          if(j<messageContent.length) // Check end of map
+                            information = messageContent[j].split("=");
                           else
-                            setTagSecondLed(currentMac, false, 0, 0, 0);
+                            break
+                        }
+                        if(tagMap.get(currentMac).get("secondled") === '1')
+                          setTagSecondLed(currentMac, true, tagMap.get(currentMac).get("ledx"), tagMap.get(currentMac).get("ledy"), tagMap.get(currentMac).get("ledz"));
+                        else
+                          setTagSecondLed(currentMac, false, 0, 0, 0);
+
+                        if(informationUpdated)
+                          addTag(currentMac)
+                        i = j-1
                         break;
+
                         default:
                         console.log("error:", information);
                         break;
@@ -829,9 +873,9 @@ function parseMessage(message){
 
 
                 //Add tag display
-                for (var [key, value] of tagMap) {
+                /*for (var [key, value] of tagMap) {
                     addTag(key);
-                }
+                }*/
             }else{
                 console.log("Unrecognized message");
             }
