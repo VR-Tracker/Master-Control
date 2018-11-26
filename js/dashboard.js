@@ -499,7 +499,7 @@ function addTag(mac){
     +'    <input size="4" class="form-control" id="tag-secondled-x-' + mac + '" placeholder="X dist" style="display:unset; width:30%;">'
     +'    <input size="4" class="form-control" id="tag-secondled-y-' + mac + '" placeholder="Y dist" style="display:unset; width:30%;">'
     +'    <input size="4" class="form-control" id="tag-secondled-z-' + mac + '" placeholder="Z dist" style="display:unset; width:30%;">'
-    +'<label class="switch" style="margin-top: 10px;">'
+    +'<p><label class="switch" style="margin-top: 10px;"></p>'
     +'<input id="tag-secondled-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
     +'<span class="slider round"></span>'
     +'</div>';
