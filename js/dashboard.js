@@ -468,7 +468,13 @@ function removeUser(mac){
 
 function addTag(mac){
 
-
+    var inputLedX = document.getElementById('tag-secondled-x-' + mac);
+    var inputLedY = document.getElementById('tag-secondled-y-' + mac);
+    var inputLedZ = document.getElementById('tag-secondled-z-' + mac);
+    if (inputLedX === document.activeElement || inputLedY === document.activeElement || inputLedZ === document.activeElement){
+        console.log("Dont update UI as Tag " + mac + " has focus");
+        return;
+    }
 
   console.log("Add Tag " + mac);
     var newTag = document.getElementById("tag-" + mac);
@@ -522,12 +528,15 @@ function updateTagSecondLed(mac)
     var message = "cmd=settagsecondled&uid=" + mac
     + "&state=" + selection.checked + "&x=" + xvalue + "&y=" + yvalue + "&z=" + zvalue;
     socket.send("cmd=settagsecondled&uid=" + mac + "&state=" + selection.checked);
-    socket.send("cmd=secondledposition&uid=" + mac + "&state=" + selection.checked + "&x=" + xvalue + "&y=" + yvalue + "&z=" + zvalue);
+    var message = "cmd=secondledposition&uid=" + mac + "&state=" + selection.checked + "&x=" + xvalue + "&y=" + yvalue + "&z=" + zvalue;
+    socket.send(message);
+    console.log("SEND: " + message);
     }
     else {
     var message = "cmd=settagsecondled&uid=" + mac
     + "&state=" + selection.checked;
     socket.send(message);
+    console.log("SEND: " + message);
     }
 
 }
@@ -860,6 +869,9 @@ function parseMessage(message){
 
                         if(informationUpdated)
                           addTag(currentMac)
+                        else {
+                            console.log("Tag info received but informations not updated : " + currentMac);
+                        }
                         i = j-1
                         break;
 
