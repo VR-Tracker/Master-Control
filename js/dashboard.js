@@ -490,6 +490,7 @@ function addTag(mac){
         var magnetude = document.getElementById("magnetude-offset");
         magnetude.style.display = "block";
     }
+
     newTag.innerHTML = '<svg class="glyph stroked app window with content"><use xlink:href="#stroked-tag"/></svg>'
     +'</br><p> mac: ' + mac + '</p>'
     +'<p> battery: '  + tagMap.get(mac).get("battery") + '%</p>'
@@ -506,10 +507,11 @@ function addTag(mac){
     +'    <input size="4" class="form-control" id="tag-secondled-y-' + mac + '" value="' + tagMap.get(mac).get("ledy") + '" placeholder="Y dist" style="display:unset; width:30%;">'
     +'    <input size="4" class="form-control" id="tag-secondled-z-' + mac + '" value="' + tagMap.get(mac).get("ledz") + '" placeholder="Z dist" style="display:unset; width:30%;">'
     +'<div style="border: none; margin-top: 10px;"><label class="switch">'
-    +'<input id="tag-secondled-' + mac + '" value="' + tagMap.get(mac).get("secondled") + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
+    +'<input id="tag-secondled-' + mac + '" ' + (tagMap.get(mac).get("secondled")=="1" ? "checked" : " ") + ' type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" onchange="updateTagSecondLed(\'' + mac + '\')">'
     +'<span class="slider round"></span></div>'
     +'</div>';
 
+    console.log(tagMap.get(mac).get("secondled"));
 
 }
 
@@ -760,7 +762,7 @@ function parseMessage(message){
         case "tagsinfo":{
             if(messageContent.length > 0){
                 var currentMac = "";
-        //        console.log(messageContent);
+                console.log(messageContent);
                 for (var i = 1; i < messageContent.length; i++ ) {
 
                     information = messageContent[i].split("=");
@@ -831,7 +833,7 @@ function parseMessage(message){
                           else
                             break
                         }
-                        
+
                         if(informationUpdated)
                           addTag(currentMac)
                         else {
