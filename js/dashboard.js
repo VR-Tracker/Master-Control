@@ -502,71 +502,40 @@ function addTag(mac){
     +'<button type="submit" class="btn btn-info orientation-btn" onclick="reorienteTag(\'' + mac + '\')">Get Orientation</button>'
     +'</br></br>'
     +'<p style="margin-bottom:0px;">Activate Second LED </p><div style="border: none; padding-bottom: 0px;">'
-    +'    <input size="4" class="form-control" id="tag-secondled-x-' + mac + '" placeholder="X dist" style="display:unset; width:30%;">'
-    +'    <input size="4" class="form-control" id="tag-secondled-y-' + mac + '" placeholder="Y dist" style="display:unset; width:30%;">'
-    +'    <input size="4" class="form-control" id="tag-secondled-z-' + mac + '" placeholder="Z dist" style="display:unset; width:30%;">'
+    +'    <input size="4" class="form-control" id="tag-secondled-x-' + mac + '" value="' + tagMap.get(mac).get("ledx") + '" placeholder="X dist" style="display:unset; width:30%;">'
+    +'    <input size="4" class="form-control" id="tag-secondled-y-' + mac + '" value="' + tagMap.get(mac).get("ledy") + '" placeholder="Y dist" style="display:unset; width:30%;">'
+    +'    <input size="4" class="form-control" id="tag-secondled-z-' + mac + '" value="' + tagMap.get(mac).get("ledz") + '" placeholder="Z dist" style="display:unset; width:30%;">'
     +'<div style="border: none; margin-top: 10px;"><label class="switch">'
-    +'<input id="tag-secondled-' + mac + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
+    +'<input id="tag-secondled-' + mac + '" value="' + tagMap.get(mac).get("secondled") + '" type="checkbox" data-toggle="toggle" data-on="Validated" data-off="Discarded" data-onstyle="success" data-offstyle="danger" checked onchange="updateTagSecondLed(\'' + mac + '\')">'
     +'<span class="slider round"></span></div>'
     +'</div>';
 
-    if(tagMap.get(mac).get("secondled") === '1'){
-      setTagSecondLed(mac, true, tagMap.get(mac).get("secondledx"), tagMap.get(mac).get("secondledy"), tagMap.get(mac).get("secondledz"));
-    }
-    else {
-      setTagSecondLed(mac, false, 0, 0, 0);
-    }
+
 }
 
 function updateTagSecondLed(mac)
 {
+    tagMap.get(mac).set("secondled", document.getElementById("tag-secondled-" + mac).checked ? "1" : "0");
+    tagMap.get(mac).set("ledx", document.getElementById("tag-secondled-x-" + mac).value === "undefined" || document.getElementById("tag-secondled-x-" + mac).value === "" ? "0" : document.getElementById("tag-secondled-x-" + mac).value);
+    tagMap.get(mac).set("ledy", document.getElementById("tag-secondled-y-" + mac).value === "undefined" || document.getElementById("tag-secondled-y-" + mac).value === ""  ? "0" : document.getElementById("tag-secondled-y-" + mac).value);
+    tagMap.get(mac).set("ledz", document.getElementById("tag-secondled-z-" + mac).value === "undefined" || document.getElementById("tag-secondled-z-" + mac).value === ""  ? "0" : document.getElementById("tag-secondled-z-" + mac).value);
+
     var selection = document.getElementById("tag-secondled-" + mac);
-    var xvalue = document.getElementById("tag-secondled-x-" + mac).value === "undefined" || document.getElementById("tag-secondled-x-" + mac).value === "" ? "0" : document.getElementById("tag-secondled-x-" + mac).value;
-    var yvalue = document.getElementById("tag-secondled-y-" + mac).value === "undefined" || document.getElementById("tag-secondled-y-" + mac).value === ""  ? "0" : document.getElementById("tag-secondled-y-" + mac).value;
-    var zvalue = document.getElementById("tag-secondled-z-" + mac).value === "undefined" || document.getElementById("tag-secondled-z-" + mac).value === ""  ? "0" : document.getElementById("tag-secondled-z-" + mac).value;
+
     if(selection.checked){
-    var message = "cmd=settagsecondled&uid=" + mac
-    + "&state=" + selection.checked + "&x=" + xvalue + "&y=" + yvalue + "&z=" + zvalue;
-    socket.send("cmd=settagsecondled&uid=" + mac + "&state=" + selection.checked);
-    var message = "cmd=secondledposition&uid=" + mac + "&state=" + selection.checked + "&x=" + xvalue + "&y=" + yvalue + "&z=" + zvalue;
-    socket.send(message);
-    console.log("SEND: " + message);
+        var message = "cmd=settagsecondled&uid=" + mac + "&state=" + selection.checked + "&x=" + tagMap.get(mac).get("ledx") + "&y=" + tagMap.get(mac).get("ledy") + "&z=" + tagMap.get(mac).get("ledz");
+        socket.send("cmd=settagsecondled&uid=" + mac + "&state=" + selection.checked);
+
+        var message = "cmd=secondledposition&uid=" + mac + "&state=" + selection.checked + "&x=" + tagMap.get(mac).get("ledx") + "&y=" + tagMap.get(mac).get("ledy") + "&z=" + tagMap.get(mac).get("ledz");
+        socket.send(message);
     }
     else {
-    var message = "cmd=settagsecondled&uid=" + mac
-    + "&state=" + selection.checked;
-    socket.send(message);
-    console.log("SEND: " + message);
+        var message = "cmd=settagsecondled&uid=" + mac + "&state=" + selection.checked;
+        socket.send(message);
     }
 
 }
 
-function setTagSecondLed(mac, value, x, y, z)
-{
-    var selection = document.getElementById("tag-secondled-" + mac);
-    if(selection != null){
-      selection.checked = value;
-    }
-    if(value === true){
-      var xvalue = document.getElementById("tag-secondled-x-" + mac);
-      if(xvalue != null && x != null){
-        xvalue.value = String(x);
-      }
-
-      var yvalue = document.getElementById("tag-secondled-y-" + mac);
-      if(yvalue != null && y != null){
-        yvalue.value = String(y);
-      }
-
-      var zvalue = document.getElementById("tag-secondled-z-" + mac);
-      if(zvalue != null && z != null){
-        zvalue.value = String(z);
-      }
-    }
-    else {
-
-    }
-}
 
 function removeTag(mac){
     //$("#tag-" + mac).remove();
@@ -791,7 +760,7 @@ function parseMessage(message){
         case "tagsinfo":{
             if(messageContent.length > 0){
                 var currentMac = "";
-                console.log(messageContent);
+        //        console.log(messageContent);
                 for (var i = 1; i < messageContent.length; i++ ) {
 
                     information = messageContent[i].split("=");
@@ -862,11 +831,7 @@ function parseMessage(message){
                           else
                             break
                         }
-                        if(tagMap.get(currentMac).get("secondled") === '1')
-                          setTagSecondLed(currentMac, true, tagMap.get(currentMac).get("ledx"), tagMap.get(currentMac).get("ledy"), tagMap.get(currentMac).get("ledz"));
-                        else
-                          setTagSecondLed(currentMac, false, 0, 0, 0);
-
+                        
                         if(informationUpdated)
                           addTag(currentMac)
                         else {
