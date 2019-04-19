@@ -23,7 +23,7 @@ var validatedCalibration = new Map();
 var calibrationPoint = []; //Store the different calibration point
 var timeOutMessage = "";
 var addingReferencePoints = false;
-var autoCalibrationActivated = false; //Currently disactivated as it is not fully functional
+var autoCalibrationActivated = true; //Currently disactivated as it is not fully functional
 /*
     Info panel information
 */
