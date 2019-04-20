@@ -236,6 +236,11 @@
 				<button style="width:50%; margin-bottom: 10px; opacity:0; display: none;" class="btn btn-primary" id="enterCalibViewBtn" onclick="handleKeySpace()" >Enter Calibration View</button>
 			</p>
 		</div>
+		<div>
+			<p align="center" style="margin-top: 1px">
+				<button style="width:50%; margin-bottom: 10px; opacity:0; display: none;" class="btn btn-primary" id="enterAutoCalibBtn" onclick="startautocalibration()" >Enter Auto-Calibration Step</button>
+			</p>
+		</div>
 		<div align="center" style="margin-top: 1px">
 			<button style="width:50%; display: none;" type="submit" class="btn btn-danger" id="stop-calibration-btn" onclick="stopCalibration()">Exit Calibration </button>
 		</div>
@@ -303,8 +308,27 @@
 		<button type="submit" class="btn btn-md" id="calibrate-btn" onclick="calibrate()">Calibrate</button>
 	</div>
 
-	<div id="cross">
+	<div id="cross" class="crossClass">
 		<a class="quit-view" onclick="masquerAffichageMessage()">&times;</a>
+	</div>
+</div>
+
+<div id="auto-calibration-window" class="panel panel-default" style="display:none;">
+
+	<div id="auto-calibration-message">
+		Time for auto calibration</br>Enter your wand lenght:
+	</div>
+	<div align="center" style=" margin: auto; margin-bottom: 4px;" >
+		<div class="form-group" style="margin-left: 10px;">
+			<input class="form-control" id="wand-lenght-value" placeholder="cm" style="width:30%">
+		</div>
+		<button type="submit" class="btn btn-md" id="wand-lenght-btn" onclick="saveWandLenght()">Save</button>
+	</div>
+	<div align="center" style=" margin: auto; margin-bottom: 4px; margin-top: 25px" >
+		<button type="submit" class="btn btn-md" id="auto-calibration-button" onclick="stopAutoCalibration()">Stop</button>
+	</div>
+	<div id="cross2" class="crossClass">
+		<a class="quit-view" onclick="masquerAllMessage()">&times;</a>
 	</div>
 </div>
 <div id="cover" > </div>

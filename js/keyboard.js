@@ -181,15 +181,33 @@ function masquerAffichageMessage(){
     calibrationViewActivated = false
 }
 
+function masquerAllMessage(){
+    document.getElementById("calibrationMessage").style.display = "none";
+    document.getElementById("messageScreen").style.display = "none";
+    document.getElementById("cover").style.display = "none";
+    document.getElementById("auto-calibration-window").style.display = "none";
+    calibrationViewActivated = false
+}
+
+
 function hideCalibrationMessages(){
     document.getElementById("calibration-failed").style.display = "none";
     document.getElementById("calibration-success").style.display = "none";
     document.getElementById("calibration-inprocess").style.display = "none";
 
 }
+
 function affichageMessage(){
     document.getElementById("calibrationMessage").style.display = "block";
     document.getElementById("messageScreen").style.display = "block";
+    document.getElementById("cover").style.display = "block";
+}
+
+function affichageMessageAutoCalibration(){
+    hideCalibrationMessages();
+    document.getElementById("calibrationMessage").style.display = "none";
+    document.getElementById("messageScreen").style.display = "none";
+    document.getElementById("auto-calibration-window").style.display = "block";
     document.getElementById("cover").style.display = "block";
 }
 
@@ -220,11 +238,19 @@ function showNextCalibrationPoint(){
                 affichageMessage();
             }
         }else{
-            affichageMessage();
+            console.log("Last calibration point");
+            affichageMessageAutoCalibration();
             var text = "Calibration Finished !";
             calibrationMessage.display = "none";
             fullScreenMessage.innerHTML = text;
-            stopCalibration();
+            if(isAutoCalibrating)
+            {
+                startautocalibration();
+            }
+            else{
+                console.log("Stopping the calibration");
+                stopCalibration();
+            }
         }
     }
 }

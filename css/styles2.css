@@ -194,6 +194,21 @@ span.round-tab:hover {
     display:block; opacity:2;
 }
 
+#auto-calibration-window{
+    position: fixed;
+    top: 30%;
+    left:10%;
+    z-index:1002;
+    display:none;
+    width: 80%;
+    /*border:5px solid #cccccc;
+    border-radius:10px;*/
+}
+
+#auto-calibration-window:target, #auto-calibration-window:target + #cover{
+    display:block; opacity:2;
+}
+
 .cancel {
     display:block;
     position:absolute;
@@ -243,7 +258,7 @@ span.round-tab:hover {
     margin-top: -25px;*/
 
 }
-#calibrationMessage{
+#calibrationMessage,#auto-calibration-message{
     position: relative;
     width: 100%;
     font-size: 300%;
@@ -251,13 +266,13 @@ span.round-tab:hover {
     color: black;
 }
 
-#cross{
+.crossClass{
     position:absolute;
     left: 50%;
     text-align: center;
 }
 
-#calibrate-btn{
+#calibrate-btn, #wand-lenght-btn{
     width:30%;
     margin-left: 10px;
     background-color: #06c;
