@@ -87,6 +87,18 @@ function parseMessage(message){
 
             break;
         }
+        case "tagsinformation":{
+            var cmdContent = messageContent[0].split("=");
+            cmd = cmdContent[1];
+            var mac;
+            var tagsMac = []
+            for (var i = 1; i < messageContent.length; i++ ) {
+                information = messageContent[i].split("=");
+                tagsMac.push(information[1]);
+            }
+            updateTags(tagsMac);
+            break;
+        }
         case "cameracalibration":{
             //Cas de xyzcalibrated
             var x,y,z;
