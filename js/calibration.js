@@ -602,31 +602,29 @@ function stopCalibration(){
     calibrationBtn.className = "btn btn-primary btn-md";
     calibrationBtn.innerHTML = "Start Calibration";
     calibrationBtn.disabled = true;
-    document.getElementById("stop-calibration-btn").style.display = "none";
-    if(autoCalibrationActivated)
-    {
-        document.getElementById("auto-calibration-btn").style.display = "block";
-    }
-    document.getElementById("add-coordinate").disabled = true;
 
     sendMessage(socket, message);
     //showCalibratedCamera();
-    resetTablePoint3D();
-    var liste = document.getElementById('available-cameras');
-    var ligne = liste.getElementsByTagName("tr");
-    var longueur = ligne.length;
-    for (var i = 0; i < longueur - 2; i++) {
-        ligne[2].parentNode.removeChild(ligne[2]);
-    }
-    hideCount();
+    resetTables();
+
     CALIBRATING = false;
 
-    calibrated = false;
-    if(calibrated){
-        document.getElementById("calibration-finished").style.opacity = 1;
-        document.getElementById("calibration-finished").className += " fadein";
+    maskCalibrationButtons();
 
+    if(autoCalibrationActivated)
+    {
+        document.getElementById("auto-calibration-btn").disabled = false;
     }
+    document.getElementById("add-reference-btn").style.display = "none";
+
+
+}
+
+function maskCalibrationButtons()
+{
+    document.getElementById("stop-calibration-btn").style.display = "none";
+
+    document.getElementById("add-coordinate").disabled = true;
 
     document.getElementById("calibrationBtn").innerHTML = "Validate Camera Selection";
     document.getElementById("add-3D-point-panel").style.opacity = 0;
@@ -641,13 +639,17 @@ function stopCalibration(){
     document.getElementById("enterAutoCalibBtn").style.opacity = 0;
     document.getElementById("enterAutoCalibBtn").style.display =  "none";
 
-    if(autoCalibrationActivated)
-    {
-        document.getElementById("auto-calibration-btn").disabled = false;
+}
+
+function resetTables()
+{
+    resetTablePoint3D();
+    var liste = document.getElementById('available-cameras');
+    var ligne = liste.getElementsByTagName("tr");
+    var longueur = ligne.length;
+    for (var i = 0; i < longueur - 2; i++) {
+        ligne[2].parentNode.removeChild(ligne[2]);
     }
-    document.getElementById("add-reference-btn").style.display = "none";
-
-
 }
 
 function addPoint3DTable(x, y, z){
@@ -886,20 +888,12 @@ function stopAutoCalibration(){
     var message = "cmd=stopautocalibration";
     //If there any selected camera we send the message
     sendMessage(socket, message);
-    document.getElementById("stop-calibration-btn").style.display = "inline";
 
     document.getElementById("auto-calibration-btn").style.display = "inline";
     document.getElementById("stop-auto-calibration-btn").style.display = "none";
 
-    document.getElementById("add-3D-point-panel").style.opacity = 0;
-    document.getElementById("add-3D-point-panel").style.display = "none";
-    document.getElementById("add-3D-point-list").style.opacity = 0;
-    document.getElementById("add-3D-point-list").style.display = "none";
-    document.getElementById("not-enough-3d").style.opacity = 0;
-    document.getElementById("not-enough-3d").style.display = "none";
-    document.getElementById("enough-3d").style.display = "none";
-    document.getElementById("add-reference-btn").style.display = "block";
-
+    maskCalibrationButtons();
+    resetTables();
 
 }
 
