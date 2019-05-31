@@ -131,7 +131,7 @@ window.setInterval(function(){
 
 window.onclose=function(){
     vrtracker.socket.close();
-    document.getElementById("calibrationBtn").disabled = true;
+    document.getElementById("calibration-button").disabled = true;
 }
 
 $(window).resize(function(){
