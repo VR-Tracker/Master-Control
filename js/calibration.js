@@ -49,7 +49,6 @@ var StopCalibration = "<p>Now that the calibration is finished, you should be ab
 window.onload=function(){
     createWebsocket();
     // Send a message when the button start calibration is clicked.
-    updateAutocalibrationDisplay();
 
     calibrationBtn.onclick = function(e) {
         e.preventDefault();
@@ -1069,15 +1068,12 @@ function updateAutocalibrationDisplay()
     console.log("Updating auto cali view");
 
     var boutonAuto = document.getElementById("auto-calibration-btn");
-    var boutonNext = document.getElementById("next-calibration-btn");
 
     if(autoCalibrationActivated){
         boutonAuto.style.display = "block";
-        boutonNext.style.display = "block";
     }else{
         console.log("disable autocalibration button");
         boutonAuto.style.display = "none";
-        boutonNext.style.display = "none";
     }
 }
 
