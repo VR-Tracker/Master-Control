@@ -245,7 +245,7 @@ function showNextCalibrationPoint(){
             fullScreenMessage.innerHTML = text;
             if(isAutoCalibrating)
             {
-                startautocalibration();
+                startAutoCalibNext();
             }
             else{
                 console.log("Stopping the calibration");

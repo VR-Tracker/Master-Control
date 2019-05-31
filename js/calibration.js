@@ -5,7 +5,7 @@ var wsFailedAlert = document.getElementById('ws_failed_alert');
 var wsSuccessAlert = document.getElementById('ws_success_alert');
 var calibrating = false;
 var socket;
-var calibrationBtn = document.getElementById('calibrationBtn');
+var calibrationBtn = document.getElementById('calibration-btn');
 var count = 0;
 var nombreCamera = 0;
 var countTable = [0];
@@ -124,7 +124,7 @@ window.onload=function(){
 
 window.onclose=function(){
     socket.close();
-    document.getElementById("calibrationBtn").disabled = true;
+    calibrationBtn.disabled = true;
 }
 
 window.setInterval(function(){
@@ -165,7 +165,7 @@ function createWebsocket(){
         wsFailedAlert.style.display = "block";
         wsSuccessAlert.style.display = "none";
         console.log('WebSocket Error: ' + error);
-        document.getElementById("calibrationBtn").disabled = true;
+        calibrationBtn.disabled = true;
     }
     // Handle messages sent by the server.
     socket.onmessage = function(event) {
@@ -275,10 +275,12 @@ function changeColor(id, numeroCamera){
             }
         }
         if(countCameraSelected < 1){
-            document.getElementById("calibrationBtn").disabled = true;
+            document.getElementById('calibration-btn').disabled = true;
+            document.getElementById('auto-calibration-btn').disabled = true;
         }
         else {
-            document.getElementById("calibrationBtn").disabled = false;
+            document.getElementById('calibration-btn').disabled = false;
+            document.getElementById('auto-calibration-btn').disabled = false;
         }
     }
 }
@@ -372,23 +374,23 @@ function addNewPointCalibration(){
                     document.getElementById("enough-3d").style.display = "block";
                     document.getElementById("enough-3d").innerHTML = "Enough points have been entered but remember, the more the better ;)";
 
-                    document.getElementById("enterCalibViewBtn").style.opacity = 1;
-                    document.getElementById("enterCalibViewBtn").style.display = "block";
-                    document.getElementById("enterCalibViewBtn").className += " fadein";
+                    document.getElementById("calib-view-btn").style.opacity = 1;
+                    document.getElementById("calib-view-btn").style.display = "block";
+                    document.getElementById("calib-view-btn").className += " fadein";
                 }else{
                     if(addingReferencePoints && calibrationPoint.length >=3){
                         document.getElementById("not-enough-3d").style.display = "none";
                         document.getElementById("enough-3d").style.display = "block";
                         document.getElementById("enough-3d").innerHTML = "Enough points have been entered ! :)";
 
-                        document.getElementById("enterCalibViewBtn").style.opacity = 1;
-                        document.getElementById("enterCalibViewBtn").style.display = "block";
-                        document.getElementById("enterCalibViewBtn").className += " fadein";
+                        document.getElementById("calib-view-btn").style.opacity = 1;
+                        document.getElementById("calib-view-btn").style.display = "block";
+                        document.getElementById("calib-view-btn").className += " fadein";
                     }else{
                         document.getElementById("not-enough-3d").style.display = "block";
                         document.getElementById("enough-3d").style.display = "none";
-                        document.getElementById("enterCalibViewBtn").style.opacity = 0;
-                        document.getElementById("enterCalibViewBtn").style.display = "none";
+                        document.getElementById("calib-view-btn").style.opacity = 0;
+                        document.getElementById("calib-view-btn").style.display = "none";
                     }
 
                 }
@@ -477,23 +479,23 @@ function addNewPointCalibration(){
                             document.getElementById("enough-3d").style.display = "block";
                             document.getElementById("enough-3d").innerHTML = "Enough points have been entered but remember, the more the better ;)";
 
-                            document.getElementById("enterCalibViewBtn").style.opacity = 1;
-                            document.getElementById("enterCalibViewBtn").style.display = "block";
-                            document.getElementById("enterCalibViewBtn").className += " fadein";
+                            document.getElementById("calib-view-btn").style.opacity = 1;
+                            document.getElementById("calib-view-btn").style.display = "block";
+                            document.getElementById("calib-view-btn").className += " fadein";
                         }else{
                             if(addingReferencePoints && calibrationPoint.length >=3){
                                 document.getElementById("not-enough-3d").style.display = "none";
                                 document.getElementById("enough-3d").style.display = "block";
                                 document.getElementById("enough-3d").innerHTML = "Enough points have been entered ! :)";
 
-                                document.getElementById("enterCalibViewBtn").style.opacity = 1;
-                                document.getElementById("enterCalibViewBtn").style.display = "block";
-                                document.getElementById("enterCalibViewBtn").className += " fadein";
+                                document.getElementById("calib-view-btn").style.opacity = 1;
+                                document.getElementById("calib-view-btn").style.display = "block";
+                                document.getElementById("calib-view-btn").className += " fadein";
                             }else{
                                 document.getElementById("not-enough-3d").style.display = "block";
                                 document.getElementById("enough-3d").style.display = "none";
-                                document.getElementById("enterCalibViewBtn").style.opacity = 0;
-                                document.getElementById("enterCalibViewBtn").style.display = "none";
+                                document.getElementById("calib-view-btn").style.opacity = 0;
+                                document.getElementById("calib-view-btn").style.display = "none";
                             }
 
                         }
@@ -530,7 +532,7 @@ function startCalibration(){
         }
     }
     numberOfSelectedCamera = numeroCamera;
-    if(send){
+    //if(send){
         CALIBRATING = true;
         //If message is sent, we change the button
         //   FADE IN the next Panel
@@ -569,11 +571,12 @@ function startCalibration(){
         }
         sendMessage(socket, message);
         displayCount();
-    }
-    else {
+        maskCalibrationStartingButtons();
+    //}
+    //else {
         calibrating = false;
         alert("No camera selected");
-    }
+    //}
 }
 
 function stopCalibration(){
@@ -610,9 +613,11 @@ function stopCalibration(){
 
     maskCalibrationButtons();
 
-    if(autoCalibrationActivated)
+    if (autoCalibrationActivated)
     {
         document.getElementById("auto-calibration-btn").disabled = false;
+    }else{
+        displayCalibrationStartingButtons()
     }
     document.getElementById("add-reference-btn").style.display = "none";
 
@@ -625,7 +630,7 @@ function maskCalibrationButtons()
 
     document.getElementById("add-coordinate").disabled = true;
 
-    document.getElementById("calibrationBtn").innerHTML = "Validate Camera Selection";
+    document.getElementById("calibration-btn").innerHTML = "Validate Camera Selection";
     document.getElementById("add-3D-point-panel").style.opacity = 0;
     document.getElementById("add-3D-point-panel").style.display = "none";
     document.getElementById("add-3D-point-list").style.opacity = 0;
@@ -633,11 +638,24 @@ function maskCalibrationButtons()
     document.getElementById("not-enough-3d").style.opacity = 0;
     document.getElementById("not-enough-3d").style.display = "none";
     document.getElementById("enough-3d").style.display = "none";
-    document.getElementById("enterCalibViewBtn").style.opacity = 0;
-    document.getElementById("enterCalibViewBtn").style.display = "none";
-    document.getElementById("enterAutoCalibBtn").style.opacity = 0;
-    document.getElementById("enterAutoCalibBtn").style.display =  "none";
+    document.getElementById("calib-view-btn").style.opacity = 0;
+    document.getElementById("calib-view-btn").style.display = "none";
+    document.getElementById("auto-calib-view-btn").style.opacity = 0;
+    document.getElementById("auto-calib-view-btn").style.display =  "none";
 
+}
+
+function maskCalibrationStartingButtons()
+{
+    console.log("masking buttons");
+    document.getElementById("calibration-btn").style.display = "none";
+    document.getElementById("auto-calibration-btn").style.display = "none";
+}
+
+function displayCalibrationStartingButtons()
+{
+    document.getElementById("calibration-btn").style.display = "block";
+    document.getElementById("auto-calibration-btn").style.display = "block";
 }
 
 function resetTables()
@@ -838,7 +856,7 @@ function removeBreaks(){
     return noBreaksText;
 }
 
-function autoCalibration(){
+function startAutoCalibration(){
     var send = false;
     //Create the corresponding message
     var message = "cmd=startautocalibration";
@@ -857,15 +875,14 @@ function autoCalibration(){
     numberOfSelectedCamera = numeroCamera;
 
     console.log(message);
-    if(send){
-        CALIBRATING = true;
-        isAutoCalibrating = true;
-        //If there any selected camera we send the message
-        sendMessage(socket, message);
+    CALIBRATING = true;
+    isAutoCalibrating = true;
+    //If there any selected camera we send the message
+    sendMessage(socket, message);
 
-        AddReferencePoints()
-    }
-    else {
+    AddReferencePoints();
+    maskCalibrationStartingButtons();
+    if (!send){
         console.log("No camera selected");
         alert("No camera selected");
     }
@@ -892,6 +909,7 @@ function stopAutoCalibration(){
     document.getElementById("stop-auto-calibration-btn").style.display = "none";
 
     maskCalibrationButtons();
+    displayCalibrationStartingButtons();
     resetTables();
 
 }
@@ -1087,24 +1105,23 @@ function generateCoordinate()
 
 }
 
-function startautocalibration()
+function startAutoCalibNext()
 {
     var message = "cmd=stopcalibration";
     sendMessage(socket, message);
     console.log("Starting autocaliration");
     document.getElementById("not-enough-3d").style.display = "block";
     document.getElementById("enough-3d").style.display = "none";
-    document.getElementById("enterCalibViewBtn").style.opacity = 0;
-    document.getElementById("enterCalibViewBtn").style.display = "none";
+    document.getElementById("calib-view-btn").style.opacity = 0;
+    document.getElementById("calib-view-btn").style.display = "none";
 
 
-    document.getElementById("enterAutoCalibBtn").style.opacity = 0;
-    document.getElementById("enterAutoCalibBtn").style.display = "none";
+    document.getElementById("auto-calib-view-btn").style.opacity = 0;
+    document.getElementById("auto-calib-view-btn").style.display = "none";
 
     document.getElementById("auto-calibration-window").style.opacity = 1;
     document.getElementById("auto-calibration-window").style.display = "block";
     document.getElementById("auto-calibration-window").className += " fadein";
-
 
 }
 

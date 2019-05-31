@@ -121,10 +121,10 @@
 		</div>
 		<div>
 			<p align="center" style="margin-top: 1px">
-				<button style="width:50%; margin-bottom: 10px" type="submit" class="btn btn-primary" id="calibration-button"   onclick="startCalibration()" style="margin-left: 10px;">Classic calibration</button>
+				<button style="width:50%; margin-bottom: 10px" type="submit" class="btn btn-primary" id="calibration-btn"   onclick="startCalibration()" disabled="true">Classic calibration</button>
 			</p>
 			<div align="center" style="margin-top: 1px">
-				<button style="width:50%; " type="submit" class="btn btn-primary" id="auto-calibration-btn" onclick="autoCalibration()">Auto Calibration </button>
+				<button style="width:50%; " type="submit" class="btn btn-primary" id="auto-calibration-btn" onclick="startAutoCalibration()" disabled="true">Auto Calibration </button>
 			</div>
 			<div align="center" style="margin-top: 1px; margin-bottom: 3px;">
 				<button style="width:50%; display: none;" type="submit" class="btn btn-primary" id="stop-auto-calibration-btn" onclick="stopAutoCalibration()">Stop Auto Calibration </button>
@@ -238,12 +238,12 @@
 		</div>
 		<div>
 			<p align="center" style="margin-top: 1px">
-				<button style="width:50%; margin-bottom: 10px; opacity:0; display: none;" class="btn btn-primary" id="enterCalibViewBtn" onclick="handleKeySpace()" >Enter Calibration View</button>
+				<button style="width:50%; margin-bottom: 10px; opacity:0; display: none;" class="btn btn-primary" id="calib-view-btn" onclick="handleKeySpace()" >Enter Calibration View</button>
 			</p>
 		</div>
 		<div>
 			<p align="center" style="margin-top: 1px">
-				<button style="width:50%; margin-bottom: 10px; opacity:0; display: none;" class="btn btn-primary" id="enterAutoCalibBtn" onclick="startautocalibration()" >Enter Auto-Calibration Step</button>
+				<button style="width:50%; margin-bottom: 10px; opacity:0; display: none;" class="btn btn-primary" id="auto-calib-view-btn" onclick="startAutoCalibNext()" >Enter Auto-Calibration Step</button>
 			</p>
 		</div>
 		<div align="center" style="margin-top: 1px">
@@ -330,7 +330,7 @@
 		<button type="submit" class="btn btn-md" id="wand-lenght-btn" onclick="saveWandLenght()">Save</button>
 	</div>
 	<div align="center" style=" margin: auto; margin-bottom: 4px; margin-top: 25px" >
-		<button type="submit" class="btn btn-md" id="auto-calibration-button" onclick="stopAutoCalibration()">Stop</button>
+		<button type="submit" class="btn btn-md" id="auto-calibration-btn" onclick="stopAutoCalibration()">Stop</button>
 	</div>
 	<div id="cross2" class="crossClass">
 		<a class="quit-view" onclick="masquerAllMessage()">&times;</a>
