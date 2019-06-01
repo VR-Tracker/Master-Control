@@ -3,6 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>VR Tracker - Calibration</title>
 
 	<link href="css/bootstrap.min.css" rel="stylesheet">
@@ -323,18 +324,25 @@
 	<div id="auto-calibration-message">
 		Time for auto calibration</br>Enter your wand lenght:
 	</div>
-	<div align="center" style=" margin: auto; margin-bottom: 4px;" >
+	<div align="center" id="wand-lenght-div" style=" margin: auto; margin-bottom: 4px;" >
 		<div class="form-group" style="margin-left: 10px;">
 			<input class="form-control" id="wand-lenght-value" placeholder="m" style="width:30%">
 		</div>
 		<button type="submit" class="btn btn-md" id="wand-lenght-btn" onclick="saveWandLenght()">Save</button>
 	</div>
+	<div class="pg-container" id="progress-bar">
+		<div class="pg-light-grey">
+		<div id="myBar" class="pg-container pg-green" style="width:0%"></div>
+		</div>
+		<br>
+	</div>
 	<div align="center" style=" margin: auto; margin-bottom: 4px; margin-top: 25px" >
-		<button type="submit" class="btn btn-md" id="auto-calibration-btn" onclick="stopAutoCalibration()">Stop</button>
+		<button type="submit" class="btn btn-primary btn-md" id="auto-calibration-btn" onclick="stopAutoCalibration()">Stop</button>
 	</div>
 	<div id="cross2" class="crossClass">
 		<a class="quit-view" onclick="masquerAllMessage()">&times;</a>
 	</div>
+
 </div>
 <div id="cover" > </div>
 
@@ -361,12 +369,26 @@ $(window).on('resize', function () {
 	if ($(window).width() <= 767) $('#sidebar-collapse').collapse('hide')
 })
 
-
+function move() {
+  var elem = document.getElementById("myBar");
+  var width = 20;
+  var id = setInterval(frame, 10);
+  function frame() {
+    if (width >= 100) {
+      clearInterval(id);
+    } else {
+      width++;
+      elem.style.width = width + '%';
+      elem.innerHTML = width * 1  + '%';
+    }
+  }
+}
 </script>
 <script src="js/calibration.js"></script>
 <script src="js/parser.js"></script>
 <script src="js/keyboard.js"></script>
 <script src="js/save.js"></script>
+<script src="js/bar.js"></script>
 </body>
 
 </html>

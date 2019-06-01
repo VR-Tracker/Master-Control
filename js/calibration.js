@@ -25,6 +25,7 @@ var timeOutMessage = "";
 var addingReferencePoints = false;
 var autoCalibrationActivated = true; //Currently disactivated as it is not fully functional
 var isAutoCalibrating = false;
+var numberOfTag = 0;
 /*
     Info panel information
 */
@@ -101,7 +102,7 @@ function createWebsocket(){
     socket.onmessage = function(event) {
         //getting the time of the message
         var message = event.data;
-        console.log(message);
+        console.log("socket " + message);
         parseMessage(message);
     }
 }
@@ -839,6 +840,11 @@ function stopAutoCalibration(){
     document.getElementById("auto-calibration-btn").style.display = "inline";
     document.getElementById("stop-auto-calibration-btn").style.display = "none";
 
+    document.getElementById("auto-calibration-window").style.opacity = 0;
+    document.getElementById("auto-calibration-window").style.display = "none";
+    document.getElementById("cover").style.display = "none";
+
+
     maskCalibrationButtons();
     displayCalibrationStartingButtons();
     resetTables();
@@ -1053,6 +1059,13 @@ function startAutoCalibNext()
     document.getElementById("auto-calibration-window").style.opacity = 1;
     document.getElementById("auto-calibration-window").style.display = "block";
     document.getElementById("auto-calibration-window").className += " fadein";
+    console.log("Number of tag " + numberOfTag);
+    if(numberOfTag == 1)
+    {
+        document.getElementById("auto-calibration-message").innerHTML = "Time for auto calibration";
+        document.getElementById("wand-lenght-div").style.display = "none";
+    }
+
 
 }
 
@@ -1119,6 +1132,7 @@ function updateTags(tagList)
         this.classList.toggle("select-arrow-active");
       });
     }
+    numberOfTag = tagList.length;
 }
 
 
