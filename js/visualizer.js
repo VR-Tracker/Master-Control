@@ -5,7 +5,6 @@ var wsFailedAlert = document.getElementById('ws_failed_alert');
 var wsSuccessAlert = document.getElementById('ws_success_alert');
 var calibrating = false;
 var socket;
-var calibration-btn = document.getElementById('calibration-btn');
 var count = 0;
 var nombreCamera = 0;
 var countTable = [0];
