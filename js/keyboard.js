@@ -239,12 +239,13 @@ function showNextCalibrationPoint(){
             }
         }else{
             console.log("Last calibration point");
-            affichageMessageAutoCalibration();
             var text = "Calibration Finished !";
             calibrationMessage.display = "none";
             fullScreenMessage.innerHTML = text;
             if(isAutoCalibrating)
             {
+              affichageMessageAutoCalibration();
+                console.log("Starting autocalibration next");
                 startAutoCalibNext();
             }
             else{
